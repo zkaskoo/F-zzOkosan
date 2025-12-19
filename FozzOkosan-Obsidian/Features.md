@@ -7,27 +7,30 @@
 ## Feature Overview
 
 ```mermaid
-mindmap
-  root((FőzzOkosan))
-    Auth
-      Registration
-      Login
-      JWT
-    Social
-      Posts
-      Likes
-      Comments
-      Follows
-    Recipes
-      CRUD
-      Images
-      Search
-      Categories
-    Smart
-      NLP Parsing
-      Shopping List
-      Unit Conversion
-      Menu Planner
+flowchart TD
+    A[🍳 FőzzOkosan] --> B[🔐 Auth]
+    A --> C[👥 Social]
+    A --> D[📖 Recipes]
+    A --> E[🧠 Smart]
+
+    B --> B1[Registration]
+    B --> B2[Login]
+    B --> B3[JWT]
+
+    C --> C1[Posts]
+    C --> C2[Likes]
+    C --> C3[Comments]
+    C --> C4[Follows]
+
+    D --> D1[CRUD]
+    D --> D2[Images]
+    D --> D3[Search]
+    D --> D4[Categories]
+
+    E --> E1[NLP Parsing]
+    E --> E2[Shopping List]
+    E --> E3[Unit Conversion]
+    E --> E4[Menu Planner]
 ```
 
 ---

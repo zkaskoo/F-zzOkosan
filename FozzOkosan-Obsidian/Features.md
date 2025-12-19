@@ -36,11 +36,11 @@ mindmap
 
 | Feature | Description | Priority | Status |
 |---------|-------------|----------|--------|
-| Registration | Email + password signup | High | ⬜ Todo |
-| Login | JWT-based auth | High | ⬜ Todo |
-| Profile | View/edit user info | Medium | ⬜ Todo |
-| Avatar | Profile picture upload | Low | ⬜ Todo |
-| Password reset | Email-based reset | Low | ⬜ Todo |
+| **Registration** | Email + password signup | ![High](https://img.shields.io/badge/High-orange) | ![Todo](https://img.shields.io/badge/Todo-lightgrey) |
+| **Login** | JWT-based auth | ![High](https://img.shields.io/badge/High-orange) | ![Todo](https://img.shields.io/badge/Todo-lightgrey) |
+| **Profile** | View/edit user info | ![Medium](https://img.shields.io/badge/Medium-yellow) | ![Todo](https://img.shields.io/badge/Todo-lightgrey) |
+| **Avatar** | Profile picture upload | ![Low](https://img.shields.io/badge/Low-blue) | ![Todo](https://img.shields.io/badge/Todo-lightgrey) |
+| **Password reset** | Email-based reset | ![Low](https://img.shields.io/badge/Low-blue) | ![Todo](https://img.shields.io/badge/Todo-lightgrey) |
 
 ---
 
@@ -48,14 +48,14 @@ mindmap
 
 | Feature | Description | Priority | Status |
 |---------|-------------|----------|--------|
-| Create recipe | Title, ingredients, instructions | High | ⬜ Todo |
-| Edit recipe | Update own recipes | High | ⬜ Todo |
-| Delete recipe | Remove own recipes | High | ⬜ Todo |
-| View recipe | Recipe detail page | High | ⬜ Todo |
-| Recipe images | Photo upload | High | ⬜ Todo |
-| Categories | Organize by type | Medium | ⬜ Todo |
-| Cooking time | Duration field | Low | ⬜ Todo |
-| Servings | Portion count | Low | ⬜ Todo |
+| **Create recipe** | Title, ingredients, instructions | ![High](https://img.shields.io/badge/High-orange) | ![Todo](https://img.shields.io/badge/Todo-lightgrey) |
+| **Edit recipe** | Update own recipes | ![High](https://img.shields.io/badge/High-orange) | ![Todo](https://img.shields.io/badge/Todo-lightgrey) |
+| **Delete recipe** | Remove own recipes | ![High](https://img.shields.io/badge/High-orange) | ![Todo](https://img.shields.io/badge/Todo-lightgrey) |
+| **View recipe** | Recipe detail page | ![High](https://img.shields.io/badge/High-orange) | ![Todo](https://img.shields.io/badge/Todo-lightgrey) |
+| **Recipe images** | Photo upload | ![High](https://img.shields.io/badge/High-orange) | ![Todo](https://img.shields.io/badge/Todo-lightgrey) |
+| **Categories** | Organize by type | ![Medium](https://img.shields.io/badge/Medium-yellow) | ![Todo](https://img.shields.io/badge/Todo-lightgrey) |
+| **Cooking time** | Duration field | ![Low](https://img.shields.io/badge/Low-blue) | ![Todo](https://img.shields.io/badge/Todo-lightgrey) |
+| **Servings** | Portion count | ![Low](https://img.shields.io/badge/Low-blue) | ![Todo](https://img.shields.io/badge/Todo-lightgrey) |
 
 ---
 
@@ -63,14 +63,14 @@ mindmap
 
 | Feature | Description | Priority | Status |
 |---------|-------------|----------|--------|
-| Recipe feed | Home page with recipes | High | ⬜ Todo |
-| Like recipe | Heart button | High | ⬜ Todo |
-| Unlike recipe | Remove like | High | ⬜ Todo |
-| Comment | Add comments | Medium | ⬜ Todo |
-| Delete comment | Remove own comments | Medium | ⬜ Todo |
-| Follow user | Follow other users | Medium | ⬜ Todo |
-| Unfollow user | Remove follow | Medium | ⬜ Todo |
-| User discovery | Find users | Low | ⬜ Todo |
+| **Recipe feed** | Home page with recipes | ![High](https://img.shields.io/badge/High-orange) | ![Todo](https://img.shields.io/badge/Todo-lightgrey) |
+| **Like recipe** | Heart button | ![High](https://img.shields.io/badge/High-orange) | ![Todo](https://img.shields.io/badge/Todo-lightgrey) |
+| **Unlike recipe** | Remove like | ![High](https://img.shields.io/badge/High-orange) | ![Todo](https://img.shields.io/badge/Todo-lightgrey) |
+| **Comment** | Add comments | ![Medium](https://img.shields.io/badge/Medium-yellow) | ![Todo](https://img.shields.io/badge/Todo-lightgrey) |
+| **Delete comment** | Remove own comments | ![Medium](https://img.shields.io/badge/Medium-yellow) | ![Todo](https://img.shields.io/badge/Todo-lightgrey) |
+| **Follow user** | Follow other users | ![Medium](https://img.shields.io/badge/Medium-yellow) | ![Todo](https://img.shields.io/badge/Todo-lightgrey) |
+| **Unfollow user** | Remove follow | ![Medium](https://img.shields.io/badge/Medium-yellow) | ![Todo](https://img.shields.io/badge/Todo-lightgrey) |
+| **User discovery** | Find users | ![Low](https://img.shields.io/badge/Low-blue) | ![Todo](https://img.shields.io/badge/Todo-lightgrey) |
 
 ---
 
@@ -78,11 +78,11 @@ mindmap
 
 | Feature | Description | Priority | Status |
 |---------|-------------|----------|--------|
-| Search by title | Text search | High | ⬜ Todo |
-| Search by ingredient | Find by ingredient | Medium | ⬜ Todo |
-| Filter by category | Category filter | Medium | ⬜ Todo |
-| Filter by diet | Vegetarian, vegan, etc. | Medium | ⬜ Todo |
-| Filter by allergen | Exclude allergens | Medium | ⬜ Todo |
+| **Search by title** | Text search | ![High](https://img.shields.io/badge/High-orange) | ![Todo](https://img.shields.io/badge/Todo-lightgrey) |
+| **Search by ingredient** | Find by ingredient | ![Medium](https://img.shields.io/badge/Medium-yellow) | ![Todo](https://img.shields.io/badge/Todo-lightgrey) |
+| **Filter by category** | Category filter | ![Medium](https://img.shields.io/badge/Medium-yellow) | ![Todo](https://img.shields.io/badge/Todo-lightgrey) |
+| **Filter by diet** | Vegetarian, vegan, etc. | ![Medium](https://img.shields.io/badge/Medium-yellow) | ![Todo](https://img.shields.io/badge/Todo-lightgrey) |
+| **Filter by allergen** | Exclude allergens | ![Medium](https://img.shields.io/badge/Medium-yellow) | ![Todo](https://img.shields.io/badge/Todo-lightgrey) |
 
 ---
 
@@ -90,12 +90,12 @@ mindmap
 
 | Feature | Description | Priority | Status |
 |---------|-------------|----------|--------|
-| NLP parsing | Parse free-text ingredients | **Critical** | ⬜ Todo |
-| Unit conversion | dkg→g, ek→ml, etc. | **Critical** | ⬜ Todo |
-| Shopping list | Generate from recipe | **Critical** | ⬜ Todo |
-| Multi-recipe merge | Combine ingredients | **Critical** | ⬜ Todo |
-| Menu planner | Weekly meal planning | High | ⬜ Todo |
-| Week shopping list | List for whole week | High | ⬜ Todo |
+| **NLP parsing** | Parse free-text ingredients | ![Critical](https://img.shields.io/badge/Critical-red) | ![Todo](https://img.shields.io/badge/Todo-lightgrey) |
+| **Unit conversion** | dkg→g, ek→ml, etc. | ![Critical](https://img.shields.io/badge/Critical-red) | ![Todo](https://img.shields.io/badge/Todo-lightgrey) |
+| **Shopping list** | Generate from recipe | ![Critical](https://img.shields.io/badge/Critical-red) | ![Todo](https://img.shields.io/badge/Todo-lightgrey) |
+| **Multi-recipe merge** | Combine ingredients | ![Critical](https://img.shields.io/badge/Critical-red) | ![Todo](https://img.shields.io/badge/Todo-lightgrey) |
+| **Menu planner** | Weekly meal planning | ![High](https://img.shields.io/badge/High-orange) | ![Todo](https://img.shields.io/badge/Todo-lightgrey) |
+| **Week shopping list** | List for whole week | ![High](https://img.shields.io/badge/High-orange) | ![Todo](https://img.shields.io/badge/Todo-lightgrey) |
 
 ---
 
@@ -103,22 +103,30 @@ mindmap
 
 | Feature | Description | Priority | Status |
 |---------|-------------|----------|--------|
-| Responsive design | Mobile-friendly | High | ⬜ Todo |
-| Dark mode | Theme toggle | Low | ⬜ Todo |
-| Loading states | Skeleton loaders | Medium | ⬜ Todo |
-| Error handling | User-friendly errors | Medium | ⬜ Todo |
-| Toast notifications | Action feedback | Low | ⬜ Todo |
+| **Responsive design** | Mobile-friendly | ![High](https://img.shields.io/badge/High-orange) | ![Todo](https://img.shields.io/badge/Todo-lightgrey) |
+| **Dark mode** | Theme toggle | ![Low](https://img.shields.io/badge/Low-blue) | ![Todo](https://img.shields.io/badge/Todo-lightgrey) |
+| **Loading states** | Skeleton loaders | ![Medium](https://img.shields.io/badge/Medium-yellow) | ![Todo](https://img.shields.io/badge/Todo-lightgrey) |
+| **Error handling** | User-friendly errors | ![Medium](https://img.shields.io/badge/Medium-yellow) | ![Todo](https://img.shields.io/badge/Todo-lightgrey) |
+| **Toast notifications** | Action feedback | ![Low](https://img.shields.io/badge/Low-blue) | ![Todo](https://img.shields.io/badge/Todo-lightgrey) |
 
 ---
 
 ## Priority Legend
 
-| Priority | Meaning |
-|----------|---------|
-| **Critical** | Must have for thesis |
-| High | Important feature |
-| Medium | Nice to have |
-| Low | If time permits |
+| Badge | Meaning |
+|-------|---------|
+| ![Critical](https://img.shields.io/badge/Critical-red) | Must have for thesis |
+| ![High](https://img.shields.io/badge/High-orange) | Important feature |
+| ![Medium](https://img.shields.io/badge/Medium-yellow) | Nice to have |
+| ![Low](https://img.shields.io/badge/Low-blue) | If time permits |
+
+## Status Legend
+
+| Badge | Meaning |
+|-------|---------|
+| ![Todo](https://img.shields.io/badge/Todo-lightgrey) | Not started |
+| ![In Progress](https://img.shields.io/badge/In_Progress-yellow) | Currently working |
+| ![Done](https://img.shields.io/badge/Done-brightgreen) | Completed |
 
 ---
 

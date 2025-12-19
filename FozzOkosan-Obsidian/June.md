@@ -1,6 +1,6 @@
 # June
 
-#timeline #june
+> Tags: `timeline #june
 
 ---
 
@@ -12,7 +12,7 @@
 
 ### NLP Implementation
 - [ ] Set up Google Gemini API
-- [ ] Create NLP service in [[Backend]]
+- [ ] Create NLP service in [Backend](Backend.md)
 - [ ] Design prompt for ingredient parsing
 - [ ] Handle edge cases (fractions, "ízlés szerint")
 - [ ] Integrate with recipe creation flow
@@ -38,7 +38,7 @@
 
 ## NLP Service Implementation
 
-See [[NLP & AI]] for full implementation details.
+See [NLP & AI](NLP%20%26%20AI.md) for full implementation details.
 
 ### Key Files
 
@@ -78,11 +78,11 @@ Return ONLY valid JSON array.
 
 | Input | Expected Output | Status |
 |-------|-----------------|--------|
-| "2 ek olaj" | qty: 2, unit: ek | 🔲 |
-| "fél kg liszt" | qty: 0.5, unit: kg | 🔲 |
-| "3 tojás" | qty: 3, unit: db | 🔲 |
-| "só ízlés szerint" | qty: null | 🔲 |
-| "1-2 gerezd fokhagyma" | qty: 1.5 | 🔲 |
+| "2 ek olaj" | qty: 2, unit: ek | ⬜ |
+| "fél kg liszt" | qty: 0.5, unit: kg | ⬜ |
+| "3 tojás" | qty: 3, unit: db | ⬜ |
+| "só ízlés szerint" | qty: null | ⬜ |
+| "1-2 gerezd fokhagyma" | qty: 1.5 | ⬜ |
 
 ---
 
@@ -115,24 +115,24 @@ Return ONLY valid JSON array.
 
 | Deliverable | Status |
 |-------------|--------|
-| Gemini API integration | 🔲 |
-| NLP service complete | 🔲 |
-| Unit tests for NLP | 🔲 |
-| Chapter 1 draft | 🔲 |
-| Chapter 2 draft | 🔲 |
+| Gemini API integration | ⬜ |
+| NLP service complete | ⬜ |
+| Unit tests for NLP | ⬜ |
+| Chapter 1 draft | ⬜ |
+| Chapter 2 draft | ⬜ |
 
 ---
 
 ## Dependencies
 
-- [[May]] must be complete (shopping list)
+- [May](May.md) must be complete (shopping list)
 
 ---
 
 ## Related
 
-- [[Timeline]]
-- [[May]] - Previous month
-- [[September]] - Next month
-- [[NLP & AI]]
-- [[00 - Index]]
+- [Timeline](Timeline.md)
+- [May](May.md) - Previous month
+- [September](September.md) - Next month
+- [NLP & AI](NLP%20%26%20AI.md)
+- [Index](00%20-%20Index.md)

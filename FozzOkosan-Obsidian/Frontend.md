@@ -1,6 +1,6 @@
 # Frontend
 
-#frontend #react #typescript
+> Tags: `frontend #react #typescript
 
 ---
 
@@ -126,6 +126,6 @@ npx tailwindcss init -p
 
 ## Related
 
-- [[Tech Stack]]
-- [[Backend]]
-- [[00 - Index]]
+- [Tech Stack](Tech%20Stack.md)
+- [Backend](Backend.md)
+- [Index](00%20-%20Index.md)

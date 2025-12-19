@@ -1,6 +1,6 @@
 # May
 
-#timeline #may
+> Tags: `timeline #may
 
 ---
 
@@ -120,11 +120,11 @@ function mergeIngredients(recipes: Recipe[]): ShoppingItem[] {
 
 | Deliverable | Status |
 |-------------|--------|
-| Shopping list from 1 recipe | 🔲 |
-| Multi-recipe merge | 🔲 |
-| Allergen filtering | 🔲 |
-| Diet filtering | 🔲 |
-| Shopping list UI | 🔲 |
+| Shopping list from 1 recipe | ⬜ |
+| Multi-recipe merge | ⬜ |
+| Allergen filtering | ⬜ |
+| Diet filtering | ⬜ |
+| Shopping list UI | ⬜ |
 
 ---
 
@@ -155,14 +155,14 @@ function mergeIngredients(recipes: Recipe[]): ShoppingItem[] {
 
 ## Dependencies
 
-- [[April]] must be complete (unit conversion)
+- [April](April.md) must be complete (unit conversion)
 
 ---
 
 ## Related
 
-- [[Timeline]]
-- [[April]] - Previous month
-- [[June]] - Next month
-- [[NLP & AI]]
-- [[00 - Index]]
+- [Timeline](Timeline.md)
+- [April](April.md) - Previous month
+- [June](June.md) - Next month
+- [NLP & AI](NLP%20%26%20AI.md)
+- [Index](00%20-%20Index.md)

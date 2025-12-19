@@ -1,6 +1,6 @@
 # Database
 
-#database #postgresql #prisma
+> Tags: `database #postgresql #prisma
 
 ---
 
@@ -241,6 +241,6 @@ npx prisma db push
 
 ## Related
 
-- [[Tech Stack]]
-- [[Backend]]
-- [[00 - Index]]
+- [Tech Stack](Tech%20Stack.md)
+- [Backend](Backend.md)
+- [Index](00%20-%20Index.md)

@@ -1,6 +1,6 @@
 # Tech Stack
 
-#tech #architecture
+> Tags: `tech #architecture
 
 ---
 
@@ -32,13 +32,13 @@
 
 | Layer | Technology | Details |
 |-------|------------|---------|
-| [[Frontend]] | React 18 | UI Framework |
-| [[Frontend]] | TypeScript | Type safety |
-| [[Frontend]] | TailwindCSS | Styling |
-| [[Backend]] | NestJS | API Framework |
-| [[Backend]] | Prisma | ORM |
-| [[Database]] | PostgreSQL | Relational DB |
-| [[NLP & AI]] | Gemini API | Ingredient parsing |
+| [Frontend](Frontend.md) | React 18 | UI Framework |
+| [Frontend](Frontend.md) | TypeScript | Type safety |
+| [Frontend](Frontend.md) | TailwindCSS | Styling |
+| [Backend](Backend.md) | NestJS | API Framework |
+| [Backend](Backend.md) | Prisma | ORM |
+| [Database](Database.md) | PostgreSQL | Relational DB |
+| [NLP & AI](NLP%20%26%20AI.md) | Gemini API | Ingredient parsing |
 
 ---
 
@@ -84,8 +84,8 @@
 
 ## Related
 
-- [[Frontend]]
-- [[Backend]]
-- [[Database]]
-- [[NLP & AI]]
-- [[00 - Index]]
+- [Frontend](Frontend.md)
+- [Backend](Backend.md)
+- [Database](Database.md)
+- [NLP & AI](NLP%20%26%20AI.md)
+- [Index](00%20-%20Index.md)

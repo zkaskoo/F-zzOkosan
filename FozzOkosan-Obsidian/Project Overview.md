@@ -1,6 +1,6 @@
 # Project Overview
 
-#project #thesis
+> Tags: `project #thesis
 
 ---
 
@@ -37,7 +37,7 @@ A web application that:
 
 ## Core Features
 
-See [[Features]] for complete list.
+See [Features](Features.md) for complete list.
 
 ### Social Media Features
 - Post recipes with images
@@ -46,7 +46,7 @@ See [[Features]] for complete list.
 - Personalized feed
 
 ### Smart Features
-- [[NLP & AI]] ingredient parsing
+- [NLP & AI](NLP%20%26%20AI.md) ingredient parsing
 - Automatic unit conversion
 - Shopping list generation
 - Multi-recipe ingredient merge
@@ -73,6 +73,6 @@ See [[Features]] for complete list.
 
 ## Related
 
-- [[Tech Stack]]
-- [[Timeline]]
-- [[00 - Index]]
+- [Tech Stack](Tech%20Stack.md)
+- [Timeline](Timeline.md)
+- [Index](00%20-%20Index.md)

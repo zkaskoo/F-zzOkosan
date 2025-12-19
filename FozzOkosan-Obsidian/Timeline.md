@@ -1,6 +1,6 @@
 # Timeline
 
-#timeline #planning
+> Tags: `timeline` `planning`
 
 ---
 
@@ -19,13 +19,13 @@ Setup   CRUD    Units    Shopping   NLP    Testing   Docs
 
 | Month | Focus | Key Deliverables |
 |-------|-------|------------------|
-| [[February]] | Foundation | Auth, repo, system design |
-| [[March]] | Core Features | Recipe CRUD, UI components |
-| [[April]] | Data Layer | Unit conversion, structured storage |
-| [[May]] | Smart Features | Shopping list generator |
-| [[June]] | AI & Docs | NLP implementation, thesis chapters |
-| [[September]] | Polish | Menu planner, user testing |
-| [[October]] | Finalize | Complete documentation |
+| [February](February.md) | Foundation | Auth, repo, system design |
+| [March](March.md) | Core Features | Recipe CRUD, UI components |
+| [April](April.md) | Data Layer | Unit conversion, structured storage |
+| [May](May.md) | Smart Features | Shopping list generator |
+| [June](June.md) | AI & Docs | NLP implementation, thesis chapters |
+| [September](September.md) | Polish | Menu planner, user testing |
+| [October](October.md) | Finalize | Complete documentation |
 
 ---
 
@@ -73,11 +73,11 @@ graph LR
 
 ## Related
 
-- [[February]]
-- [[March]]
-- [[April]]
-- [[May]]
-- [[June]]
-- [[September]]
-- [[October]]
-- [[00 - Index]]
+- [February](February.md)
+- [March](March.md)
+- [April](April.md)
+- [May](May.md)
+- [June](June.md)
+- [September](September.md)
+- [October](October.md)
+- [Index](00%20-%20Index.md)

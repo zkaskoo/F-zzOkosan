@@ -1,6 +1,6 @@
 # February
 
-#timeline #february
+> Tags: `timeline #february
 
 ---
 
@@ -18,7 +18,7 @@
 
 ### System Design
 - [ ] Create architecture diagram
-- [ ] Design [[Database]] schema
+- [ ] Design [Database](Database.md) schema
 - [ ] Define API endpoints
 - [ ] Plan module structure
 
@@ -27,8 +27,8 @@
 - [ ] Set up CI/CD (GitHub Actions)
 - [ ] Configure Docker for local development
 - [ ] Set up PostgreSQL database
-- [ ] Initialize [[Frontend]] (React + TypeScript)
-- [ ] Initialize [[Backend]] (NestJS)
+- [ ] Initialize [Frontend](Frontend.md) (React + TypeScript)
+- [ ] Initialize [Backend](Backend.md) (NestJS)
 - [ ] Configure Prisma ORM
 
 ### User Authentication
@@ -44,19 +44,19 @@
 
 | Deliverable | Status |
 |-------------|--------|
-| Literature analysis document | 🔲 |
-| Architecture diagram | 🔲 |
-| Database schema (Prisma) | 🔲 |
-| Working registration/login | 🔲 |
-| CI/CD pipeline | 🔲 |
+| Literature analysis document | ⬜ |
+| Architecture diagram | ⬜ |
+| Database schema (Prisma) | ⬜ |
+| Working registration/login | ⬜ |
+| CI/CD pipeline | ⬜ |
 
 ---
 
 ## Tech Focus
 
-- [[Backend]] - NestJS setup, auth module
-- [[Database]] - Prisma schema design
-- [[Frontend]] - Basic React setup
+- [Backend](Backend.md) - NestJS setup, auth module
+- [Database](Database.md) - Prisma schema design
+- [Frontend](Frontend.md) - Basic React setup
 
 ---
 
@@ -86,6 +86,6 @@ npx prisma migrate dev --name init
 
 ## Related
 
-- [[Timeline]]
-- [[March]] - Next month
-- [[00 - Index]]
+- [Timeline](Timeline.md)
+- [March](March.md) - Next month
+- [Index](00%20-%20Index.md)

@@ -1,6 +1,6 @@
 # Backend
 
-#backend #nestjs #api
+> Tags: `backend #nestjs #api
 
 ---
 
@@ -163,8 +163,8 @@ npx prisma init
 
 ## Related
 
-- [[Tech Stack]]
-- [[Frontend]]
-- [[Database]]
-- [[NLP & AI]]
-- [[00 - Index]]
+- [Tech Stack](Tech%20Stack.md)
+- [Frontend](Frontend.md)
+- [Database](Database.md)
+- [NLP & AI](NLP%20%26%20AI.md)
+- [Index](00%20-%20Index.md)

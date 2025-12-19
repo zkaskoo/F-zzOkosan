@@ -1,6 +1,6 @@
 # FőzzOkosan - Project Map
 
-#project #thesis #moc
+> Tags: `project` `thesis` `moc`
 
 ---
 
@@ -30,20 +30,20 @@ graph TD
 
 | Document | Description |
 |----------|-------------|
-| [[Project Overview]] | Project summary and goals |
-| [[Tech Stack]] | All technologies used |
-| [[Features]] | Complete feature list |
-| [[Timeline]] | Monthly breakdown |
-| [[Risks]] | Risk management |
+| [Project Overview](Project%20Overview.md) | Project summary and goals |
+| [Tech Stack](Tech%20Stack.md) | All technologies used |
+| [Features](Features.md) | Complete feature list |
+| [Timeline](Timeline.md) | Monthly breakdown |
+| [Risks](Risks.md) | Risk management |
 
 ---
 
 ## Tech Stack
 
-- [[Frontend]] - React + TypeScript + TailwindCSS
-- [[Backend]] - NestJS + Prisma
-- [[Database]] - PostgreSQL schema
-- [[NLP & AI]] - Google Gemini integration
+- [Frontend](Frontend.md) - React + TypeScript + TailwindCSS
+- [Backend](Backend.md) - NestJS + Prisma
+- [Database](Database.md) - PostgreSQL schema
+- [NLP & AI](NLP%20%26%20AI.md) - Google Gemini integration
 
 ---
 
@@ -51,13 +51,13 @@ graph TD
 
 | Month | Focus | Status |
 |-------|-------|--------|
-| [[February]] | Setup & Auth | 🔲 Not Started |
-| [[March]] | CRUD & UI | 🔲 Not Started |
-| [[April]] | Units & Data | 🔲 Not Started |
-| [[May]] | Shopping List | 🔲 Not Started |
-| [[June]] | NLP & Docs | 🔲 Not Started |
-| [[September]] | Testing & Menu | 🔲 Not Started |
-| [[October]] | Final Docs | 🔲 Not Started |
+| [February](February.md) | Setup & Auth | ⬜ Not Started |
+| [March](March.md) | CRUD & UI | ⬜ Not Started |
+| [April](April.md) | Units & Data | ⬜ Not Started |
+| [May](May.md) | Shopping List | ⬜ Not Started |
+| [June](June.md) | NLP & Docs | ⬜ Not Started |
+| [September](September.md) | Testing & Menu | ⬜ Not Started |
+| [October](October.md) | Final Docs | ⬜ Not Started |
 
 ---
 
@@ -70,4 +70,4 @@ graph TD
 
 ## Tags
 
-#react #nestjs #typescript #postgresql #gemini #nlp
+`react` `nestjs` `typescript` `postgresql` `gemini` `nlp`

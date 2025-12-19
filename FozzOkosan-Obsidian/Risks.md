@@ -1,6 +1,6 @@
 # Risks
 
-#risks #planning
+> Tags: `risks #planning
 
 ---
 
@@ -60,7 +60,7 @@ Medium │  ┌─────────────┐
 
 **Mitigation Strategies:**
 - Prioritize MVP features
-- Use [[Features]] priority list
+- Use [Features](Features.md) priority list
 - Weekly progress reviews
 - Cut low-priority features if needed
 
@@ -148,7 +148,7 @@ Medium │  ┌─────────────┐
 - Ask friends and family
 - University classmates
 - Online communities
-- Start recruiting early ([[September]])
+- Start recruiting early ([September](September.md))
 
 ---
 
@@ -169,7 +169,7 @@ Medium │  ┌─────────────┐
 
 Weekly check:
 - [ ] API usage within limits?
-- [ ] On track with [[Timeline]]?
+- [ ] On track with [Timeline](Timeline.md)?
 - [ ] Any new blockers?
 - [ ] Test coverage adequate?
 
@@ -177,7 +177,7 @@ Weekly check:
 
 ## Related
 
-- [[Timeline]]
-- [[Features]]
-- [[NLP & AI]]
-- [[00 - Index]]
+- [Timeline](Timeline.md)
+- [Features](Features.md)
+- [NLP & AI](NLP%20%26%20AI.md)
+- [Index](00%20-%20Index.md)

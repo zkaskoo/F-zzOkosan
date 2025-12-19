@@ -1,6 +1,6 @@
 # March
 
-#timeline #march
+> Tags: `timeline #march
 
 ---
 
@@ -44,11 +44,11 @@
 
 | Deliverable | Status |
 |-------------|--------|
-| Recipe CRUD API | 🔲 |
-| Image upload working | 🔲 |
-| Home feed UI | 🔲 |
-| Recipe detail page | 🔲 |
-| Create recipe form | 🔲 |
+| Recipe CRUD API | ⬜ |
+| Image upload working | ⬜ |
+| Home feed UI | ⬜ |
+| Recipe detail page | ⬜ |
+| Create recipe form | ⬜ |
 
 ---
 
@@ -104,15 +104,15 @@
 
 ## Dependencies
 
-- [[February]] must be complete (auth working)
+- [February](February.md) must be complete (auth working)
 
 ---
 
 ## Related
 
-- [[Timeline]]
-- [[February]] - Previous month
-- [[April]] - Next month
-- [[Frontend]]
-- [[Backend]]
-- [[00 - Index]]
+- [Timeline](Timeline.md)
+- [February](February.md) - Previous month
+- [April](April.md) - Next month
+- [Frontend](Frontend.md)
+- [Backend](Backend.md)
+- [Index](00%20-%20Index.md)

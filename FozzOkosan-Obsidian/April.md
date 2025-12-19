@@ -1,6 +1,6 @@
 # April
 
-#timeline #april
+> Tags: `timeline #april
 
 ---
 
@@ -106,24 +106,24 @@ const FRACTIONS = {
 
 | Deliverable | Status |
 |-------------|--------|
-| Unit conversion service | 🔲 |
-| Fraction parsing | 🔲 |
-| Structured ingredient storage | 🔲 |
-| Ingredient categories | 🔲 |
+| Unit conversion service | ⬜ |
+| Fraction parsing | ⬜ |
+| Structured ingredient storage | ⬜ |
+| Ingredient categories | ⬜ |
 
 ---
 
 ## Dependencies
 
-- [[March]] must be complete (recipes working)
+- [March](March.md) must be complete (recipes working)
 
 ---
 
 ## Related
 
-- [[Timeline]]
-- [[March]] - Previous month
-- [[May]] - Next month
-- [[NLP & AI]]
-- [[Database]]
-- [[00 - Index]]
+- [Timeline](Timeline.md)
+- [March](March.md) - Previous month
+- [May](May.md) - Next month
+- [NLP & AI](NLP%20%26%20AI.md)
+- [Database](Database.md)
+- [Index](00%20-%20Index.md)

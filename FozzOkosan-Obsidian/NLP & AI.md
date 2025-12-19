@@ -1,6 +1,6 @@
 # NLP & AI
 
-#nlp #ai #gemini
+> Tags: `nlp #ai #gemini
 
 ---
 
@@ -225,8 +225,8 @@ For thesis project: **More than enough!**
 
 ## Related
 
-- [[Tech Stack]]
-- [[Backend]]
-- [[May]] - Shopping list implementation
-- [[June]] - NLP implementation month
-- [[00 - Index]]
+- [Tech Stack](Tech%20Stack.md)
+- [Backend](Backend.md)
+- [May](May.md) - Shopping list implementation
+- [June](June.md) - NLP implementation month
+- [Index](00%20-%20Index.md)

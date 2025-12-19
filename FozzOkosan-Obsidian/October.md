@@ -1,6 +1,6 @@
 # October
 
-#timeline #october
+> Tags: `timeline #october
 
 ---
 
@@ -135,24 +135,24 @@ Függelék
 
 | Deliverable | Status |
 |-------------|--------|
-| Chapter 3 complete | 🔲 |
-| Chapter 4 complete | 🔲 |
-| Chapter 5 complete | 🔲 |
-| Chapter 6 complete | 🔲 |
-| Abstract written | 🔲 |
-| Supervisor approved | 🔲 |
-| **Thesis submitted** | 🔲 |
+| Chapter 3 complete | ⬜ |
+| Chapter 4 complete | ⬜ |
+| Chapter 5 complete | ⬜ |
+| Chapter 6 complete | ⬜ |
+| Abstract written | ⬜ |
+| Supervisor approved | ⬜ |
+| **Thesis submitted** | ⬜ |
 
 ---
 
 ## Dependencies
 
-- [[September]] must be complete (testing done)
+- [September](September.md) must be complete (testing done)
 
 ---
 
 ## Related
 
-- [[Timeline]]
-- [[September]] - Previous month
-- [[00 - Index]]
+- [Timeline](Timeline.md)
+- [September](September.md) - Previous month
+- [Index](00%20-%20Index.md)

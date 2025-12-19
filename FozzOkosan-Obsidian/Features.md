@@ -1,6 +1,6 @@
 # Features
 
-#features #requirements
+> Tags: `features` `requirements`
 
 ---
 
@@ -36,11 +36,11 @@ mindmap
 
 | Feature | Description | Priority | Status |
 |---------|-------------|----------|--------|
-| Registration | Email + password signup | High | 🔲 |
-| Login | JWT-based auth | High | 🔲 |
-| Profile | View/edit user info | Medium | 🔲 |
-| Avatar | Profile picture upload | Low | 🔲 |
-| Password reset | Email-based reset | Low | 🔲 |
+| Registration | Email + password signup | High | ⬜ Todo |
+| Login | JWT-based auth | High | ⬜ Todo |
+| Profile | View/edit user info | Medium | ⬜ Todo |
+| Avatar | Profile picture upload | Low | ⬜ Todo |
+| Password reset | Email-based reset | Low | ⬜ Todo |
 
 ---
 
@@ -48,14 +48,14 @@ mindmap
 
 | Feature | Description | Priority | Status |
 |---------|-------------|----------|--------|
-| Create recipe | Title, ingredients, instructions | High | 🔲 |
-| Edit recipe | Update own recipes | High | 🔲 |
-| Delete recipe | Remove own recipes | High | 🔲 |
-| View recipe | Recipe detail page | High | 🔲 |
-| Recipe images | Photo upload | High | 🔲 |
-| Categories | Organize by type | Medium | 🔲 |
-| Cooking time | Duration field | Low | 🔲 |
-| Servings | Portion count | Low | 🔲 |
+| Create recipe | Title, ingredients, instructions | High | ⬜ Todo |
+| Edit recipe | Update own recipes | High | ⬜ Todo |
+| Delete recipe | Remove own recipes | High | ⬜ Todo |
+| View recipe | Recipe detail page | High | ⬜ Todo |
+| Recipe images | Photo upload | High | ⬜ Todo |
+| Categories | Organize by type | Medium | ⬜ Todo |
+| Cooking time | Duration field | Low | ⬜ Todo |
+| Servings | Portion count | Low | ⬜ Todo |
 
 ---
 
@@ -63,14 +63,14 @@ mindmap
 
 | Feature | Description | Priority | Status |
 |---------|-------------|----------|--------|
-| Recipe feed | Home page with recipes | High | 🔲 |
-| Like recipe | Heart button | High | 🔲 |
-| Unlike recipe | Remove like | High | 🔲 |
-| Comment | Add comments | Medium | 🔲 |
-| Delete comment | Remove own comments | Medium | 🔲 |
-| Follow user | Follow other users | Medium | 🔲 |
-| Unfollow user | Remove follow | Medium | 🔲 |
-| User discovery | Find users | Low | 🔲 |
+| Recipe feed | Home page with recipes | High | ⬜ Todo |
+| Like recipe | Heart button | High | ⬜ Todo |
+| Unlike recipe | Remove like | High | ⬜ Todo |
+| Comment | Add comments | Medium | ⬜ Todo |
+| Delete comment | Remove own comments | Medium | ⬜ Todo |
+| Follow user | Follow other users | Medium | ⬜ Todo |
+| Unfollow user | Remove follow | Medium | ⬜ Todo |
+| User discovery | Find users | Low | ⬜ Todo |
 
 ---
 
@@ -78,11 +78,11 @@ mindmap
 
 | Feature | Description | Priority | Status |
 |---------|-------------|----------|--------|
-| Search by title | Text search | High | 🔲 |
-| Search by ingredient | Find by ingredient | Medium | 🔲 |
-| Filter by category | Category filter | Medium | 🔲 |
-| Filter by diet | Vegetarian, vegan, etc. | Medium | 🔲 |
-| Filter by allergen | Exclude allergens | Medium | 🔲 |
+| Search by title | Text search | High | ⬜ Todo |
+| Search by ingredient | Find by ingredient | Medium | ⬜ Todo |
+| Filter by category | Category filter | Medium | ⬜ Todo |
+| Filter by diet | Vegetarian, vegan, etc. | Medium | ⬜ Todo |
+| Filter by allergen | Exclude allergens | Medium | ⬜ Todo |
 
 ---
 
@@ -90,12 +90,12 @@ mindmap
 
 | Feature | Description | Priority | Status |
 |---------|-------------|----------|--------|
-| [[NLP & AI\|NLP parsing]] | Parse free-text ingredients | **Critical** | 🔲 |
-| Unit conversion | dkg→g, ek→ml, etc. | **Critical** | 🔲 |
-| Shopping list | Generate from recipe | **Critical** | 🔲 |
-| Multi-recipe merge | Combine ingredients | **Critical** | 🔲 |
-| Menu planner | Weekly meal planning | High | 🔲 |
-| Week shopping list | List for whole week | High | 🔲 |
+| NLP parsing | Parse free-text ingredients | **Critical** | ⬜ Todo |
+| Unit conversion | dkg→g, ek→ml, etc. | **Critical** | ⬜ Todo |
+| Shopping list | Generate from recipe | **Critical** | ⬜ Todo |
+| Multi-recipe merge | Combine ingredients | **Critical** | ⬜ Todo |
+| Menu planner | Weekly meal planning | High | ⬜ Todo |
+| Week shopping list | List for whole week | High | ⬜ Todo |
 
 ---
 
@@ -103,11 +103,11 @@ mindmap
 
 | Feature | Description | Priority | Status |
 |---------|-------------|----------|--------|
-| Responsive design | Mobile-friendly | High | 🔲 |
-| Dark mode | Theme toggle | Low | 🔲 |
-| Loading states | Skeleton loaders | Medium | 🔲 |
-| Error handling | User-friendly errors | Medium | 🔲 |
-| Toast notifications | Action feedback | Low | 🔲 |
+| Responsive design | Mobile-friendly | High | ⬜ Todo |
+| Dark mode | Theme toggle | Low | ⬜ Todo |
+| Loading states | Skeleton loaders | Medium | ⬜ Todo |
+| Error handling | User-friendly errors | Medium | ⬜ Todo |
+| Toast notifications | Action feedback | Low | ⬜ Todo |
 
 ---
 
@@ -126,19 +126,19 @@ mindmap
 
 Must be complete for thesis:
 
-1. ✅ User registration & login
-2. ✅ Recipe CRUD with images
-3. ✅ Like & comment
-4. ✅ NLP ingredient parsing
-5. ✅ Unit conversion
-6. ✅ Shopping list generation
-7. ✅ Multi-recipe merge
-8. ✅ Weekly menu planner
+- [ ] User registration & login
+- [ ] Recipe CRUD with images
+- [ ] Like & comment
+- [ ] NLP ingredient parsing
+- [ ] Unit conversion
+- [ ] Shopping list generation
+- [ ] Multi-recipe merge
+- [ ] Weekly menu planner
 
 ---
 
 ## Related
 
-- [[Project Overview]]
-- [[Timeline]]
-- [[00 - Index]]
+- [Project Overview](Project%20Overview.md)
+- [Timeline](Timeline.md)
+- [Index](00%20-%20Index.md)

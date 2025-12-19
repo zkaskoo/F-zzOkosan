@@ -1,6 +1,6 @@
 # September
 
-#timeline #september
+> Tags: `timeline #september
 
 ---
 
@@ -129,23 +129,23 @@ System Usability Scale - 10 questions, 1-5 scale
 
 | Deliverable | Status |
 |-------------|--------|
-| Menu planner feature | 🔲 |
-| User testing completed | 🔲 |
-| SUS score calculated | 🔲 |
-| Bug fixes implemented | 🔲 |
+| Menu planner feature | ⬜ |
+| User testing completed | ⬜ |
+| SUS score calculated | ⬜ |
+| Bug fixes implemented | ⬜ |
 
 ---
 
 ## Dependencies
 
-- [[June]] must be complete (NLP working)
+- [June](June.md) must be complete (NLP working)
 
 ---
 
 ## Related
 
-- [[Timeline]]
-- [[June]] - Previous month
-- [[October]] - Next month
-- [[Features]]
-- [[00 - Index]]
+- [Timeline](Timeline.md)
+- [June](June.md) - Previous month
+- [October](October.md) - Next month
+- [Features](Features.md)
+- [Index](00%20-%20Index.md)

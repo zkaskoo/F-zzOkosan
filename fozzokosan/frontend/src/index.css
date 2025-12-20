@@ -1,0 +1,17 @@
+@import "tailwindcss";
+
+/* Custom theme configuration */
+@theme {
+  --color-primary: #f97316;
+  --color-primary-dark: #ea580c;
+  --color-secondary: #10b981;
+  --color-background: #f9fafb;
+  --color-surface: #ffffff;
+  --color-text: #1f2937;
+  --color-text-secondary: #6b7280;
+}
+
+/* Base styles */
+body {
+  @apply bg-background text-text min-h-screen antialiased;
+}

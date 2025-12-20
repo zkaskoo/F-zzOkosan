@@ -1,0 +1,276 @@
+// FőzzOkosan - Database Schema
+// Recipe sharing social network with NLP-powered shopping lists
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================
+// USER & AUTHENTICATION
+// ============================================
+
+model User {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  passwordHash String   @map("password_hash")
+  name         String
+  avatar       String?
+  bio          String?
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  recipes       Recipe[]
+  likes         Like[]
+  comments      Comment[]
+  shoppingLists ShoppingList[]
+  menuPlans     MenuPlan[]
+  followers     Follow[]       @relation("followers")
+  following     Follow[]       @relation("following")
+
+  @@map("users")
+}
+
+model Follow {
+  id          String   @id @default(uuid())
+  followerId  String   @map("follower_id")
+  followingId String   @map("following_id")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  follower  User @relation("following", fields: [followerId], references: [id], onDelete: Cascade)
+  following User @relation("followers", fields: [followingId], references: [id], onDelete: Cascade)
+
+  @@unique([followerId, followingId])
+  @@map("follows")
+}
+
+// ============================================
+// RECIPES
+// ============================================
+
+model Recipe {
+  id           String   @id @default(uuid())
+  userId       String   @map("user_id")
+  title        String
+  description  String?
+  imageUrl     String?  @map("image_url")
+  cookingTime  Int?     @map("cooking_time") // in minutes
+  servings     Int      @default(4)
+  difficulty   Difficulty @default(MEDIUM)
+  isPublic     Boolean  @default(true) @map("is_public")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  user        User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  ingredients RecipeIngredient[]
+  steps       RecipeStep[]
+  categories  RecipeCategory[]
+  likes       Like[]
+  comments    Comment[]
+  menuItems   MenuItem[]
+
+  @@index([userId])
+  @@index([createdAt])
+  @@map("recipes")
+}
+
+enum Difficulty {
+  EASY
+  MEDIUM
+  HARD
+}
+
+model RecipeStep {
+  id          String @id @default(uuid())
+  recipeId    String @map("recipe_id")
+  stepNumber  Int    @map("step_number")
+  instruction String
+  imageUrl    String? @map("image_url")
+
+  recipe Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+
+  @@unique([recipeId, stepNumber])
+  @@map("recipe_steps")
+}
+
+model Category {
+  id      String           @id @default(uuid())
+  name    String           @unique
+  slug    String           @unique
+  recipes RecipeCategory[]
+
+  @@map("categories")
+}
+
+model RecipeCategory {
+  recipeId   String @map("recipe_id")
+  categoryId String @map("category_id")
+
+  recipe   Recipe   @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@id([recipeId, categoryId])
+  @@map("recipe_categories")
+}
+
+// ============================================
+// INGREDIENTS & UNITS
+// ============================================
+
+model Ingredient {
+  id              String             @id @default(uuid())
+  name            String             @unique
+  normalizedName  String             @map("normalized_name")
+  defaultUnit     String?            @map("default_unit")
+  category        IngredientCategory @default(OTHER)
+
+  recipeIngredients RecipeIngredient[]
+
+  @@index([normalizedName])
+  @@map("ingredients")
+}
+
+enum IngredientCategory {
+  MEAT
+  DAIRY
+  VEGETABLE
+  FRUIT
+  GRAIN
+  SPICE
+  CONDIMENT
+  BEVERAGE
+  OTHER
+}
+
+model RecipeIngredient {
+  id           String  @id @default(uuid())
+  recipeId     String  @map("recipe_id")
+  ingredientId String  @map("ingredient_id")
+  quantity     Float
+  unit         String
+  notes        String? // e.g., "finomra vágva"
+  isOptional   Boolean @default(false) @map("is_optional")
+
+  recipe     Recipe     @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  ingredient Ingredient @relation(fields: [ingredientId], references: [id])
+
+  @@map("recipe_ingredients")
+}
+
+model UnitConversion {
+  id         String @id @default(uuid())
+  fromUnit   String @map("from_unit")
+  toUnit     String @map("to_unit")
+  multiplier Float
+
+  @@unique([fromUnit, toUnit])
+  @@map("unit_conversions")
+}
+
+// ============================================
+// SOCIAL FEATURES
+// ============================================
+
+model Like {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  recipeId  String   @map("recipe_id")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  recipe Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, recipeId])
+  @@map("likes")
+}
+
+model Comment {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  recipeId  String   @map("recipe_id")
+  content   String
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  recipe Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+
+  @@index([recipeId])
+  @@map("comments")
+}
+
+// ============================================
+// SHOPPING LIST
+// ============================================
+
+model ShoppingList {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  name      String
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user  User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items ShoppingListItem[]
+
+  @@map("shopping_lists")
+}
+
+model ShoppingListItem {
+  id             String  @id @default(uuid())
+  shoppingListId String  @map("shopping_list_id")
+  ingredientName String  @map("ingredient_name")
+  quantity       Float
+  unit           String
+  isChecked      Boolean @default(false) @map("is_checked")
+  sourceRecipes  String[] @map("source_recipes") // recipe IDs
+
+  shoppingList ShoppingList @relation(fields: [shoppingListId], references: [id], onDelete: Cascade)
+
+  @@map("shopping_list_items")
+}
+
+// ============================================
+// MENU PLANNING
+// ============================================
+
+model MenuPlan {
+  id        String     @id @default(uuid())
+  userId    String     @map("user_id")
+  name      String
+  startDate DateTime   @map("start_date")
+  endDate   DateTime   @map("end_date")
+  createdAt DateTime   @default(now()) @map("created_at")
+
+  user  User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items MenuItem[]
+
+  @@map("menu_plans")
+}
+
+model MenuItem {
+  id         String   @id @default(uuid())
+  menuPlanId String   @map("menu_plan_id")
+  recipeId   String   @map("recipe_id")
+  date       DateTime
+  mealType   MealType @map("meal_type")
+  servings   Int      @default(4)
+
+  menuPlan MenuPlan @relation(fields: [menuPlanId], references: [id], onDelete: Cascade)
+  recipe   Recipe   @relation(fields: [recipeId], references: [id])
+
+  @@map("menu_items")
+}
+
+enum MealType {
+  BREAKFAST
+  LUNCH
+  DINNER
+  SNACK
+}

@@ -1,0 +1,29 @@
+{
+  "name": "fozzokosan",
+  "version": "1.0.0",
+  "description": "Hungarian recipe sharing social network with NLP-powered shopping lists",
+  "private": true,
+  "scripts": {
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down",
+    "docker:logs": "docker-compose logs -f",
+    "backend:dev": "cd backend && npm run start:dev",
+    "backend:build": "cd backend && npm run build",
+    "backend:test": "cd backend && npm run test",
+    "frontend:dev": "cd frontend && npm run dev",
+    "frontend:build": "cd frontend && npm run build",
+    "db:migrate": "cd backend && npx prisma migrate dev",
+    "db:generate": "cd backend && npx prisma generate",
+    "db:studio": "cd backend && npx prisma studio",
+    "install:all": "npm install && cd backend && npm install && cd ../frontend && npm install"
+  },
+  "keywords": [
+    "recipe",
+    "cooking",
+    "shopping-list",
+    "nlp",
+    "hungarian"
+  ],
+  "author": "zkaskoo",
+  "license": "MIT"
+}

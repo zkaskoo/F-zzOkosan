@@ -26,14 +26,14 @@
 
 📄 **See full document:** [System Design](System%20Design.md)
 
-### Dev Environment Setup
+### Dev Environment Setup ✅
 - [x] Create GitHub repository
-- [ ] Set up CI/CD (GitHub Actions)
-- [ ] Configure Docker for local development
-- [ ] Set up PostgreSQL database
-- [ ] Initialize [Frontend](Frontend.md) (React + TypeScript)
-- [ ] Initialize [Backend](Backend.md) (NestJS)
-- [ ] Configure Prisma ORM
+- [x] Set up CI/CD (GitHub Actions)
+- [x] Configure Docker for local development
+- [x] Set up PostgreSQL database
+- [x] Initialize [Frontend](Frontend.md) (React + TypeScript + TailwindCSS v4)
+- [x] Initialize [Backend](Backend.md) (NestJS)
+- [x] Configure Prisma ORM
 
 ### User Authentication
 - [ ] Implement user registration
@@ -51,8 +51,9 @@
 | Literature analysis document | ✅ Done |
 | Architecture diagram | ✅ Done |
 | Database schema (Prisma) | ✅ Done |
+| Dev environment (Docker + Projects) | ✅ Done |
+| CI/CD pipeline | ✅ Done |
 | Working registration/login | ⬜ Todo |
-| CI/CD pipeline | ⬜ Todo |
 
 ---
 
@@ -67,23 +68,24 @@
 ## Commands to Run
 
 ```bash
-# Create GitHub repo (already done)
-# git@github.com:zkaskoo/F-zzOkosan.git
+# Start Docker containers (PostgreSQL, Redis, Adminer)
+cd fozzokosan
+npm run docker:up
 
-# Initialize projects
-npx create-react-app frontend --template typescript
-npx @nestjs/cli new backend
+# Install all dependencies
+npm run install:all
 
-# Backend auth dependencies
-cd backend
-npm install @nestjs/passport passport passport-jwt @nestjs/jwt
-npm install bcrypt class-validator class-transformer
-npm install @prisma/client
-npm install -D prisma
+# Run database migrations
+npm run db:migrate
 
-# Initialize database
-npx prisma init
-npx prisma migrate dev --name init
+# Start development servers
+npm run backend:dev  # Terminal 1
+npm run frontend:dev # Terminal 2
+
+# Access:
+# - Frontend: http://localhost:3000
+# - Backend API: http://localhost:3001
+# - Database Admin: http://localhost:8080
 ```
 
 ---

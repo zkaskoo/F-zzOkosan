@@ -36,6 +36,7 @@ graph TD
 | [Timeline](Timeline.md) | Monthly breakdown |
 | [Risks](Risks.md) | Risk management |
 | [Literature Research](Literature%20Research.md) | Similar apps & NLP research ✅ |
+| [System Design](System%20Design.md) | Architecture, API & modules ✅ |
 
 ---
 

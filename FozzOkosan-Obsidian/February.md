@@ -18,11 +18,13 @@
 
 📄 **See full document:** [Literature Research](Literature%20Research.md)
 
-### System Design
-- [ ] Create architecture diagram
-- [ ] Design [Database](Database.md) schema
-- [ ] Define API endpoints
-- [ ] Plan module structure
+### System Design ✅
+- [x] Create architecture diagram
+- [x] Design [Database](Database.md) schema
+- [x] Define API endpoints
+- [x] Plan module structure
+
+📄 **See full document:** [System Design](System%20Design.md)
 
 ### Dev Environment Setup
 - [x] Create GitHub repository
@@ -47,8 +49,8 @@
 | Deliverable | Status |
 |-------------|--------|
 | Literature analysis document | ✅ Done |
-| Architecture diagram | ⬜ Todo |
-| Database schema (Prisma) | ⬜ Todo |
+| Architecture diagram | ✅ Done |
+| Database schema (Prisma) | ✅ Done |
 | Working registration/login | ⬜ Todo |
 | CI/CD pipeline | ⬜ Todo |
 

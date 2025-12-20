@@ -1,6 +1,6 @@
 # February
 
-> Tags: `timeline #february
+> Tags: `timeline` `february`
 
 ---
 
@@ -10,11 +10,13 @@
 
 ## Tasks
 
-### Literature Research
-- [ ] Analyze similar apps (Cookpad, Mealime, Tasty, etc.)
-- [ ] Document features comparison
-- [ ] Identify gaps/opportunities
-- [ ] Research NLP approaches for ingredient parsing
+### Literature Research ✅
+- [x] Analyze similar apps (Cookpad, Mealime, Tasty, etc.)
+- [x] Document features comparison
+- [x] Identify gaps/opportunities
+- [x] Research NLP approaches for ingredient parsing
+
+📄 **See full document:** [Literature Research](Literature%20Research.md)
 
 ### System Design
 - [ ] Create architecture diagram
@@ -23,7 +25,7 @@
 - [ ] Plan module structure
 
 ### Dev Environment Setup
-- [ ] Create GitHub repository
+- [x] Create GitHub repository
 - [ ] Set up CI/CD (GitHub Actions)
 - [ ] Configure Docker for local development
 - [ ] Set up PostgreSQL database
@@ -44,11 +46,11 @@
 
 | Deliverable | Status |
 |-------------|--------|
-| Literature analysis document | ⬜ |
-| Architecture diagram | ⬜ |
-| Database schema (Prisma) | ⬜ |
-| Working registration/login | ⬜ |
-| CI/CD pipeline | ⬜ |
+| Literature analysis document | ✅ Done |
+| Architecture diagram | ⬜ Todo |
+| Database schema (Prisma) | ⬜ Todo |
+| Working registration/login | ⬜ Todo |
+| CI/CD pipeline | ⬜ Todo |
 
 ---
 
@@ -87,5 +89,6 @@ npx prisma migrate dev --name init
 ## Related
 
 - [Timeline](Timeline.md)
+- [Literature Research](Literature%20Research.md)
 - [March](March.md) - Next month
 - [Index](00%20-%20Index.md)

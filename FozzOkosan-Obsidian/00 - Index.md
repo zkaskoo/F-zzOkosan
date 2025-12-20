@@ -35,6 +35,7 @@ graph TD
 | [Features](Features.md) | Complete feature list |
 | [Timeline](Timeline.md) | Monthly breakdown |
 | [Risks](Risks.md) | Risk management |
+| [Literature Research](Literature%20Research.md) | Similar apps & NLP research ✅ |
 
 ---
 
@@ -51,7 +52,7 @@ graph TD
 
 | Month | Focus | Status |
 |-------|-------|--------|
-| [February](February.md) | Setup & Auth | ⬜ Not Started |
+| [February](February.md) | Setup & Auth | 🟡 In Progress |
 | [March](March.md) | CRUD & UI | ⬜ Not Started |
 | [April](April.md) | Units & Data | ⬜ Not Started |
 | [May](May.md) | Shopping List | ⬜ Not Started |

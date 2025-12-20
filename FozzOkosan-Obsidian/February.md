@@ -35,12 +35,12 @@
 - [x] Initialize [Backend](Backend.md) (NestJS)
 - [x] Configure Prisma ORM
 
-### User Authentication
-- [ ] Implement user registration
-- [ ] Implement user login
-- [ ] Set up JWT authentication
-- [ ] Create protected routes
-- [ ] Password hashing (bcrypt)
+### User Authentication ✅
+- [x] Implement user registration
+- [x] Implement user login
+- [x] Set up JWT authentication
+- [x] Create protected routes
+- [x] Password hashing (bcrypt)
 
 ---
 
@@ -53,7 +53,7 @@
 | Database schema (Prisma) | ✅ Done |
 | Dev environment (Docker + Projects) | ✅ Done |
 | CI/CD pipeline | ✅ Done |
-| Working registration/login | ⬜ Todo |
+| Working registration/login | ✅ Done |
 
 ---
 

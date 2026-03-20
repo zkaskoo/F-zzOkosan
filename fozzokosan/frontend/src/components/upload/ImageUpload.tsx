@@ -49,7 +49,8 @@ export default function ImageUpload({
       try {
         const result = await uploadApi.uploadImage(file, setProgress);
         onChange(result.url);
-      } catch {
+      } catch (err) {
+        console.error('[ImageUpload] Upload failed:', err);
         setError('A feltöltés sikertelen. Ellenőrizd a fájl méretét és formátumát.');
       } finally {
         setUploading(false);

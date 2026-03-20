@@ -19,7 +19,6 @@ import { UploadModule } from './upload/upload.module';
       rootPath: join(__dirname, '..', 'uploads'),
       serveRoot: '/uploads',
       serveStaticOptions: {
-        // SA-002: Prevent MIME-sniffing and restrict execution context
         setHeaders: (res) => {
           res.setHeader('X-Content-Type-Options', 'nosniff');
           res.setHeader('Content-Disposition', 'inline');

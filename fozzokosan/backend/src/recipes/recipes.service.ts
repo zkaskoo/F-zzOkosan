@@ -135,11 +135,11 @@ export class RecipesService {
     });
 
     if (!recipe) {
-      throw new NotFoundException('Recipe not found');
+      throw new NotFoundException('A recept nem található');
     }
 
     if (!recipe.isPublic && recipe.userId !== requesterId) {
-      throw new NotFoundException('Recipe not found');
+      throw new NotFoundException('A recept nem található');
     }
 
     return recipe;
@@ -151,11 +151,11 @@ export class RecipesService {
     });
 
     if (!recipe) {
-      throw new NotFoundException('Recipe not found');
+      throw new NotFoundException('A recept nem található');
     }
 
     if (recipe.userId !== userId) {
-      throw new ForbiddenException('You can only update your own recipes');
+      throw new ForbiddenException('Csak a saját receptjeidet szerkesztheted');
     }
 
     const { steps, ingredients, ...recipeData } = updateRecipeDto;
@@ -228,17 +228,17 @@ export class RecipesService {
     });
 
     if (!recipe) {
-      throw new NotFoundException('Recipe not found');
+      throw new NotFoundException('A recept nem található');
     }
 
     if (recipe.userId !== userId) {
-      throw new ForbiddenException('You can only delete your own recipes');
+      throw new ForbiddenException('Csak a saját receptjeidet törölheted');
     }
 
     await this.prisma.recipe.delete({
       where: { id },
     });
 
-    return { message: 'Recipe deleted successfully' };
+    return { message: 'A recept sikeresen törölve' };
   }
 }

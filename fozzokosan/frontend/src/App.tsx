@@ -27,13 +27,14 @@ function App() {
           <Route path="/bejelentkezes" element={<LoginPage />} />
           <Route path="/regisztracio" element={<RegisterPage />} />
           <Route path="/receptek" element={<RecipeListPage />} />
-          <Route path="/receptek/:id" element={<RecipeDetailPage />} />
 
-          {/* Protected routes */}
+          {/* Protected routes - static paths before dynamic */}
           <Route element={<PrivateRoute />}>
             <Route path="/receptek/uj" element={<CreateRecipePage />} />
             <Route path="/receptek/:id/szerkesztes" element={<EditRecipePage />} />
           </Route>
+
+          <Route path="/receptek/:id" element={<RecipeDetailPage />} />
 
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

@@ -5,6 +5,7 @@ import LoadingSpinner from '../components/common/LoadingSpinner';
 import ErrorMessage from '../components/common/ErrorMessage';
 import { useRecipe, useDeleteRecipe } from '../hooks/useRecipes';
 import { useAuthStore } from '../stores/authStore';
+import { isValidImageUrl } from '../utils/imageUrl';
 
 const difficultyLabels = {
   EASY: { label: 'Könnyű', classes: 'bg-green-100 text-green-700' },
@@ -76,7 +77,7 @@ export default function RecipeDetailPage() {
           </Link>
 
           {/* Cover image */}
-          {recipe.imageUrl ? (
+          {isValidImageUrl(recipe.imageUrl) ? (
             <img
               src={recipe.imageUrl}
               alt={recipe.title}
@@ -138,7 +139,7 @@ export default function RecipeDetailPage() {
           {/* Author */}
           <div className="flex items-center gap-3 mb-8 p-4 rounded-xl bg-gray-50">
             <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary font-bold text-sm">
-              {recipe.user.avatar ? (
+              {isValidImageUrl(recipe.user.avatar) ? (
                 <img src={recipe.user.avatar} alt={recipe.user.name} className="h-10 w-10 rounded-full object-cover" />
               ) : (
                 recipe.user.name.charAt(0).toUpperCase()

@@ -64,6 +64,7 @@ export default function EditRecipePage() {
           )}
 
           <RecipeForm
+            key={recipe.id}
             initialValues={recipe}
             onSubmit={handleSubmit}
             isLoading={updateMutation.isPending}

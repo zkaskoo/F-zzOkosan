@@ -1,8 +1,9 @@
-import { useEffect, useState } from 'react';
-import type { CreateRecipeDto, Difficulty, IngredientFormItem, Recipe, StepFormItem } from '../../types';
+import { useState } from 'react';
+import type { CreateRecipeDto, Difficulty, Recipe } from '../../types';
 import IngredientInput from './IngredientInput';
 import StepInput from './StepInput';
 import ErrorMessage from '../common/ErrorMessage';
+import type { IngredientFormItemWithId, StepFormItemWithId } from './formTypes';
 
 interface RecipeFormProps {
   initialValues?: Recipe;
@@ -10,50 +11,44 @@ interface RecipeFormProps {
   isLoading: boolean;
 }
 
-const emptyIngredient: IngredientFormItem = { name: '', quantity: 0, unit: '', isOptional: false };
-const emptyStep: StepFormItem = { stepNumber: 1, instruction: '' };
+function initIngredients(recipe?: Recipe): IngredientFormItemWithId[] {
+  if (recipe && recipe.ingredients.length > 0) {
+    return recipe.ingredients.map((ing) => ({
+      id: crypto.randomUUID(),
+      name: ing.name,
+      quantity: ing.quantity,
+      unit: ing.unit,
+      notes: ing.notes ?? undefined,
+      isOptional: ing.isOptional,
+    }));
+  }
+  return [{ id: crypto.randomUUID(), name: '', quantity: 0, unit: '', isOptional: false }];
+}
+
+function initSteps(recipe?: Recipe): StepFormItemWithId[] {
+  if (recipe && recipe.steps.length > 0) {
+    return recipe.steps
+      .sort((a, b) => a.stepNumber - b.stepNumber)
+      .map((s) => ({
+        id: crypto.randomUUID(),
+        stepNumber: s.stepNumber,
+        instruction: s.instruction,
+      }));
+  }
+  return [{ id: crypto.randomUUID(), stepNumber: 1, instruction: '' }];
+}
 
 export default function RecipeForm({ initialValues, onSubmit, isLoading }: RecipeFormProps) {
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-  const [imageUrl, setImageUrl] = useState('');
-  const [cookingTime, setCookingTime] = useState<number | ''>('');
-  const [servings, setServings] = useState<number | ''>('');
-  const [difficulty, setDifficulty] = useState<Difficulty>('MEDIUM');
-  const [isPublic, setIsPublic] = useState(true);
-  const [ingredients, setIngredients] = useState<IngredientFormItem[]>([{ ...emptyIngredient }]);
-  const [steps, setSteps] = useState<StepFormItem[]>([{ ...emptyStep }]);
+  const [title, setTitle] = useState(initialValues?.title ?? '');
+  const [description, setDescription] = useState(initialValues?.description ?? '');
+  const [imageUrl, setImageUrl] = useState(initialValues?.imageUrl ?? '');
+  const [cookingTime, setCookingTime] = useState<number | ''>(initialValues?.cookingTime ?? '');
+  const [servings, setServings] = useState<number | ''>(initialValues?.servings || '');
+  const [difficulty, setDifficulty] = useState<Difficulty>(initialValues?.difficulty ?? 'MEDIUM');
+  const [isPublic, setIsPublic] = useState(initialValues?.isPublic ?? true);
+  const [ingredients, setIngredients] = useState<IngredientFormItemWithId[]>(() => initIngredients(initialValues));
+  const [steps, setSteps] = useState<StepFormItemWithId[]>(() => initSteps(initialValues));
   const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (initialValues) {
-      setTitle(initialValues.title);
-      setDescription(initialValues.description ?? '');
-      setImageUrl(initialValues.imageUrl ?? '');
-      setCookingTime(initialValues.cookingTime ?? '');
-      setServings(initialValues.servings || '');
-      setDifficulty(initialValues.difficulty);
-      setIsPublic(initialValues.isPublic);
-      setIngredients(
-        initialValues.ingredients.length > 0
-          ? initialValues.ingredients.map((ing) => ({
-              name: ing.name,
-              quantity: ing.quantity,
-              unit: ing.unit,
-              notes: ing.notes ?? undefined,
-              isOptional: ing.isOptional,
-            }))
-          : [{ ...emptyIngredient }],
-      );
-      setSteps(
-        initialValues.steps.length > 0
-          ? initialValues.steps
-              .sort((a, b) => a.stepNumber - b.stepNumber)
-              .map((s) => ({ stepNumber: s.stepNumber, instruction: s.instruction }))
-          : [{ ...emptyStep }],
-      );
-    }
-  }, [initialValues]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -84,8 +79,17 @@ export default function RecipeForm({ initialValues, onSubmit, isLoading }: Recip
       servings: servings ? Number(servings) : undefined,
       difficulty,
       isPublic,
-      ingredients: validIngredients,
-      steps: validSteps.map((s, i) => ({ ...s, stepNumber: i + 1 })),
+      ingredients: validIngredients.map((item) => ({
+        name: item.name,
+        quantity: item.quantity,
+        unit: item.unit,
+        notes: item.notes,
+        isOptional: item.isOptional,
+      })),
+      steps: validSteps.map((item, i) => ({
+        stepNumber: i + 1,
+        instruction: item.instruction,
+      })),
     });
   };
 
@@ -97,8 +101,9 @@ export default function RecipeForm({ initialValues, onSubmit, isLoading }: Recip
       {error && <ErrorMessage message={error} />}
 
       <div>
-        <label className="block text-sm font-medium text-text mb-1">Recept neve *</label>
+        <label htmlFor="recipe-title" className="block text-sm font-medium text-text mb-1">Recept neve *</label>
         <input
+          id="recipe-title"
           type="text"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
@@ -108,8 +113,9 @@ export default function RecipeForm({ initialValues, onSubmit, isLoading }: Recip
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-text mb-1">Leírás</label>
+        <label htmlFor="recipe-description" className="block text-sm font-medium text-text mb-1">Leírás</label>
         <textarea
+          id="recipe-description"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           placeholder="Rövid leírás a receptről..."
@@ -119,8 +125,9 @@ export default function RecipeForm({ initialValues, onSubmit, isLoading }: Recip
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-text mb-1">Kép URL</label>
+        <label htmlFor="recipe-image-url" className="block text-sm font-medium text-text mb-1">Kép URL</label>
         <input
+          id="recipe-image-url"
           type="url"
           value={imageUrl}
           onChange={(e) => setImageUrl(e.target.value)}
@@ -131,8 +138,9 @@ export default function RecipeForm({ initialValues, onSubmit, isLoading }: Recip
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div>
-          <label className="block text-sm font-medium text-text mb-1">Főzési idő (perc)</label>
+          <label htmlFor="recipe-cooking-time" className="block text-sm font-medium text-text mb-1">Főzési idő (perc)</label>
           <input
+            id="recipe-cooking-time"
             type="number"
             value={cookingTime}
             onChange={(e) => setCookingTime(e.target.value ? parseInt(e.target.value) : '')}
@@ -142,8 +150,9 @@ export default function RecipeForm({ initialValues, onSubmit, isLoading }: Recip
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-text mb-1">Adagok száma</label>
+          <label htmlFor="recipe-servings" className="block text-sm font-medium text-text mb-1">Adagok száma</label>
           <input
+            id="recipe-servings"
             type="number"
             value={servings}
             onChange={(e) => setServings(e.target.value ? parseInt(e.target.value) : '')}
@@ -153,8 +162,9 @@ export default function RecipeForm({ initialValues, onSubmit, isLoading }: Recip
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-text mb-1">Nehézség</label>
+          <label htmlFor="recipe-difficulty" className="block text-sm font-medium text-text mb-1">Nehézség</label>
           <select
+            id="recipe-difficulty"
             value={difficulty}
             onChange={(e) => setDifficulty(e.target.value as Difficulty)}
             className={inputClass}
@@ -166,8 +176,9 @@ export default function RecipeForm({ initialValues, onSubmit, isLoading }: Recip
         </div>
       </div>
 
-      <label className="flex items-center gap-2 text-sm text-text">
+      <label htmlFor="recipe-is-public" className="flex items-center gap-2 text-sm text-text">
         <input
+          id="recipe-is-public"
           type="checkbox"
           checked={isPublic}
           onChange={(e) => setIsPublic(e.target.checked)}

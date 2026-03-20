@@ -10,12 +10,18 @@ import {
   UseGuards,
   Request,
 } from '@nestjs/common';
+import { Request as ExpressRequest } from 'express';
 import { RecipesService } from './recipes.service';
 import { CreateRecipeDto } from './dto/create-recipe.dto';
 import { UpdateRecipeDto } from './dto/update-recipe.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { OptionalJwtAuthGuard } from '../auth/guards/optional-jwt-auth.guard';
-import { AuthenticatedRequest } from '../auth/interfaces';
+
+interface ReqUser {
+  id: string;
+  email: string;
+  name: string;
+}
 
 @Controller('recipes')
 export class RecipesController {
@@ -25,7 +31,7 @@ export class RecipesController {
   @UseGuards(JwtAuthGuard)
   create(
     @Body() createRecipeDto: CreateRecipeDto,
-    @Request() req: AuthenticatedRequest,
+    @Request() req: ExpressRequest & { user: ReqUser },
   ) {
     return this.recipesService.create(createRecipeDto, req.user.id);
   }
@@ -36,7 +42,7 @@ export class RecipesController {
     @Query('page') page?: number,
     @Query('limit') limit?: number,
     @Query('userId') userId?: string,
-    @Request() req?: Partial<AuthenticatedRequest>,
+    @Request() req?: ExpressRequest & { user?: ReqUser },
   ) {
     return this.recipesService.findAll({
       page: page || 1,
@@ -50,7 +56,7 @@ export class RecipesController {
   @UseGuards(OptionalJwtAuthGuard)
   findOne(
     @Param('id') id: string,
-    @Request() req?: Partial<AuthenticatedRequest>,
+    @Request() req?: ExpressRequest & { user?: ReqUser },
   ) {
     return this.recipesService.findOne(id, req?.user?.id);
   }
@@ -60,14 +66,17 @@ export class RecipesController {
   update(
     @Param('id') id: string,
     @Body() updateRecipeDto: UpdateRecipeDto,
-    @Request() req: AuthenticatedRequest,
+    @Request() req: ExpressRequest & { user: ReqUser },
   ) {
     return this.recipesService.update(id, updateRecipeDto, req.user.id);
   }
 
   @Delete(':id')
   @UseGuards(JwtAuthGuard)
-  remove(@Param('id') id: string, @Request() req: AuthenticatedRequest) {
+  remove(
+    @Param('id') id: string,
+    @Request() req: ExpressRequest & { user: ReqUser },
+  ) {
     return this.recipesService.remove(id, req.user.id);
   }
 }

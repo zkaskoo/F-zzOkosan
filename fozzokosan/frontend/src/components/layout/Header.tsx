@@ -46,6 +46,7 @@ export default function Header() {
                   onClick={handleLogout}
                   className="text-text-secondary hover:text-red-500 transition-colors p-2"
                   title="Kijelentkezés"
+                  aria-label="Kijelentkezés"
                 >
                   <LogOut className="h-5 w-5" />
                 </button>

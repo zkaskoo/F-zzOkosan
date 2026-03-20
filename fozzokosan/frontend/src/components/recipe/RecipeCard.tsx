@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Clock, Users } from 'lucide-react';
 import type { Recipe } from '../../types';
+import { isValidImageUrl } from '../../utils/imageUrl';
 
 interface RecipeCardProps {
   recipe: Recipe;
@@ -26,7 +27,7 @@ export default function RecipeCard({ recipe }: RecipeCardProps) {
 
   return (
     <Link to={`/receptek/${recipe.id}`} className="card group block">
-      {recipe.imageUrl ? (
+      {isValidImageUrl(recipe.imageUrl) ? (
         <img
           src={recipe.imageUrl}
           alt={recipe.title}

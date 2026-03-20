@@ -1,4 +1,4 @@
-// FőzzOkosan - Database Schema
+// FozzOkosan - Database Schema
 // Recipe sharing social network with NLP-powered shopping lists
 
 generator client {
@@ -125,14 +125,13 @@ model RecipeCategory {
 
 model Ingredient {
   id              String             @id @default(uuid())
-  name            String             @unique
-  normalizedName  String             @map("normalized_name")
+  name            String
+  normalizedName  String             @unique @map("normalized_name")
   defaultUnit     String?            @map("default_unit")
   category        IngredientCategory @default(OTHER)
 
   recipeIngredients RecipeIngredient[]
 
-  @@index([normalizedName])
   @@map("ingredients")
 }
 
@@ -154,7 +153,7 @@ model RecipeIngredient {
   ingredientId String  @map("ingredient_id")
   quantity     Float
   unit         String
-  notes        String? // e.g., "finomra vágva"
+  notes        String? // e.g., "finomra vagva"
   isOptional   Boolean @default(false) @map("is_optional")
 
   recipe     Recipe     @relation(fields: [recipeId], references: [id], onDelete: Cascade)

@@ -1,4 +1,11 @@
-import { IsInt, IsString, MinLength, Min, IsOptional } from 'class-validator';
+import {
+  IsInt,
+  IsString,
+  MinLength,
+  Min,
+  IsOptional,
+  IsUrl,
+} from 'class-validator';
 
 export class CreateRecipeStepDto {
   @IsInt()
@@ -10,6 +17,6 @@ export class CreateRecipeStepDto {
   instruction: string;
 
   @IsOptional()
-  @IsString()
+  @IsUrl()
   imageUrl?: string;
 }

@@ -3,9 +3,20 @@ import {
   NotFoundException,
   ForbiddenException,
 } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateRecipeDto } from './dto/create-recipe.dto';
 import { UpdateRecipeDto } from './dto/update-recipe.dto';
+
+const RECIPE_FULL_INCLUDE = {
+  user: { select: { id: true, name: true, avatar: true } },
+  steps: { orderBy: { stepNumber: 'asc' as const } },
+  ingredients: { include: { ingredient: true } },
+  categories: true,
+  _count: { select: { likes: true, comments: true } },
+} satisfies Prisma.RecipeInclude;
+
+const MAX_LIMIT = 100;
 
 @Injectable()
 export class RecipesService {
@@ -19,13 +30,6 @@ export class RecipesService {
         data: {
           ...recipeData,
           userId,
-        },
-        include: {
-          user: { select: { id: true, name: true, avatar: true } },
-          steps: { orderBy: { stepNumber: 'asc' } },
-          ingredients: { include: { ingredient: true } },
-          categories: true,
-          _count: { select: { likes: true, comments: true } },
         },
       });
 
@@ -44,7 +48,7 @@ export class RecipesService {
         for (const ing of ingredients) {
           const normalizedName = ing.ingredientName.toLowerCase().trim();
           const ingredient = await prisma.ingredient.upsert({
-            where: { name: ing.ingredientName },
+            where: { normalizedName },
             update: {},
             create: {
               name: ing.ingredientName,
@@ -67,7 +71,13 @@ export class RecipesService {
         }
       }
 
-      return recipe;
+      // Re-fetch the recipe with all relations to return fresh data
+      const fullRecipe = await prisma.recipe.findUnique({
+        where: { id: recipe.id },
+        include: RECIPE_FULL_INCLUDE,
+      });
+
+      return fullRecipe;
     });
   }
 
@@ -78,10 +88,10 @@ export class RecipesService {
     requesterId?: string;
   }) {
     const page = params.page || 1;
-    const limit = params.limit || 10;
+    const limit = Math.min(params.limit || 20, MAX_LIMIT);
     const skip = (page - 1) * limit;
 
-    const where: any = {};
+    const where: Prisma.RecipeWhereInput = {};
 
     if (params.userId) {
       where.userId = params.userId;
@@ -121,13 +131,7 @@ export class RecipesService {
   async findOne(id: string, requesterId?: string) {
     const recipe = await this.prisma.recipe.findUnique({
       where: { id },
-      include: {
-        user: { select: { id: true, name: true, avatar: true } },
-        steps: { orderBy: { stepNumber: 'asc' } },
-        ingredients: { include: { ingredient: true } },
-        categories: true,
-        _count: { select: { likes: true, comments: true } },
-      },
+      include: RECIPE_FULL_INCLUDE,
     });
 
     if (!recipe) {
@@ -156,19 +160,66 @@ export class RecipesService {
 
     const { steps, ingredients, ...recipeData } = updateRecipeDto;
 
-    const updatedRecipe = await this.prisma.recipe.update({
-      where: { id },
-      data: recipeData,
-      include: {
-        user: { select: { id: true, name: true, avatar: true } },
-        steps: { orderBy: { stepNumber: 'asc' } },
-        ingredients: { include: { ingredient: true } },
-        categories: true,
-        _count: { select: { likes: true, comments: true } },
-      },
-    });
+    return this.prisma.$transaction(async (prisma) => {
+      await prisma.recipe.update({
+        where: { id },
+        data: recipeData,
+      });
 
-    return updatedRecipe;
+      // Replace steps if provided
+      if (steps !== undefined) {
+        await prisma.recipeStep.deleteMany({ where: { recipeId: id } });
+
+        if (steps.length > 0) {
+          await prisma.recipeStep.createMany({
+            data: steps.map((step) => ({
+              recipeId: id,
+              stepNumber: step.stepNumber,
+              instruction: step.instruction,
+              imageUrl: step.imageUrl,
+            })),
+          });
+        }
+      }
+
+      // Replace ingredients if provided
+      if (ingredients !== undefined) {
+        await prisma.recipeIngredient.deleteMany({
+          where: { recipeId: id },
+        });
+
+        if (ingredients.length > 0) {
+          for (const ing of ingredients) {
+            const normalizedName = ing.ingredientName.toLowerCase().trim();
+            const ingredient = await prisma.ingredient.upsert({
+              where: { normalizedName },
+              update: {},
+              create: {
+                name: ing.ingredientName,
+                normalizedName,
+              },
+            });
+
+            await prisma.recipeIngredient.create({
+              data: {
+                recipeId: id,
+                ingredientId: ingredient.id,
+                quantity: ing.quantity,
+                unit: ing.unit,
+                notes: ing.notes,
+                isOptional: ing.isOptional ?? false,
+              },
+            });
+          }
+        }
+      }
+
+      // Re-fetch with all relations for fresh data
+      return prisma.recipe.findUnique({
+        where: { id },
+        include: RECIPE_FULL_INCLUDE,
+      });
+    });
   }
 
   async remove(id: string, userId: string) {

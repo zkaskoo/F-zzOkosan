@@ -1,5 +1,4 @@
-import { useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { Navigate, useNavigate, useParams } from 'react-router-dom';
 import Layout from '../components/layout/Layout';
 import RecipeForm from '../components/recipe/RecipeForm';
 import LoadingSpinner from '../components/common/LoadingSpinner';
@@ -14,12 +13,6 @@ export default function EditRecipePage() {
   const { data: recipe, isLoading, isError } = useRecipe(id);
   const updateMutation = useUpdateRecipe();
   const user = useAuthStore((s) => s.user);
-
-  useEffect(() => {
-    if (recipe && user && recipe.userId !== user.id) {
-      navigate(`/receptek/${id}`, { replace: true });
-    }
-  }, [recipe, user, id, navigate]);
 
   const handleSubmit = (data: CreateRecipeDto) => {
     if (!id) return;
@@ -49,6 +42,10 @@ export default function EditRecipePage() {
         </div>
       </Layout>
     );
+  }
+
+  if (recipe && user?.id !== recipe.userId) {
+    return <Navigate to={`/receptek/${id}`} replace />;
   }
 
   return (

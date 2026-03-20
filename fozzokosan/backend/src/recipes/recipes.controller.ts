@@ -14,6 +14,7 @@ import { RecipesService } from './recipes.service';
 import { CreateRecipeDto } from './dto/create-recipe.dto';
 import { UpdateRecipeDto } from './dto/update-recipe.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { OptionalJwtAuthGuard } from '../auth/guards/optional-jwt-auth.guard';
 import { AuthenticatedRequest } from '../auth/interfaces';
 
 @Controller('recipes')
@@ -30,6 +31,7 @@ export class RecipesController {
   }
 
   @Get()
+  @UseGuards(OptionalJwtAuthGuard)
   findAll(
     @Query('page') page?: number,
     @Query('limit') limit?: number,
@@ -45,6 +47,7 @@ export class RecipesController {
   }
 
   @Get(':id')
+  @UseGuards(OptionalJwtAuthGuard)
   findOne(
     @Param('id') id: string,
     @Request() req?: Partial<AuthenticatedRequest>,

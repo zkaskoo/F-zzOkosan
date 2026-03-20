@@ -14,6 +14,7 @@ import { RecipesService } from './recipes.service';
 import { CreateRecipeDto } from './dto/create-recipe.dto';
 import { UpdateRecipeDto } from './dto/update-recipe.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { AuthenticatedRequest } from '../auth/interfaces';
 
 @Controller('recipes')
 export class RecipesController {
@@ -21,7 +22,10 @@ export class RecipesController {
 
   @Post()
   @UseGuards(JwtAuthGuard)
-  create(@Body() createRecipeDto: CreateRecipeDto, @Request() req) {
+  create(
+    @Body() createRecipeDto: CreateRecipeDto,
+    @Request() req: AuthenticatedRequest,
+  ) {
     return this.recipesService.create(createRecipeDto, req.user.id);
   }
 
@@ -30,7 +34,7 @@ export class RecipesController {
     @Query('page') page?: number,
     @Query('limit') limit?: number,
     @Query('userId') userId?: string,
-    @Request() req?,
+    @Request() req?: Partial<AuthenticatedRequest>,
   ) {
     return this.recipesService.findAll({
       page: page || 1,
@@ -41,7 +45,10 @@ export class RecipesController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string, @Request() req?) {
+  findOne(
+    @Param('id') id: string,
+    @Request() req?: Partial<AuthenticatedRequest>,
+  ) {
     return this.recipesService.findOne(id, req?.user?.id);
   }
 
@@ -50,14 +57,14 @@ export class RecipesController {
   update(
     @Param('id') id: string,
     @Body() updateRecipeDto: UpdateRecipeDto,
-    @Request() req,
+    @Request() req: AuthenticatedRequest,
   ) {
     return this.recipesService.update(id, updateRecipeDto, req.user.id);
   }
 
   @Delete(':id')
   @UseGuards(JwtAuthGuard)
-  remove(@Param('id') id: string, @Request() req) {
+  remove(@Param('id') id: string, @Request() req: AuthenticatedRequest) {
     return this.recipesService.remove(id, req.user.id);
   }
 }

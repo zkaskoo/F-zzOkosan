@@ -1,7 +1,17 @@
-import { IsString, IsNumber, Min, IsOptional, IsBoolean } from 'class-validator';
+import {
+  IsString,
+  IsNumber,
+  Min,
+  IsOptional,
+  IsBoolean,
+  MinLength,
+  MaxLength,
+} from 'class-validator';
 
 export class CreateRecipeIngredientDto {
   @IsString()
+  @MinLength(1)
+  @MaxLength(100)
   ingredientName: string;
 
   @IsNumber()

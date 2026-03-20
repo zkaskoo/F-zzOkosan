@@ -8,6 +8,7 @@ import {
   IsEnum,
   IsBoolean,
   IsArray,
+  IsUrl,
   ValidateNested,
 } from 'class-validator';
 import { Type } from 'class-transformer';
@@ -25,6 +26,10 @@ export class CreateRecipeDto {
   @IsString()
   @MaxLength(2000)
   description?: string;
+
+  @IsOptional()
+  @IsUrl()
+  imageUrl?: string;
 
   @IsOptional()
   @IsInt()

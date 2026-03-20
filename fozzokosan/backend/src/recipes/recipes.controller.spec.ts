@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
 import { RecipesController } from './recipes.controller';
 import { RecipesService } from './recipes.service';
+import { AuthenticatedRequest } from '../auth/interfaces';
 
 // ============================================================
 // Shared test fixtures
@@ -13,13 +14,13 @@ const mockRecipeId = 'recipe-uuid-1';
 
 const mockAuthenticatedRequest = {
   user: { id: mockUserId, email: 'chef@example.com', name: 'Test Chef' },
-};
+} as unknown as AuthenticatedRequest;
 
 const mockRecipeSummary = {
   id: mockRecipeId,
   userId: mockUserId,
-  title: 'Gulyás leves',
-  description: 'Klasszikus magyar gulyás',
+  title: 'Gulyas leves',
+  description: 'Klasszikus magyar gulyas',
   imageUrl: null,
   cookingTime: 90,
   servings: 4,
@@ -33,7 +34,7 @@ const mockRecipeSummary = {
 
 const mockRecipeFull = {
   ...mockRecipeSummary,
-  steps: [{ id: 'step-1', stepNumber: 1, instruction: 'Vágjuk fel a húst.' }],
+  steps: [{ id: 'step-1', stepNumber: 1, instruction: 'Vagjuk fel a hust.' }],
   ingredients: [],
   categories: [],
 };
@@ -47,17 +48,17 @@ const mockPaginatedResult = {
 };
 
 const mockCreateDto = {
-  title: 'Gulyás leves',
-  description: 'Klasszikus magyar gulyás',
+  title: 'Gulyas leves',
+  description: 'Klasszikus magyar gulyas',
   cookingTime: 90,
   servings: 4,
   difficulty: 'MEDIUM' as const,
   isPublic: true,
-  steps: [{ stepNumber: 1, instruction: 'Vágjuk fel a húst.' }],
+  steps: [{ stepNumber: 1, instruction: 'Vagjuk fel a hust.' }],
   ingredients: [],
 };
 
-const mockUpdateDto = { title: 'Gulyás leves - frissítve' };
+const mockUpdateDto = { title: 'Gulyas leves - frissitve' };
 
 // ============================================================
 // Mock RecipesService
@@ -83,9 +84,7 @@ describe('RecipesController', () => {
 
     const module: TestingModule = await Test.createTestingModule({
       controllers: [RecipesController],
-      providers: [
-        { provide: RecipesService, useValue: mockRecipesService },
-      ],
+      providers: [{ provide: RecipesService, useValue: mockRecipesService }],
     }).compile();
 
     controller = module.get<RecipesController>(RecipesController);
@@ -105,7 +104,10 @@ describe('RecipesController', () => {
       mockRecipesService.create.mockResolvedValue(mockRecipeFull);
 
       // When: authenticated user POSTs a new recipe
-      const result = await controller.create(mockCreateDto, mockAuthenticatedRequest);
+      const result = await controller.create(
+        mockCreateDto,
+        mockAuthenticatedRequest,
+      );
 
       // Then: service.create is called with the DTO and the authenticated user's ID
       expect(mockRecipesService.create).toHaveBeenCalledWith(
@@ -120,8 +122,11 @@ describe('RecipesController', () => {
 
       await controller.create(mockCreateDto, mockAuthenticatedRequest);
 
-      const [, calledUserId] = mockRecipesService.create.mock.calls[0];
-      expect(calledUserId).toBe(mockUserId);
+      const calledArgs = mockRecipesService.create.mock.calls[0] as [
+        unknown,
+        string,
+      ];
+      expect(calledArgs[1]).toBe(mockUserId);
     });
 
     it('testEdge_PostRecipesForwardsServiceErrors - propagates errors thrown by service', async () => {
@@ -178,7 +183,9 @@ describe('RecipesController', () => {
       // No authenticated user - pass undefined/null request
       await controller.findAll(1, 10, undefined, undefined);
 
-      const callArg = mockRecipesService.findAll.mock.calls[0][0];
+      const callArg = mockRecipesService.findAll.mock.calls[0]?.[0] as {
+        requesterId?: string;
+      };
       expect(callArg.requesterId).toBeUndefined();
     });
 
@@ -242,10 +249,12 @@ describe('RecipesController', () => {
         new NotFoundException('Recipe not found'),
       );
 
+      const otherRequest = {
+        user: { id: otherUserId, email: 'other@example.com', name: 'Other' },
+      } as unknown as AuthenticatedRequest;
+
       await expect(
-        controller.findOne(mockRecipeId, {
-          user: { id: otherUserId, email: 'other@example.com', name: 'Other' },
-        }),
+        controller.findOne(mockRecipeId, otherRequest),
       ).rejects.toThrow(NotFoundException);
     });
   });
@@ -257,7 +266,10 @@ describe('RecipesController', () => {
   describe('PATCH /recipes/:id - update()', () => {
     it('testBR008_PatchRecipeUpdatesRecipeForOwner - calls service update with id, dto and caller userId', async () => {
       // Given: service returns updated recipe
-      const updatedRecipe = { ...mockRecipeFull, title: 'Gulyás leves - frissítve' };
+      const updatedRecipe = {
+        ...mockRecipeFull,
+        title: 'Gulyas leves - frissitve',
+      };
       mockRecipesService.update.mockResolvedValue(updatedRecipe);
 
       // When: authenticated owner PATCHes the recipe
@@ -281,10 +293,12 @@ describe('RecipesController', () => {
         new ForbiddenException('Access denied'),
       );
 
+      const otherRequest = {
+        user: { id: otherUserId, email: 'other@example.com', name: 'Other' },
+      } as unknown as AuthenticatedRequest;
+
       await expect(
-        controller.update(mockRecipeId, mockUpdateDto, {
-          user: { id: otherUserId, email: 'other@example.com', name: 'Other' },
-        }),
+        controller.update(mockRecipeId, mockUpdateDto, otherRequest),
       ).rejects.toThrow(ForbiddenException);
     });
 
@@ -294,7 +308,11 @@ describe('RecipesController', () => {
       );
 
       await expect(
-        controller.update('non-existent-id', mockUpdateDto, mockAuthenticatedRequest),
+        controller.update(
+          'non-existent-id',
+          mockUpdateDto,
+          mockAuthenticatedRequest,
+        ),
       ).rejects.toThrow(NotFoundException);
     });
   });
@@ -306,10 +324,15 @@ describe('RecipesController', () => {
   describe('DELETE /recipes/:id - remove()', () => {
     it('testBR009_DeleteRecipeRemovesRecipeForOwner - calls service remove with id and caller userId', async () => {
       // Given: service confirms deletion
-      mockRecipesService.remove.mockResolvedValue({ message: 'Recipe deleted successfully' });
+      mockRecipesService.remove.mockResolvedValue({
+        message: 'Recipe deleted successfully',
+      });
 
       // When: authenticated owner DELETEs the recipe
-      const result = await controller.remove(mockRecipeId, mockAuthenticatedRequest);
+      const result = await controller.remove(
+        mockRecipeId,
+        mockAuthenticatedRequest,
+      );
 
       // Then: service.remove called with id and userId
       expect(mockRecipesService.remove).toHaveBeenCalledWith(
@@ -324,10 +347,12 @@ describe('RecipesController', () => {
         new ForbiddenException('Access denied'),
       );
 
+      const otherRequest = {
+        user: { id: otherUserId, email: 'other@example.com', name: 'Other' },
+      } as unknown as AuthenticatedRequest;
+
       await expect(
-        controller.remove(mockRecipeId, {
-          user: { id: otherUserId, email: 'other@example.com', name: 'Other' },
-        }),
+        controller.remove(mockRecipeId, otherRequest),
       ).rejects.toThrow(ForbiddenException);
     });
 
@@ -342,9 +367,14 @@ describe('RecipesController', () => {
     });
 
     it('testEdge_DeleteRecipeReturnsConfirmationMessage - deletion response contains a message string', async () => {
-      mockRecipesService.remove.mockResolvedValue({ message: 'Recipe deleted successfully' });
+      mockRecipesService.remove.mockResolvedValue({
+        message: 'Recipe deleted successfully',
+      });
 
-      const result = await controller.remove(mockRecipeId, mockAuthenticatedRequest);
+      const result = await controller.remove(
+        mockRecipeId,
+        mockAuthenticatedRequest,
+      );
 
       expect(typeof result.message).toBe('string');
     });

@@ -3,6 +3,7 @@ import type { CreateRecipeDto, Difficulty, Recipe } from '../../types';
 import IngredientInput from './IngredientInput';
 import StepInput from './StepInput';
 import ErrorMessage from '../common/ErrorMessage';
+import { isValidImageUrl } from '../../utils/imageUrl';
 import type { IngredientFormItemWithId, StepFormItemWithId } from './formTypes';
 
 interface RecipeFormProps {
@@ -59,6 +60,12 @@ export default function RecipeForm({ initialValues, onSubmit, isLoading }: Recip
       return;
     }
 
+    const trimmedImageUrl = imageUrl.trim();
+    if (trimmedImageUrl && !isValidImageUrl(trimmedImageUrl)) {
+      setError('Érvénytelen kép URL');
+      return;
+    }
+
     const validIngredients = ingredients.filter((i) => i.name.trim());
     if (validIngredients.length === 0) {
       setError('Legalább egy hozzávalót adj meg.');
@@ -74,7 +81,7 @@ export default function RecipeForm({ initialValues, onSubmit, isLoading }: Recip
     onSubmit({
       title: title.trim(),
       description: description.trim() || undefined,
-      imageUrl: imageUrl.trim() || undefined,
+      imageUrl: trimmedImageUrl || undefined,
       cookingTime: cookingTime ? Number(cookingTime) : undefined,
       servings: servings ? Number(servings) : undefined,
       difficulty,

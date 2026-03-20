@@ -236,7 +236,7 @@ describe('RecipesController', () => {
 
     it('testError_GetRecipeByIdForwardsNotFoundFromService - propagates NotFoundException from service', async () => {
       mockRecipesService.findOne.mockRejectedValue(
-        new NotFoundException('Recipe not found'),
+        new NotFoundException('A recept nem található'),
       );
 
       await expect(
@@ -246,7 +246,7 @@ describe('RecipesController', () => {
 
     it('testError_GetRecipeByIdForwardsForbiddenFromService - propagates NotFoundException for private recipe', async () => {
       mockRecipesService.findOne.mockRejectedValue(
-        new NotFoundException('Recipe not found'),
+        new NotFoundException('A recept nem található'),
       );
 
       const otherRequest = {
@@ -304,7 +304,7 @@ describe('RecipesController', () => {
 
     it('testError_PatchRecipeForwardsNotFoundFromService - propagates NotFoundException when recipe is missing', async () => {
       mockRecipesService.update.mockRejectedValue(
-        new NotFoundException('Recipe not found'),
+        new NotFoundException('A recept nem található'),
       );
 
       await expect(
@@ -325,7 +325,7 @@ describe('RecipesController', () => {
     it('testBR009_DeleteRecipeRemovesRecipeForOwner - calls service remove with id and caller userId', async () => {
       // Given: service confirms deletion
       mockRecipesService.remove.mockResolvedValue({
-        message: 'Recipe deleted successfully',
+        message: 'A recept sikeresen törölve',
       });
 
       // When: authenticated owner DELETEs the recipe
@@ -358,7 +358,7 @@ describe('RecipesController', () => {
 
     it('testError_DeleteRecipeForwardsNotFoundFromService - propagates NotFoundException when recipe is missing', async () => {
       mockRecipesService.remove.mockRejectedValue(
-        new NotFoundException('Recipe not found'),
+        new NotFoundException('A recept nem található'),
       );
 
       await expect(
@@ -368,7 +368,7 @@ describe('RecipesController', () => {
 
     it('testEdge_DeleteRecipeReturnsConfirmationMessage - deletion response contains a message string', async () => {
       mockRecipesService.remove.mockResolvedValue({
-        message: 'Recipe deleted successfully',
+        message: 'A recept sikeresen törölve',
       });
 
       const result = await controller.remove(

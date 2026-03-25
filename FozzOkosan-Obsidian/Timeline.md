@@ -32,9 +32,9 @@ Setup   CRUD    Units    Shopping   NLP    Testing   Docs
 ## Progress Tracker
 
 ```
-February   [░░░░░░░░░░] 0%
-March      [░░░░░░░░░░] 0%
-April      [░░░░░░░░░░] 0%
+February   [██████████] 100%
+March      [██████████] 100%
+April      [██████████] 100%
 May        [░░░░░░░░░░] 0%
 June       [░░░░░░░░░░] 0%
 September  [░░░░░░░░░░] 0%

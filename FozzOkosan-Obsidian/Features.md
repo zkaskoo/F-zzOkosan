@@ -137,9 +137,9 @@ flowchart TD
 
 Must be complete for thesis:
 
-- [ ] User registration & login
-- [ ] Recipe CRUD with images
-- [ ] Like & comment
+- [x] User registration & login
+- [x] Recipe CRUD with images
+- [x] Like & comment
 - [ ] NLP ingredient parsing
 - [ ] Unit conversion
 - [ ] Shopping list generation

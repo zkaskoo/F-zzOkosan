@@ -42,12 +42,14 @@ export class RecipesController {
     @Query('page') page?: number,
     @Query('limit') limit?: number,
     @Query('userId') userId?: string,
+    @Query('search') search?: string,
     @Request() req?: ExpressRequest & { user?: ReqUser },
   ) {
     return this.recipesService.findAll({
       page: page || 1,
       limit: limit || 10,
       userId,
+      search,
       requesterId: req?.user?.id,
     });
   }

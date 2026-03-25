@@ -355,31 +355,31 @@ Structured Output:
 ## Complete Feature Checklist
 
 ### Auth & Users
-- [ ] User registration
-- [ ] User login (JWT)
-- [ ] User profile
+- [x] User registration
+- [x] User login (JWT)
+- [x] User profile
 - [ ] Profile editing
 - [ ] Avatar upload
 
 ### Recipes
-- [ ] Create recipe
-- [ ] Edit recipe
-- [ ] Delete recipe
-- [ ] View recipe
-- [ ] Recipe images
-- [ ] Search recipes
+- [x] Create recipe
+- [x] Edit recipe
+- [x] Delete recipe
+- [x] View recipe
+- [x] Recipe images
+- [x] Search recipes
 - [ ] Filter by category
 
 ### Social Features
-- [ ] Like recipes
-- [ ] Comment on recipes
+- [x] Like recipes
+- [x] Comment on recipes
 - [ ] Follow users
-- [ ] Recipe feed
+- [x] Recipe feed
 - [ ] User discovery
 
 ### Smart Features
 - [ ] NLP ingredient parsing
-- [ ] Unit conversion
+- [x] Unit conversion
 - [ ] Shopping list generation
 - [ ] Multi-recipe merge
 - [ ] Allergen filtering

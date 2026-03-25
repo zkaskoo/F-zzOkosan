@@ -32,6 +32,7 @@ export class CommentsService {
   }
 
   async findByRecipe(recipeId: string, page = 1, limit = 20) {
+    limit = Math.min(limit, 100);
     const skip = (page - 1) * limit;
 
     const [data, total] = await Promise.all([

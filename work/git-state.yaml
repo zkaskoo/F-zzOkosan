@@ -1,0 +1,17 @@
+_meta:
+  agent: git-manager
+  executed_at: "2026-03-20T15:40:00Z"
+  duration_ms: 2500
+  status: SUCCESS
+
+action: create_branch
+branch: feature/MARCH-3-image-upload
+branch_type: feature
+created_from: sandbox
+target_branch: sandbox
+merge_strategy: squash
+is_epic: false
+is_sub_issue: false
+is_continuation: false
+stashed: true
+clean: true

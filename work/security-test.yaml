@@ -1,0 +1,281 @@
+_meta:
+  agent: security-tester
+  executed_at: "2026-03-20T14:48:03Z"
+  duration_ms: 45000
+  status: SUCCESS
+
+task_id: UPLOAD-SECURITY-REVIEW
+
+static_analysis:
+  scan_scope:
+    files_scanned: 6
+    language: typescript
+    framework: nestjs-react
+    files_reviewed:
+      - fozzokosan/backend/src/upload/upload.module.ts
+      - fozzokosan/backend/src/upload/upload.controller.ts
+      - fozzokosan/backend/src/upload/upload.service.ts
+      - fozzokosan/backend/src/app.module.ts
+      - fozzokosan/backend/src/main.ts
+      - fozzokosan/frontend/src/services/uploadApi.ts
+      - fozzokosan/frontend/src/components/upload/ImageUpload.tsx
+
+  findings:
+    - id: SA-001
+      severity: HIGH
+      category: MIME_TYPE_SPOOFING
+      title: "MIME type validated via Content-Type header only, not magic bytes"
+      file: fozzokosan/backend/src/upload/upload.module.ts
+      line: 27
+      evidence: |
+        if (allowedMimes.includes(file.mimetype)) {
+        // file.mimetype is populated from the multipart Content-Type field,
+        // not from reading the actual file bytes. An attacker can send a PHP
+        // webshell or HTML file with Content-Type: image/jpeg and it will pass
+        // the filter, be written to disk as <uuid>.jpeg, and be served back.
+      recommendation: |
+        Read the first 12 bytes of the uploaded buffer and compare against known
+        image magic byte signatures before accepting the file. Use the `file-type`
+        npm package (pure JS, reads magic bytes) as a second validation layer:
+          import { fileTypeFromBuffer } from 'file-type';
+          const type = await fileTypeFromBuffer(file.buffer);
+          if (!type || !allowedMimes.includes(type.mime)) { reject(); }
+        Switch Multer to memoryStorage() for the validation step, or read the first
+        chunk from the tmp file before moving it to the final destination.
+
+    - id: SA-002
+      severity: HIGH
+      category: FILE_EXECUTION_VIA_STATIC_SERVING
+      title: "ServeStaticModule serves uploads directory with no Content-Type override or execution prevention"
+      file: fozzokosan/backend/src/app.module.ts
+      line: 17
+      evidence: |
+        ServeStaticModule.forRoot({
+          rootPath: join(__dirname, '..', 'uploads'),
+          serveRoot: '/uploads',
+        })
+        No serveStaticOptions are set. @nestjs/serve-static relies on the `serve-static`
+        Express middleware which uses `mime` to determine Content-Type. If a file with
+        an .html, .svg, or .js extension lands in uploads/ (possible via SA-001 or a
+        future bug), the browser will execute it in the origin context of the API server,
+        enabling stored XSS or credential theft.
+      recommendation: |
+        1. Add serveStaticOptions to force a safe Content-Type for all served files:
+             serveStaticOptions: {
+               setHeaders: (res) => {
+                 res.setHeader('Content-Type', 'application/octet-stream');
+                 res.setHeader('X-Content-Type-Options', 'nosniff');
+                 res.setHeader('Content-Disposition', 'attachment');
+               },
+             }
+           OR configure your reverse proxy (nginx) to serve the uploads directory
+           with these headers instead of NestJS.
+        2. Add a strict allowlist of extensions at the OS/filesystem level so only
+           .jpg/.jpeg/.png/.webp/.gif files can ever reside in uploads/.
+
+    - id: SA-003
+      severity: HIGH
+      category: PATH_TRAVERSAL
+      title: "File extension extracted from attacker-controlled originalname without sanitization"
+      file: fozzokosan/backend/src/upload/upload.module.ts
+      line: 15
+      evidence: |
+        const uniqueName = `${randomUUID()}${extname(file.originalname)}`;
+        Node's `path.extname` returns everything from the last dot to the end of the
+        string. For a filename like "shell.php%00.jpg" in some Node versions, or
+        "shell.php.jpg" on certain server configurations, this produces an extension
+        that may bypass downstream processing. More critically, `extname` on
+        "exploit.jpg.php" returns ".php", so a file named that way gets written as
+        <uuid>.php. If the uploads directory is ever served by a PHP-capable web server
+        or the static middleware is replaced, this enables RCE.
+        Even without PHP, ".html" and ".svg" extensions produce executable content in
+        browsers (see SA-002).
+      recommendation: |
+        Enforce the extension via an explicit allowlist rather than trusting originalname:
+          const EXT_MAP: Record<string, string> = {
+            'image/jpeg': '.jpg',
+            'image/png':  '.png',
+            'image/webp': '.webp',
+            'image/gif':  '.gif',
+          };
+          const safeExt = EXT_MAP[file.mimetype] ?? '.bin';
+          const uniqueName = `${randomUUID()}${safeExt}`;
+        This removes any dependency on attacker-controlled input for the filename.
+
+    - id: SA-004
+      severity: HIGH
+      category: MISSING_RATE_LIMITING
+      title: "No rate limiting on POST /api/uploads/image"
+      file: fozzokosan/backend/src/upload/upload.controller.ts
+      line: 17
+      evidence: |
+        @Post('image')
+        @UseGuards(JwtAuthGuard)
+        @UseInterceptors(FileInterceptor('file'))
+        uploadImage(...)
+        Neither @nestjs/throttler nor any middleware rate-limits this endpoint.
+        Any authenticated user can issue unlimited upload requests. Combined with
+        the 5 MB per-file limit and no per-user quota (SA-005), this is a direct
+        disk exhaustion vector.
+      recommendation: |
+        Install @nestjs/throttler and apply a conservative limit to the upload endpoint:
+          @Throttle({ default: { limit: 10, ttl: 60000 } })
+          @Post('image')
+        Register ThrottlerModule globally in AppModule and add ThrottlerGuard as a
+        global guard, or apply it per-controller. Tune limits to your expected
+        legitimate upload frequency.
+
+    - id: SA-005
+      severity: MEDIUM
+      category: DISK_EXHAUSTION
+      title: "No per-user upload quota enforced"
+      file: fozzokosan/backend/src/upload/upload.service.ts
+      line: 1
+      evidence: |
+        UploadService contains only getImageUrl(). There is no tracking of how many
+        files or how many total bytes a given user has uploaded. An authenticated
+        attacker (or a compromised account) can fill the disk by repeatedly uploading
+        5 MB files, limited only by bandwidth.
+      recommendation: |
+        Track upload counts and/or total bytes per user in the database (add an
+        `uploadedBytes` field to the User model or a separate UploadRecord table).
+        Enforce a configurable per-user ceiling (e.g. 50 MB) in UploadService before
+        writing the file. Delete orphaned upload files when the associated entity
+        (recipe, etc.) is deleted.
+
+    - id: SA-006
+      severity: MEDIUM
+      category: MISSING_SECURITY_HEADERS
+      title: "Helmet not configured; no X-Content-Type-Options, CSP, or HSTS headers"
+      file: fozzokosan/backend/src/main.ts
+      line: 6
+      evidence: |
+        app.enableCors(...) is configured but `helmet` is not applied. Without
+        X-Content-Type-Options: nosniff, browsers may MIME-sniff uploaded files
+        served from /uploads and execute them as a different content type. Without
+        a Content-Security-Policy, a stored XSS via an SVG (if SA-001/SA-003 were
+        exploited) would have full access to cookies and localStorage.
+      recommendation: |
+        Add helmet to main.ts:
+          import helmet from 'helmet';
+          app.use(helmet());
+        Install: npm install helmet @types/helmet
+        This sets X-Content-Type-Options, X-Frame-Options, and a baseline CSP.
+        Tune the CSP to restrict script-src to your own origin.
+
+    - id: SA-007
+      severity: MEDIUM
+      category: MISSING_FILE_ORPHAN_CLEANUP
+      title: "Uploaded files are never deleted from disk"
+      file: fozzokosan/backend/src/upload/upload.service.ts
+      line: 1
+      evidence: |
+        getImageUrl() constructs a URL but there is no deleteFile() method and no
+        lifecycle hook that removes files when the parent record is deleted. Over
+        time this leads to unbounded disk growth (contributing to SA-005) and
+        potential exposure of files that the user believes have been removed.
+      recommendation: |
+        Implement UploadService.deleteFile(filename: string) using fs.unlink(). Call
+        it from recipe/user delete handlers. Consider a scheduled cleanup job that
+        removes files in uploads/ that have no corresponding database reference.
+
+    - id: SA-008
+      severity: LOW
+      category: CLIENT_SIDE_VALIDATION_ONLY_FOR_UX
+      title: "Frontend MIME/size validation is UX-only; server is authoritative"
+      file: fozzokosan/frontend/src/components/upload/ImageUpload.tsx
+      line: 27
+      evidence: |
+        validateFile() checks file.type (which is the browser-reported MIME type,
+        itself set from the file extension on most OSes) and file.size. This check
+        can be trivially bypassed by any HTTP client that sends the request directly.
+        The server-side checks in upload.module.ts are the real enforcement layer.
+      recommendation: |
+        No code change needed in the frontend — this is a correct UX optimisation.
+        Document that the server-side filter in upload.module.ts (plus SA-001 magic
+        byte fix) is the security boundary. Ensure the server never trusts
+        frontend-asserted values.
+
+    - id: SA-009
+      severity: LOW
+      category: INFORMATION_DISCLOSURE
+      title: "Upload response exposes server-side filename, size, and mimetype"
+      file: fozzokosan/backend/src/upload/upload.controller.ts
+      line: 25
+      evidence: |
+        return {
+          url: this.uploadService.getImageUrl(file.filename),
+          filename: file.filename,
+          size: file.size,
+          mimetype: file.mimetype,
+        };
+        Returning the internal filename and mimetype is minor information disclosure.
+        More importantly, mimetype is echoed back from the attacker-controlled
+        Content-Type field; if a downstream system trusts this value, it could be
+        misused.
+      recommendation: |
+        Return only `url` to the client. The client has no need for the server-side
+        filename, size, or mimetype values. If size is needed for UX purposes, derive
+        it client-side from the original File object before uploading.
+
+    - id: SA-010
+      severity: LOW
+      category: SSRF
+      title: "No URL-based upload path present; SSRF not applicable"
+      file: fozzokosan/backend/src/upload/upload.controller.ts
+      line: 17
+      evidence: |
+        The upload endpoint accepts only multipart file data via FileInterceptor.
+        There is no URL-based fetch / remote image import feature. SSRF is not
+        a risk in the current implementation.
+      recommendation: "No action required. If a URL-import feature is added in future, validate the URL against an allowlist of schemes and hosts."
+
+  summary:
+    critical: 0
+    high: 4
+    medium: 3
+    low: 3
+
+active_testing: null
+
+all_findings:
+  - { id: SA-001, source: static, severity: HIGH,   category: MIME_TYPE_SPOOFING,              title: "MIME type validated via Content-Type header only, not magic bytes",                      file: fozzokosan/backend/src/upload/upload.module.ts }
+  - { id: SA-002, source: static, severity: HIGH,   category: FILE_EXECUTION_VIA_STATIC_SERVING, title: "ServeStaticModule serves uploads with no Content-Type override or execution prevention", file: fozzokosan/backend/src/app.module.ts }
+  - { id: SA-003, source: static, severity: HIGH,   category: PATH_TRAVERSAL,                  title: "File extension extracted from attacker-controlled originalname without sanitization",    file: fozzokosan/backend/src/upload/upload.module.ts }
+  - { id: SA-004, source: static, severity: HIGH,   category: MISSING_RATE_LIMITING,            title: "No rate limiting on POST /api/uploads/image",                                           file: fozzokosan/backend/src/upload/upload.controller.ts }
+  - { id: SA-005, source: static, severity: MEDIUM, category: DISK_EXHAUSTION,                  title: "No per-user upload quota enforced",                                                      file: fozzokosan/backend/src/upload/upload.service.ts }
+  - { id: SA-006, source: static, severity: MEDIUM, category: MISSING_SECURITY_HEADERS,         title: "Helmet not configured; no X-Content-Type-Options, CSP, or HSTS headers",               file: fozzokosan/backend/src/main.ts }
+  - { id: SA-007, source: static, severity: MEDIUM, category: MISSING_FILE_ORPHAN_CLEANUP,      title: "Uploaded files are never deleted from disk",                                             file: fozzokosan/backend/src/upload/upload.service.ts }
+  - { id: SA-008, source: static, severity: LOW,    category: CLIENT_SIDE_VALIDATION_ONLY_FOR_UX, title: "Frontend MIME/size validation is UX-only; server is authoritative",                  file: fozzokosan/frontend/src/components/upload/ImageUpload.tsx }
+  - { id: SA-009, source: static, severity: LOW,    category: INFORMATION_DISCLOSURE,            title: "Upload response exposes server-side filename, size, and mimetype",                      file: fozzokosan/backend/src/upload/upload.controller.ts }
+  - { id: SA-010, source: static, severity: LOW,    category: SSRF,                             title: "No URL-based upload path; SSRF not applicable",                                          file: fozzokosan/backend/src/upload/upload.controller.ts }
+
+summary:
+  critical: 0
+  high: 4
+  medium: 3
+  low: 3
+
+decision: NEEDS_FIXES
+
+blocking_issues:
+  - SA-001  # MIME type spoofing - file-type magic byte check missing
+  - SA-002  # Uploaded files served without Content-Type enforcement - stored XSS path
+  - SA-003  # Extension taken from attacker-controlled originalname - can produce .php/.html/.svg
+  - SA-004  # No rate limiting - authenticated disk exhaustion and abuse vector
+
+remediation_priority:
+  - id: SA-003
+    reason: "Fix first — eliminates the malicious extension class of bugs entirely. One-line change in upload.module.ts."
+  - id: SA-001
+    reason: "Add file-type magic byte check. Requires adding the `file-type` package and switching to memoryStorage or reading tmp file header."
+  - id: SA-002
+    reason: "Add setHeaders to ServeStaticModule to force Content-Disposition: attachment and X-Content-Type-Options: nosniff. Blocks browser execution of any file that slips through."
+  - id: SA-004
+    reason: "Add @nestjs/throttler. Blocks upload flooding from authenticated accounts."
+  - id: SA-006
+    reason: "Add helmet to main.ts. Broad defence-in-depth for the entire API."
+  - id: SA-005
+    reason: "Add per-user quota tracking. Requires schema migration."
+  - id: SA-007
+    reason: "Add deleteFile() and wire it to deletion handlers."

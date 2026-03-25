@@ -11,20 +11,20 @@
 ## Tasks
 
 ### Unit Conversion System
-- [ ] Create unit conversion service
-- [ ] Handle Hungarian units (ek, tk, dkg, csésze, etc.)
-- [ ] Convert to base units (g, ml, db)
-- [ ] Handle fractions ("fél", "negyed")
+- [x] Create unit conversion service
+- [x] Handle Hungarian units (ek, tk, dkg, csésze, etc.)
+- [x] Convert to base units (g, ml, db)
+- [x] Handle fractions ("fél", "negyed")
 
 ### Ingredient Database
-- [ ] Create standardized ingredient list
-- [ ] Add ingredient categories
-- [ ] Map common variations (paradicsom → paradicsom)
+- [x] Create standardized ingredient list
+- [x] Add ingredient categories
+- [x] Map common variations (paradicsom → paradicsom)
 
 ### Structured Storage
-- [ ] Update recipe model for parsed ingredients
-- [ ] Store both raw and parsed ingredients
-- [ ] Create JSON structure for ingredients
+- [x] Update recipe model for parsed ingredients
+- [x] Store both raw and parsed ingredients
+- [x] Create JSON structure for ingredients
 
 ---
 
@@ -106,10 +106,10 @@ const FRACTIONS = {
 
 | Deliverable | Status |
 |-------------|--------|
-| Unit conversion service | ⬜ |
-| Fraction parsing | ⬜ |
-| Structured ingredient storage | ⬜ |
-| Ingredient categories | ⬜ |
+| Unit conversion service | ✅ |
+| Fraction parsing | ✅ |
+| Structured ingredient storage | ✅ |
+| Ingredient categories | ✅ |
 
 ---
 

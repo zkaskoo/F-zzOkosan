@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { MessageCircle, Trash2, Send } from 'lucide-react';
 import { useComments, useCreateComment, useDeleteComment } from '../../hooks/useComments';
 import { useAuthStore } from '../../stores/authStore';
@@ -85,9 +86,9 @@ export default function CommentSection({ recipeId }: CommentSectionProps) {
         </form>
       ) : (
         <p className="text-sm text-text-secondary mb-6">
-          <a href="/bejelentkezes" className="text-primary hover:underline">
+          <Link to="/bejelentkezes" className="text-primary hover:underline">
             Jelentkezz be
-          </a>
+          </Link>
           {' '}a hozzászóláshoz.
         </p>
       )}

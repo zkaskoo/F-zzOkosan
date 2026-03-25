@@ -1,0 +1,147 @@
+_meta:
+  agent: code-reviewer
+  executed_at: "2026-03-20T00:00:00Z"
+  duration_ms: 18000
+  status: SUCCESS
+
+task_id: MARCH-3
+iteration: 1
+decision: NEEDS_WORK
+
+checks:
+  tests:
+    total: 9
+    passed: 9
+    failed: 0
+    errors: 0
+    status: PASSING
+    command: "cd fozzokosan/backend && npx jest --no-coverage"
+  static_analysis:
+    errors: 0
+    command: "cd fozzokosan/backend && npx tsc --noEmit"
+  frontend_type_check:
+    errors: 0
+    command: "cd fozzokosan/frontend && npx tsc --noEmit"
+  linting:
+    issues: 4
+    errors: 1
+    warnings: 3
+    command: "npx eslint src/upload/"
+  build:
+    status: SUCCESS
+    command: "cd fozzokosan/frontend && npm run build"
+
+failures: []
+
+issues:
+  - type: STYLE
+    severity: MAJOR
+    file: fozzokosan/backend/src/upload/upload.controller.spec.ts
+    line: 44
+    description: >
+      Prettier formatting error (ESLint error, not just warning). The
+      `expect(() => controller.uploadImage(...)).toThrow(...)` call is
+      formatted incorrectly — must be auto-fixed or rewritten to match
+      project prettier config. This is the only ESLint *error* (vs warnings)
+      and will fail any CI lint gate.
+    fix_agent: developer
+
+  - type: STYLE
+    severity: MINOR
+    file: fozzokosan/backend/src/upload/upload.module.ts
+    line: 31
+    description: >
+      `cb(new Error(...) as any, false)` — the `as any` cast suppresses a
+      TypeScript unsafe-argument warning. Multer's fileFilter callback
+      expects the first argument as `Error | null`. Pass `null` on success
+      and a typed `new MulterError` or a plain `new Error` without the cast.
+      Consider creating a custom `BadRequestException`-derived error or using
+      multer's own `MulterError` class so the global exception filter can
+      surface it correctly.
+    fix_agent: developer
+
+  - type: STYLE
+    severity: MINOR
+    file: fozzokosan/backend/src/upload/upload.controller.spec.ts
+    line: 45
+    description: >
+      Two `@typescript-eslint/no-unsafe-argument` warnings for passing
+      `undefined as any` to `controller.uploadImage()`. Use an explicit
+      overload or type the parameter properly in the test (e.g.,
+      `undefined as unknown as Express.Multer.File`) to satisfy strict mode
+      without suppressing type safety.
+    fix_agent: developer
+
+  - type: SECURITY
+    severity: MAJOR
+    file: fozzokosan/backend/src/upload/upload.module.ts
+    line: 15
+    description: >
+      Filename extension is taken directly from `file.originalname` using
+      `extname()`. A client can send `originalname: "shell.php\0.jpg"` — on
+      some systems the null-byte truncates the name server-side. Additionally,
+      MIME sniffing bypass: the `fileFilter` validates `file.mimetype` which
+      is set by the client header, not by inspecting the file's actual magic
+      bytes. A malicious actor can upload a PHP/HTML file with a
+      `Content-Type: image/jpeg` header and bypass the filter.
+      Recommendation: (1) whitelist only known-safe extensions (.jpg, .jpeg,
+      .png, .webp, .gif) derived from the validated MIME type rather than
+      trusting `originalname`; (2) consider integrating `file-type` or
+      `mmmagic` to validate magic bytes server-side.
+    fix_agent: security-tester
+
+  - type: SECURITY
+    severity: MINOR
+    file: fozzokosan/backend/src/app.module.ts
+    line: 17
+    description: >
+      `ServeStaticModule` serves the entire `uploads/` directory with no
+      auth guard. Any uploaded file is publicly accessible to anyone with
+      its URL. For a recipe-sharing app this may be intentional, but it
+      should be a conscious decision documented in the task. If images
+      should be private, static serving should be replaced with a guarded
+      streaming endpoint.
+    fix_agent: developer
+
+  - type: ARCHITECTURE
+    severity: MINOR
+    file: fozzokosan/backend/src/upload/upload.service.ts
+    line: 5
+    description: >
+      `UploadService.getImageUrl()` is a trivial one-liner that could
+      reasonably live in the controller. The service adds no real abstraction.
+      This is acceptable for now, but if the service grows (e.g., S3
+      integration, thumbnail generation) the boundary is already set
+      correctly — no action required unless complexity increases.
+    fix_agent: null
+
+  - type: STYLE
+    severity: MINOR
+    file: fozzokosan/frontend/src/components/upload/ImageUpload.tsx
+    line: 52
+    description: >
+      The `catch` block silences the original error entirely (`catch {}`).
+      The generic Hungarian error message is good for UX, but in development
+      or when the server returns a structured error (e.g., 413 Payload Too
+      Large, 401 Unauthorized), the developer gets no diagnostic info. Log
+      the raw error to the console in non-production builds or re-throw as
+      needed.
+    fix_agent: developer
+
+quality_notes:
+  - "All 9 tests pass (upload.controller.spec.ts: 4, upload.service.spec.ts: 2, app.controller.spec.ts: 3)."
+  - "Frontend Vite build succeeds cleanly with tsc -b + vite build (no type errors)."
+  - "Backend tsc --noEmit passes with 0 errors."
+  - "All user-facing text is in Hungarian as required: error messages, labels, placeholders, alt text, title attributes."
+  - "MIME type whitelist is correctly defined and consistent between frontend constants and backend fileFilter."
+  - "5 MB size limit is enforced at both layers (Multer limits.fileSize and client-side validateFile)."
+  - "Filenames are sanitised with randomUUID() — the original name is never used as the stored name, mitigating most path-traversal risk."
+  - "Static file serving via ServeStaticModule is correctly configured; /uploads proxy in vite.config.ts routes dev traffic to the backend."
+  - "JwtAuthGuard is applied to the upload endpoint, preventing unauthenticated uploads."
+  - "Drag-and-drop, progress bar, loading state, error display, and remove-image UI are all implemented correctly."
+  - "Keyboard accessibility on the drop zone (Enter / Space triggers file picker) is present."
+  - ".gitignore correctly excludes uploaded files but preserves .gitkeep."
+
+blocker_count: 0
+major_count: 2
+minor_count: 5

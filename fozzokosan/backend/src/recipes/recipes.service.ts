@@ -105,7 +105,8 @@ export class RecipesService {
 
     if (params.search) {
       const searchTerm = params.search.trim();
-      where.OR = [
+      if (searchTerm.length > 0) {
+        where.OR = [
         { title: { contains: searchTerm, mode: 'insensitive' } },
         { description: { contains: searchTerm, mode: 'insensitive' } },
         {
@@ -118,6 +119,7 @@ export class RecipesService {
           },
         },
       ];
+      }
     }
 
     const [data, total] = await Promise.all([

@@ -11,32 +11,32 @@
 ## Tasks
 
 ### Recipe CRUD
-- [ ] Create recipe endpoint (POST /recipes)
-- [ ] Read recipe endpoint (GET /recipes/:id)
-- [ ] Update recipe endpoint (PATCH /recipes/:id)
-- [ ] Delete recipe endpoint (DELETE /recipes/:id)
-- [ ] List recipes endpoint (GET /recipes)
-- [ ] Search recipes by title/ingredients
+- [x] Create recipe endpoint (POST /recipes)
+- [x] Read recipe endpoint (GET /recipes/:id)
+- [x] Update recipe endpoint (PATCH /recipes/:id)
+- [x] Delete recipe endpoint (DELETE /recipes/:id)
+- [x] List recipes endpoint (GET /recipes)
+- [x] Search recipes by title/ingredients
 
 ### Image Upload
-- [ ] Set up Multer for file uploads
-- [ ] Configure Cloudinary/S3 for image storage
-- [ ] Add image field to recipe model
-- [ ] Create image upload endpoint
+- [x] Set up Multer for file uploads
+- [x] Configure Cloudinary/S3 for image storage
+- [x] Add image field to recipe model
+- [x] Create image upload endpoint
 
 ### Frontend UI Components
-- [ ] Layout components (Header, Footer, Sidebar)
-- [ ] Recipe card component
-- [ ] Recipe detail page
-- [ ] Create recipe form
-- [ ] Recipe feed (home page)
-- [ ] User profile page
-- [ ] Login/Register forms
+- [x] Layout components (Header, Footer, Sidebar)
+- [x] Recipe card component
+- [x] Recipe detail page
+- [x] Create recipe form
+- [x] Recipe feed (home page)
+- [x] User profile page
+- [x] Login/Register forms
 
 ### Basic Interactions
-- [ ] Like recipe functionality
-- [ ] Comment on recipe
-- [ ] View recipe details
+- [x] Like recipe functionality
+- [x] Comment on recipe
+- [x] View recipe details
 
 ---
 
@@ -44,11 +44,11 @@
 
 | Deliverable | Status |
 |-------------|--------|
-| Recipe CRUD API | ⬜ |
-| Image upload working | ⬜ |
-| Home feed UI | ⬜ |
-| Recipe detail page | ⬜ |
-| Create recipe form | ⬜ |
+| Recipe CRUD API | ✅ |
+| Image upload working | ✅ |
+| Home feed UI | ✅ |
+| Recipe detail page | ✅ |
+| Create recipe form | ✅ |
 
 ---
 

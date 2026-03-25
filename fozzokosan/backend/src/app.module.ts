@@ -9,6 +9,9 @@ import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { RecipesModule } from './recipes/recipes.module';
 import { UploadModule } from './upload/upload.module';
+import { LikesModule } from './likes/likes.module';
+import { CommentsModule } from './comments/comments.module';
+import { UnitsModule } from './units/units.module';
 
 @Module({
   imports: [
@@ -34,6 +37,9 @@ import { UploadModule } from './upload/upload.module';
     UsersModule,
     RecipesModule,
     UploadModule,
+    LikesModule,
+    CommentsModule,
+    UnitsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

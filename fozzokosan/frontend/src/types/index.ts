@@ -92,3 +92,18 @@ export interface AuthResponse {
   accessToken: string;
   user: User;
 }
+
+export interface Comment {
+  id: string;
+  content: string;
+  createdAt: string;
+  updatedAt: string;
+  userId: string;
+  recipeId: string;
+  user: Pick<User, 'id' | 'name' | 'avatar'>;
+}
+
+export interface LikeStatus {
+  count: number;
+  liked: boolean;
+}

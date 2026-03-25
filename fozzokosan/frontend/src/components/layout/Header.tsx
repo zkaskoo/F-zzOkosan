@@ -39,9 +39,12 @@ export default function Header() {
                   <Plus className="h-4 w-4" />
                   <span className="hidden sm:inline">Új recept</span>
                 </Link>
-                <span className="text-sm text-text-secondary hidden sm:inline">
+                <Link
+                  to="/profil"
+                  className="text-sm text-text-secondary hover:text-primary transition-colors hidden sm:inline"
+                >
                   {user?.name}
-                </span>
+                </Link>
                 <button
                   onClick={handleLogout}
                   className="text-text-secondary hover:text-red-500 transition-colors p-2"

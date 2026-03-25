@@ -85,6 +85,7 @@ export class RecipesService {
     page?: number;
     limit?: number;
     userId?: string;
+    search?: string;
     requesterId?: string;
   }) {
     const page = params.page || 1;
@@ -95,14 +96,30 @@ export class RecipesService {
 
     if (params.userId) {
       where.userId = params.userId;
-      // If the requester is browsing another user's recipes, only show public
       if (params.requesterId && params.requesterId !== params.userId) {
         where.isPublic = true;
       }
-      // If no requesterId or requesterId === userId, show all (no isPublic filter)
     } else {
-      // No userId filter: only show public recipes
       where.isPublic = true;
+    }
+
+    if (params.search) {
+      const searchTerm = params.search.trim();
+      if (searchTerm.length > 0) {
+        where.OR = [
+        { title: { contains: searchTerm, mode: 'insensitive' } },
+        { description: { contains: searchTerm, mode: 'insensitive' } },
+        {
+          ingredients: {
+            some: {
+              ingredient: {
+                name: { contains: searchTerm, mode: 'insensitive' },
+              },
+            },
+          },
+        },
+      ];
+      }
     }
 
     const [data, total] = await Promise.all([

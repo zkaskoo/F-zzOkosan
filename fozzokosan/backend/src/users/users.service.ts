@@ -17,7 +17,7 @@ export class UsersService {
     });
 
     if (existingUser) {
-      throw new ConflictException('Email already registered');
+      throw new ConflictException('Ez az email cím már regisztrálva van');
     }
 
     // Hash password
@@ -79,7 +79,7 @@ export class UsersService {
     });
 
     if (!user) {
-      throw new NotFoundException('User not found');
+      throw new NotFoundException('A felhasználó nem található');
     }
 
     return user;
@@ -97,7 +97,7 @@ export class UsersService {
     });
 
     if (!user) {
-      throw new NotFoundException('User not found');
+      throw new NotFoundException('A felhasználó nem található');
     }
 
     return this.prisma.user.update({
@@ -121,13 +121,13 @@ export class UsersService {
     });
 
     if (!user) {
-      throw new NotFoundException('User not found');
+      throw new NotFoundException('A felhasználó nem található');
     }
 
     await this.prisma.user.delete({
       where: { id },
     });
 
-    return { message: 'User deleted successfully' };
+    return { message: 'A felhasználó sikeresen törölve' };
   }
 }

@@ -1,7 +1,8 @@
 import { Link } from 'react-router-dom';
-import { Clock, Users } from 'lucide-react';
+import { Clock, MessageCircle, Users } from 'lucide-react';
 import type { Recipe } from '../../types';
 import { isValidImageUrl } from '../../utils/imageUrl';
+import LikeButton from './LikeButton';
 
 interface RecipeCardProps {
   recipe: Recipe;
@@ -64,9 +65,20 @@ export default function RecipeCard({ recipe }: RecipeCardProps) {
         </div>
 
         <div className="flex items-center justify-between pt-1">
-          <span className="text-xs text-text-secondary">
-            {recipe.user.name}
-          </span>
+          <div className="flex items-center gap-3">
+            <span className="text-xs text-text-secondary">
+              {recipe.user.name}
+            </span>
+            <div className="flex items-center gap-2">
+              <LikeButton recipeId={recipe.id} compact />
+              {(recipe._count?.comments ?? 0) > 0 && (
+                <span className="flex items-center gap-1 text-xs text-text-secondary">
+                  <MessageCircle className="h-3.5 w-3.5" />
+                  {recipe._count!.comments}
+                </span>
+              )}
+            </div>
+          </div>
           <span
             className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${difficulty.bg} ${difficulty.text}`}
           >

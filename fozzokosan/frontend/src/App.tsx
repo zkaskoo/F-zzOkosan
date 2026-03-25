@@ -8,6 +8,7 @@ import RecipeListPage from './pages/RecipeListPage';
 import RecipeDetailPage from './pages/RecipeDetailPage';
 import CreateRecipePage from './pages/CreateRecipePage';
 import EditRecipePage from './pages/EditRecipePage';
+import ProfilePage from './pages/ProfilePage';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -35,6 +36,8 @@ function App() {
           </Route>
 
           <Route path="/receptek/:id" element={<RecipeDetailPage />} />
+          <Route path="/profil" element={<ProfilePage />} />
+          <Route path="/profil/:id" element={<ProfilePage />} />
 
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

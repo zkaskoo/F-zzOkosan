@@ -5,8 +5,13 @@
   "private": true,
   "scripts": {
     "docker:up": "docker-compose up -d",
+    "docker:build": "docker-compose up -d --build",
+    "docker:up:infra": "docker-compose up -d postgres redis adminer",
     "docker:down": "docker-compose down",
     "docker:logs": "docker-compose logs -f",
+    "docker:logs:backend": "docker-compose logs -f backend",
+    "docker:logs:frontend": "docker-compose logs -f frontend",
+    "docker:rebuild": "docker-compose up -d --build backend frontend",
     "backend:dev": "cd backend && npm run start:dev",
     "backend:build": "cd backend && npm run build",
     "backend:test": "cd backend && npm run test",
@@ -15,6 +20,7 @@
     "db:migrate": "cd backend && npx prisma migrate dev",
     "db:generate": "cd backend && npx prisma generate",
     "db:studio": "cd backend && npx prisma studio",
+    "db:seed": "cd backend && npm run db:seed",
     "install:all": "npm install && cd backend && npm install && cd ../frontend && npm install"
   },
   "keywords": [

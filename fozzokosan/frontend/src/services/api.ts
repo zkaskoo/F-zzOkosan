@@ -1,5 +1,5 @@
 import axios from 'axios';
-import type { AuthResponse, CreateRecipeDto, LoginCredentials, PaginatedResponse, Recipe, RegisterData } from '../types';
+import type { AuthResponse, Comment, CreateRecipeDto, LikeStatus, LoginCredentials, PaginatedResponse, Recipe, RegisterData } from '../types';
 
 export const api = axios.create({
   baseURL: '/api',
@@ -58,5 +58,33 @@ export const recipeApi = {
   },
   delete: async (id: string): Promise<void> => {
     await api.delete(`/recipes/${id}`);
+  },
+};
+
+export const likeApi = {
+  getStatus: async (recipeId: string): Promise<LikeStatus> => {
+    const { data } = await api.get<LikeStatus>(`/recipes/${recipeId}/likes`);
+    return data;
+  },
+  toggle: async (recipeId: string): Promise<{ liked: boolean }> => {
+    const { data } = await api.post<{ liked: boolean }>(`/recipes/${recipeId}/likes`);
+    return data;
+  },
+};
+
+export const commentApi = {
+  list: async (recipeId: string, page = 1): Promise<PaginatedResponse<Comment>> => {
+    const { data } = await api.get<PaginatedResponse<Comment>>(
+      `/recipes/${recipeId}/comments`,
+      { params: { page } },
+    );
+    return data;
+  },
+  create: async (recipeId: string, content: string): Promise<Comment> => {
+    const { data } = await api.post<Comment>(`/recipes/${recipeId}/comments`, { content });
+    return data;
+  },
+  delete: async (recipeId: string, commentId: string): Promise<void> => {
+    await api.delete(`/recipes/${recipeId}/comments/${commentId}`);
   },
 };

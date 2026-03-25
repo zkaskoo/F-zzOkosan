@@ -6,6 +6,8 @@ import ErrorMessage from '../components/common/ErrorMessage';
 import { useRecipe, useDeleteRecipe } from '../hooks/useRecipes';
 import { useAuthStore } from '../stores/authStore';
 import { isValidImageUrl } from '../utils/imageUrl';
+import LikeButton from '../components/recipe/LikeButton';
+import CommentSection from '../components/recipe/CommentSection';
 
 const difficultyLabels = {
   EASY: { label: 'Könnyű', classes: 'bg-green-100 text-green-700' },
@@ -96,25 +98,28 @@ export default function RecipeDetailPage() {
               )}
             </div>
 
-            {isOwner && (
-              <div className="flex items-center gap-2 shrink-0">
-                <Link
-                  to={`/receptek/${recipe.id}/szerkesztes`}
-                  className="btn-secondary flex items-center gap-1.5 text-sm"
-                >
-                  <Edit className="h-4 w-4" />
-                  Szerkesztés
-                </Link>
-                <button
-                  onClick={handleDelete}
-                  disabled={deleteMutation.isPending}
-                  className="flex items-center gap-1.5 rounded-lg bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 text-sm transition-colors disabled:opacity-50"
-                >
-                  <Trash2 className="h-4 w-4" />
-                  Törlés
-                </button>
-              </div>
-            )}
+            <div className="flex items-center gap-2 shrink-0">
+              <LikeButton recipeId={recipe.id} />
+              {isOwner && (
+                <>
+                  <Link
+                    to={`/receptek/${recipe.id}/szerkesztes`}
+                    className="btn-secondary flex items-center gap-1.5 text-sm"
+                  >
+                    <Edit className="h-4 w-4" />
+                    Szerkesztés
+                  </Link>
+                  <button
+                    onClick={handleDelete}
+                    disabled={deleteMutation.isPending}
+                    className="flex items-center gap-1.5 rounded-lg bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 text-sm transition-colors disabled:opacity-50"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                    Törlés
+                  </button>
+                </>
+              )}
+            </div>
           </div>
 
           {/* Meta */}
@@ -137,7 +142,7 @@ export default function RecipeDetailPage() {
           </div>
 
           {/* Author */}
-          <div className="flex items-center gap-3 mb-8 p-4 rounded-xl bg-gray-50">
+          <Link to={`/profil/${recipe.user.id}`} className="flex items-center gap-3 mb-8 p-4 rounded-xl bg-gray-50 hover:bg-gray-100 transition-colors">
             <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary font-bold text-sm">
               {isValidImageUrl(recipe.user.avatar) ? (
                 <img src={recipe.user.avatar} alt={recipe.user.name} className="h-10 w-10 rounded-full object-cover" />
@@ -149,7 +154,7 @@ export default function RecipeDetailPage() {
               <p className="font-medium text-text text-sm">{recipe.user.name}</p>
               <p className="text-xs text-text-secondary">Szerző</p>
             </div>
-          </div>
+          </Link>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Ingredients */}
@@ -195,6 +200,9 @@ export default function RecipeDetailPage() {
               </ol>
             </div>
           </div>
+
+          {/* Comments */}
+          <CommentSection recipeId={recipe.id} />
         </div>
       </div>
     </Layout>

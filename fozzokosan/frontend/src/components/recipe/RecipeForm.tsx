@@ -16,14 +16,14 @@ function initIngredients(recipe?: Recipe): IngredientFormItemWithId[] {
   if (recipe && recipe.ingredients.length > 0) {
     return recipe.ingredients.map((ing) => ({
       id: crypto.randomUUID(),
-      name: ing.name,
+      ingredientName: ing.ingredient.name,
       quantity: ing.quantity,
       unit: ing.unit,
       notes: ing.notes ?? undefined,
       isOptional: ing.isOptional,
     }));
   }
-  return [{ id: crypto.randomUUID(), name: '', quantity: 0, unit: '', isOptional: false }];
+  return [{ id: crypto.randomUUID(), ingredientName: '', quantity: 0, unit: '', isOptional: false }];
 }
 
 function initSteps(recipe?: Recipe): StepFormItemWithId[] {
@@ -66,7 +66,7 @@ export default function RecipeForm({ initialValues, onSubmit, isLoading }: Recip
       return;
     }
 
-    const validIngredients = ingredients.filter((i) => i.name.trim());
+    const validIngredients = ingredients.filter((i) => (i.ingredientName ?? '').trim());
     if (validIngredients.length === 0) {
       setError('Legalább egy hozzávalót adj meg.');
       return;
@@ -87,7 +87,7 @@ export default function RecipeForm({ initialValues, onSubmit, isLoading }: Recip
       difficulty,
       isPublic,
       ingredients: validIngredients.map((item) => ({
-        name: item.name,
+        ingredientName: item.ingredientName,
         quantity: item.quantity,
         unit: item.unit,
         notes: item.notes,

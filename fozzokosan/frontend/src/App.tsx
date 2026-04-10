@@ -9,6 +9,11 @@ import RecipeDetailPage from './pages/RecipeDetailPage';
 import CreateRecipePage from './pages/CreateRecipePage';
 import EditRecipePage from './pages/EditRecipePage';
 import ProfilePage from './pages/ProfilePage';
+import ShoppingListsPage from './pages/ShoppingListsPage';
+import ShoppingListDetailPage from './pages/ShoppingListDetailPage';
+import CreateShoppingListPage from './pages/CreateShoppingListPage';
+import MenuPlansPage from './pages/MenuPlansPage';
+import MenuPlanDetailPage from './pages/MenuPlanDetailPage';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -33,6 +38,11 @@ function App() {
           <Route element={<PrivateRoute />}>
             <Route path="/receptek/uj" element={<CreateRecipePage />} />
             <Route path="/receptek/:id/szerkesztes" element={<EditRecipePage />} />
+            <Route path="/bevasarlolista" element={<ShoppingListsPage />} />
+            <Route path="/bevasarlolista/uj" element={<CreateShoppingListPage />} />
+            <Route path="/bevasarlolista/:id" element={<ShoppingListDetailPage />} />
+            <Route path="/etlapterv" element={<MenuPlansPage />} />
+            <Route path="/etlapterv/:id" element={<MenuPlanDetailPage />} />
           </Route>
 
           <Route path="/receptek/:id" element={<RecipeDetailPage />} />

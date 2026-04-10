@@ -167,7 +167,7 @@ export default function RecipeDetailPage() {
                       <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-primary shrink-0" />
                       <span className="text-text">
                         <span className="font-medium">{ing.quantity} {ing.unit}</span>{' '}
-                        {ing.name}
+                        {ing.ingredient.name}
                         {ing.isOptional && (
                           <span className="text-text-secondary ml-1">(opcionális)</span>
                         )}

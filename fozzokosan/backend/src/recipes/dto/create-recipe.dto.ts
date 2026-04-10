@@ -12,7 +12,7 @@ import {
   ValidateNested,
 } from 'class-validator';
 import { Type } from 'class-transformer';
-import { Difficulty } from '@prisma/client';
+import { Difficulty, DietaryTag } from '@prisma/client';
 import { CreateRecipeStepDto } from './create-recipe-step.dto';
 import { CreateRecipeIngredientDto } from './create-recipe-ingredient.dto';
 
@@ -44,6 +44,11 @@ export class CreateRecipeDto {
   @IsOptional()
   @IsEnum(Difficulty)
   difficulty?: Difficulty;
+
+  @IsOptional()
+  @IsArray()
+  @IsEnum(DietaryTag, { each: true })
+  dietaryTags?: DietaryTag[];
 
   @IsOptional()
   @IsBoolean()

@@ -1,5 +1,5 @@
 import axios from 'axios';
-import type { AuthResponse, Comment, CreateRecipeDto, LikeStatus, LoginCredentials, PaginatedResponse, Recipe, RegisterData } from '../types';
+import type { AuthResponse, Comment, CreateRecipeDto, LikeStatus, LoginCredentials, MealType, MenuPlan, PaginatedResponse, Recipe, RegisterData, ShoppingList, ShoppingListItem } from '../types';
 
 export const api = axios.create({
   baseURL: '/api',
@@ -20,6 +20,31 @@ api.interceptors.request.use((config) => {
   }
   return config;
 });
+
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error?.response?.status === 401) {
+      // Token expired or invalid — clear auth state
+      try {
+        const raw = localStorage.getItem('fozzokosan-auth');
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (parsed?.state?.token) {
+            parsed.state.token = null;
+            parsed.state.user = null;
+            parsed.state.isAuthenticated = false;
+            localStorage.setItem('fozzokosan-auth', JSON.stringify(parsed));
+            window.location.href = '/bejelentkezes';
+          }
+        }
+      } catch {
+        // ignore
+      }
+    }
+    return Promise.reject(error);
+  },
+);
 
 export const authApi = {
   login: async (credentials: LoginCredentials): Promise<AuthResponse> => {
@@ -69,6 +94,94 @@ export const likeApi = {
   toggle: async (recipeId: string): Promise<{ liked: boolean }> => {
     const { data } = await api.post<{ liked: boolean }>(`/recipes/${recipeId}/likes`);
     return data;
+  },
+};
+
+export interface IngredientSuggestion {
+  id: string;
+  name: string;
+  normalizedName: string;
+  defaultUnit: string | null;
+  category: string;
+}
+
+export interface ParsedNlpIngredient {
+  name: string;
+  quantity: number;
+  unit: string;
+  notes?: string;
+}
+
+export const nlpApi = {
+  parseIngredients: async (text: string): Promise<ParsedNlpIngredient[]> => {
+    const { data } = await api.post<{ ingredients: ParsedNlpIngredient[] }>('/nlp/parse-ingredients', { text });
+    return data.ingredients;
+  },
+  status: async (): Promise<{ configured: boolean }> => {
+    const { data } = await api.get<{ configured: boolean }>('/nlp/status');
+    return data;
+  },
+};
+
+export const ingredientApi = {
+  search: async (query: string): Promise<IngredientSuggestion[]> => {
+    if (!query.trim()) return [];
+    const { data } = await api.get<IngredientSuggestion[]>('/ingredients/search', {
+      params: { q: query },
+    });
+    return data;
+  },
+};
+
+export const shoppingListApi = {
+  list: async (): Promise<ShoppingList[]> => {
+    const { data } = await api.get<ShoppingList[]>('/shopping-lists');
+    return data;
+  },
+  get: async (id: string): Promise<ShoppingList> => {
+    const { data } = await api.get<ShoppingList>(`/shopping-lists/${id}`);
+    return data;
+  },
+  generate: async (payload: { name: string; recipeIds: string[]; excludeAllergens?: string[] }): Promise<ShoppingList> => {
+    const { data } = await api.post<ShoppingList>('/shopping-lists', payload);
+    return data;
+  },
+  toggleItem: async (listId: string, itemId: string): Promise<ShoppingListItem> => {
+    const { data } = await api.patch<ShoppingListItem>(`/shopping-lists/${listId}/items/${itemId}/toggle`);
+    return data;
+  },
+  delete: async (id: string): Promise<void> => {
+    await api.delete(`/shopping-lists/${id}`);
+  },
+};
+
+export const menuPlanApi = {
+  list: async (): Promise<MenuPlan[]> => {
+    const { data } = await api.get<MenuPlan[]>('/menu-plans');
+    return data;
+  },
+  get: async (id: string): Promise<MenuPlan> => {
+    const { data } = await api.get<MenuPlan>(`/menu-plans/${id}`);
+    return data;
+  },
+  create: async (payload: { name: string; startDate: string; endDate: string }): Promise<MenuPlan> => {
+    const { data } = await api.post<MenuPlan>('/menu-plans', payload);
+    return data;
+  },
+  addItem: async (planId: string, item: { recipeId: string; date: string; mealType: MealType; servings?: number }): Promise<MenuPlan> => {
+    const { data } = await api.post<MenuPlan>(`/menu-plans/${planId}/items`, item);
+    return data;
+  },
+  removeItem: async (planId: string, itemId: string): Promise<MenuPlan> => {
+    const { data } = await api.delete<MenuPlan>(`/menu-plans/${planId}/items/${itemId}`);
+    return data;
+  },
+  generateShoppingList: async (planId: string): Promise<ShoppingList> => {
+    const { data } = await api.post<ShoppingList>(`/menu-plans/${planId}/shopping-list`);
+    return data;
+  },
+  delete: async (id: string): Promise<void> => {
+    await api.delete(`/menu-plans/${id}`);
   },
 };
 

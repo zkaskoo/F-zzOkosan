@@ -12,6 +12,10 @@ import { UploadModule } from './upload/upload.module';
 import { LikesModule } from './likes/likes.module';
 import { CommentsModule } from './comments/comments.module';
 import { UnitsModule } from './units/units.module';
+import { IngredientsModule } from './ingredients/ingredients.module';
+import { ShoppingListsModule } from './shopping-lists/shopping-lists.module';
+import { NlpModule } from './nlp/nlp.module';
+import { MenuPlansModule } from './menu-plans/menu-plans.module';
 
 @Module({
   imports: [
@@ -40,6 +44,10 @@ import { UnitsModule } from './units/units.module';
     LikesModule,
     CommentsModule,
     UnitsModule,
+    IngredientsModule,
+    ShoppingListsModule,
+    NlpModule,
+    MenuPlansModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -1,5 +1,5 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { ChefHat, LogOut, Plus } from 'lucide-react';
+import { ChefHat, LogOut, Plus, ShoppingCart, CalendarDays } from 'lucide-react';
 import { useAuthStore } from '../../stores/authStore';
 
 export default function Header() {
@@ -27,6 +27,24 @@ export default function Header() {
             >
               Receptek
             </Link>
+            {isAuthenticated && (
+              <>
+                <Link
+                  to="/bevasarlolista"
+                  className="text-text-secondary hover:text-primary font-medium transition-colors flex items-center gap-1"
+                >
+                  <ShoppingCart className="h-4 w-4" />
+                  Bevásárlólista
+                </Link>
+                <Link
+                  to="/etlapterv"
+                  className="text-text-secondary hover:text-primary font-medium transition-colors flex items-center gap-1"
+                >
+                  <CalendarDays className="h-4 w-4" />
+                  Étlapterv
+                </Link>
+              </>
+            )}
           </nav>
 
           <div className="flex items-center gap-3">

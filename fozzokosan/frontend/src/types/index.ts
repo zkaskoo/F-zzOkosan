@@ -11,11 +11,18 @@ export type Difficulty = 'EASY' | 'MEDIUM' | 'HARD';
 
 export interface RecipeIngredient {
   id: string;
-  name: string;
   quantity: number;
   unit: string;
+  normalizedQuantity: number | null;
+  normalizedUnit: string | null;
   notes: string | null;
   isOptional: boolean;
+  ingredient: {
+    id: string;
+    name: string;
+    normalizedName: string;
+    category: string;
+  };
 }
 
 export interface RecipeStep {
@@ -64,7 +71,7 @@ export interface CreateRecipeDto {
 }
 
 export interface IngredientFormItem {
-  name: string;
+  ingredientName: string;
   quantity: number;
   unit: string;
   notes?: string;
@@ -74,6 +81,52 @@ export interface IngredientFormItem {
 export interface StepFormItem {
   stepNumber: number;
   instruction: string;
+}
+
+export type DietaryTag = 'VEGETARIAN' | 'VEGAN' | 'GLUTEN_FREE' | 'DAIRY_FREE' | 'KETO' | 'PALEO' | 'LOW_CARB' | 'NUT_FREE';
+export type Allergen = 'GLUTEN' | 'DAIRY' | 'EGG' | 'NUT' | 'PEANUT' | 'SOY' | 'FISH' | 'SHELLFISH' | 'SESAME' | 'CELERY' | 'MUSTARD' | 'SULPHITE';
+
+export interface ShoppingListItem {
+  id: string;
+  ingredientName: string;
+  quantity: number;
+  unit: string;
+  isChecked: boolean;
+  sourceRecipes: string[];
+}
+
+export interface ShoppingList {
+  id: string;
+  name: string;
+  createdAt: string;
+  updatedAt: string;
+  items: ShoppingListItem[];
+}
+
+export type MealType = 'BREAKFAST' | 'LUNCH' | 'DINNER' | 'SNACK';
+
+export interface MenuItem {
+  id: string;
+  recipeId: string;
+  date: string;
+  mealType: MealType;
+  servings: number;
+  recipe: {
+    id: string;
+    title: string;
+    imageUrl: string | null;
+    cookingTime: number | null;
+    servings: number;
+  };
+}
+
+export interface MenuPlan {
+  id: string;
+  name: string;
+  startDate: string;
+  endDate: string;
+  createdAt: string;
+  items: MenuItem[];
 }
 
 export interface LoginCredentials {

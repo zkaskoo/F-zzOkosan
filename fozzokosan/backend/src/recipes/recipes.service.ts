@@ -5,8 +5,10 @@ import {
 } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
+import { UnitsService } from '../units/units.service';
 import { CreateRecipeDto } from './dto/create-recipe.dto';
 import { UpdateRecipeDto } from './dto/update-recipe.dto';
+import { CreateRecipeIngredientDto } from './dto/create-recipe-ingredient.dto';
 
 const RECIPE_FULL_INCLUDE = {
   user: { select: { id: true, name: true, avatar: true } },
@@ -20,7 +22,21 @@ const MAX_LIMIT = 100;
 
 @Injectable()
 export class RecipesService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private unitsService: UnitsService,
+  ) {}
+
+  private normalizeIngredient(ing: CreateRecipeIngredientDto) {
+    const converted = this.unitsService.convertToBase(ing.quantity, ing.unit);
+    const normalizedUnit = this.unitsService.normalizeUnit(ing.unit);
+    return {
+      quantity: ing.quantity,
+      unit: normalizedUnit,
+      normalizedQuantity: converted.quantity,
+      normalizedUnit: converted.unit,
+    };
+  }
 
   async create(createRecipeDto: CreateRecipeDto, userId: string) {
     const { steps, ingredients, ...recipeData } = createRecipeDto;
@@ -56,13 +72,16 @@ export class RecipesService {
             },
           });
 
+          const normalized = this.normalizeIngredient(ing);
           await prisma.recipeIngredient.createMany({
             data: [
               {
                 recipeId: recipe.id,
                 ingredientId: ingredient.id,
-                quantity: ing.quantity,
-                unit: ing.unit,
+                quantity: normalized.quantity,
+                unit: normalized.unit,
+                normalizedQuantity: normalized.normalizedQuantity,
+                normalizedUnit: normalized.normalizedUnit,
                 notes: ing.notes,
                 isOptional: ing.isOptional ?? false,
               },
@@ -87,6 +106,8 @@ export class RecipesService {
     userId?: string;
     search?: string;
     requesterId?: string;
+    dietaryTags?: string[];
+    excludeAllergens?: string[];
   }) {
     const page = params.page || 1;
     const limit = Math.min(params.limit || 20, MAX_LIMIT);
@@ -120,6 +141,22 @@ export class RecipesService {
         },
       ];
       }
+    }
+
+    // Filter by dietary tags (recipe must have ALL specified tags)
+    if (params.dietaryTags && params.dietaryTags.length > 0) {
+      where.dietaryTags = { hasEvery: params.dietaryTags as any };
+    }
+
+    // Exclude recipes containing ingredients with specified allergens
+    if (params.excludeAllergens && params.excludeAllergens.length > 0) {
+      where.ingredients = {
+        none: {
+          ingredient: {
+            allergens: { hasSome: params.excludeAllergens as any },
+          },
+        },
+      };
     }
 
     const [data, total] = await Promise.all([
@@ -217,12 +254,15 @@ export class RecipesService {
               },
             });
 
+            const normalized = this.normalizeIngredient(ing);
             await prisma.recipeIngredient.create({
               data: {
                 recipeId: id,
                 ingredientId: ingredient.id,
-                quantity: ing.quantity,
-                unit: ing.unit,
+                quantity: normalized.quantity,
+                unit: normalized.unit,
+                normalizedQuantity: normalized.normalizedQuantity,
+                normalizedUnit: normalized.normalizedUnit,
                 notes: ing.notes,
                 isOptional: ing.isOptional ?? false,
               },

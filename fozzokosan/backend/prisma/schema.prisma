@@ -54,17 +54,18 @@ model Follow {
 // ============================================
 
 model Recipe {
-  id           String   @id @default(uuid())
-  userId       String   @map("user_id")
+  id           String       @id @default(uuid())
+  userId       String       @map("user_id")
   title        String
   description  String?
-  imageUrl     String?  @map("image_url")
-  cookingTime  Int?     @map("cooking_time") // in minutes
-  servings     Int      @default(4)
-  difficulty   Difficulty @default(MEDIUM)
-  isPublic     Boolean  @default(true) @map("is_public")
-  createdAt    DateTime @default(now()) @map("created_at")
-  updatedAt    DateTime @updatedAt @map("updated_at")
+  imageUrl     String?      @map("image_url")
+  cookingTime  Int?         @map("cooking_time") // in minutes
+  servings     Int          @default(4)
+  difficulty   Difficulty   @default(MEDIUM)
+  dietaryTags  DietaryTag[] @default([]) @map("dietary_tags")
+  isPublic     Boolean      @default(true) @map("is_public")
+  createdAt    DateTime     @default(now()) @map("created_at")
+  updatedAt    DateTime     @updatedAt @map("updated_at")
 
   // Relations
   user        User              @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -84,6 +85,17 @@ enum Difficulty {
   EASY
   MEDIUM
   HARD
+}
+
+enum DietaryTag {
+  VEGETARIAN
+  VEGAN
+  GLUTEN_FREE
+  DAIRY_FREE
+  KETO
+  PALEO
+  LOW_CARB
+  NUT_FREE
 }
 
 model RecipeStep {
@@ -129,10 +141,26 @@ model Ingredient {
   normalizedName  String             @unique @map("normalized_name")
   defaultUnit     String?            @map("default_unit")
   category        IngredientCategory @default(OTHER)
+  allergens       Allergen[]         @default([])
 
   recipeIngredients RecipeIngredient[]
 
   @@map("ingredients")
+}
+
+enum Allergen {
+  GLUTEN
+  DAIRY
+  EGG
+  NUT
+  PEANUT
+  SOY
+  FISH
+  SHELLFISH
+  SESAME
+  CELERY
+  MUSTARD
+  SULPHITE
 }
 
 enum IngredientCategory {
@@ -148,13 +176,15 @@ enum IngredientCategory {
 }
 
 model RecipeIngredient {
-  id           String  @id @default(uuid())
-  recipeId     String  @map("recipe_id")
-  ingredientId String  @map("ingredient_id")
-  quantity     Float
-  unit         String
-  notes        String? // e.g., "finomra vagva"
-  isOptional   Boolean @default(false) @map("is_optional")
+  id                 String  @id @default(uuid())
+  recipeId           String  @map("recipe_id")
+  ingredientId       String  @map("ingredient_id")
+  quantity           Float
+  unit               String
+  normalizedQuantity Float?  @map("normalized_quantity")
+  normalizedUnit     String? @map("normalized_unit")
+  notes              String? // e.g., "finomra vagva"
+  isOptional         Boolean @default(false) @map("is_optional")
 
   recipe     Recipe     @relation(fields: [recipeId], references: [id], onDelete: Cascade)
   ingredient Ingredient @relation(fields: [ingredientId], references: [id])

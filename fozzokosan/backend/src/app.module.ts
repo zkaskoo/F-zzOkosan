@@ -16,6 +16,8 @@ import { IngredientsModule } from './ingredients/ingredients.module';
 import { ShoppingListsModule } from './shopping-lists/shopping-lists.module';
 import { NlpModule } from './nlp/nlp.module';
 import { MenuPlansModule } from './menu-plans/menu-plans.module';
+import { CategoriesModule } from './categories/categories.module';
+import { FollowsModule } from './follows/follows.module';
 
 @Module({
   imports: [
@@ -48,6 +50,8 @@ import { MenuPlansModule } from './menu-plans/menu-plans.module';
     ShoppingListsModule,
     NlpModule,
     MenuPlansModule,
+    CategoriesModule,
+    FollowsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

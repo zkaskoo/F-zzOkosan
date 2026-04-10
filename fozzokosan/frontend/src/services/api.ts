@@ -57,11 +57,25 @@ export const authApi = {
   },
 };
 
+export interface Category {
+  id: string;
+  name: string;
+  slug: string;
+}
+
+export const categoryApi = {
+  list: async (): Promise<Category[]> => {
+    const { data } = await api.get<Category[]>('/categories');
+    return data;
+  },
+};
+
 export interface RecipeListParams {
   page?: number;
   limit?: number;
   search?: string;
   userId?: string;
+  category?: string;
 }
 
 export const recipeApi = {
@@ -182,6 +196,34 @@ export const menuPlanApi = {
   },
   delete: async (id: string): Promise<void> => {
     await api.delete(`/menu-plans/${id}`);
+  },
+};
+
+export interface UserListItem {
+  id: string;
+  name: string;
+  bio: string | null;
+  avatar: string | null;
+  _count: { recipes: number; followers: number };
+}
+
+export const userApi = {
+  list: async (search?: string): Promise<UserListItem[]> => {
+    const { data } = await api.get<UserListItem[]>('/users', {
+      params: search ? { search } : undefined,
+    });
+    return data;
+  },
+};
+
+export const followApi = {
+  getStatus: async (userId: string): Promise<{ following: boolean }> => {
+    const { data } = await api.get<{ following: boolean }>(`/users/${userId}/follow`);
+    return data;
+  },
+  toggle: async (userId: string): Promise<{ following: boolean }> => {
+    const { data } = await api.post<{ following: boolean }>(`/users/${userId}/follow`);
+    return data;
   },
 };
 

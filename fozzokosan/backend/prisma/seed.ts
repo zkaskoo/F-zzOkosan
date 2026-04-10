@@ -142,6 +142,32 @@ async function main() {
 
   console.log(`Seeded ${INGREDIENTS.length} ingredients.`);
 
+  // ============================================
+  // CATEGORIES
+  // ============================================
+  console.log('Seeding categories...');
+  const CATEGORIES = [
+    { name: 'Leves', slug: 'leves' },
+    { name: 'Főétel', slug: 'foetel' },
+    { name: 'Desszert', slug: 'desszert' },
+    { name: 'Saláta', slug: 'salata' },
+    { name: 'Előétel', slug: 'eloetel' },
+    { name: 'Reggeli', slug: 'reggeli' },
+    { name: 'Snack', slug: 'snack' },
+    { name: 'Ital', slug: 'ital' },
+    { name: 'Köret', slug: 'koret' },
+    { name: 'Tészta', slug: 'teszta' },
+  ];
+
+  for (const cat of CATEGORIES) {
+    await prisma.category.upsert({
+      where: { slug: cat.slug },
+      update: {},
+      create: cat,
+    });
+  }
+  console.log(`Seeded ${CATEGORIES.length} categories.`);
+
   console.log('Seeding unit conversions...');
 
   for (const conv of UNIT_CONVERSIONS) {

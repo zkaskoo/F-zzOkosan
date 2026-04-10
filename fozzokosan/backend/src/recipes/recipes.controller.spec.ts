@@ -148,7 +148,7 @@ describe('RecipesController', () => {
       mockRecipesService.findAll.mockResolvedValue(mockPaginatedResult);
 
       // When: GET /recipes?page=1&limit=10
-      const result = await controller.findAll(1, 10, undefined, undefined, undefined, undefined, undefined);
+      const result = await controller.findAll(1, 10, undefined, undefined, undefined, undefined, undefined, undefined);
 
       // Then: result matches paginated structure
       expect(result).toEqual(mockPaginatedResult);
@@ -160,7 +160,7 @@ describe('RecipesController', () => {
     it('testBR004_GetRecipesWithUserIdFilter - passes userId filter to service when query param is provided', async () => {
       mockRecipesService.findAll.mockResolvedValue(mockPaginatedResult);
 
-      await controller.findAll(1, 10, mockUserId, undefined, undefined, undefined, undefined);
+      await controller.findAll(1, 10, mockUserId, undefined, undefined, undefined, undefined, undefined);
 
       expect(mockRecipesService.findAll).toHaveBeenCalledWith(
         expect.objectContaining({ userId: mockUserId }),
@@ -170,7 +170,7 @@ describe('RecipesController', () => {
     it('testBR005_GetRecipesWithAuthenticatedRequester - passes requesterId when user is authenticated', async () => {
       mockRecipesService.findAll.mockResolvedValue(mockPaginatedResult);
 
-      await controller.findAll(1, 10, undefined, undefined, undefined, undefined, mockAuthenticatedRequest);
+      await controller.findAll(1, 10, undefined, undefined, undefined, undefined, undefined, mockAuthenticatedRequest);
 
       expect(mockRecipesService.findAll).toHaveBeenCalledWith(
         expect.objectContaining({ requesterId: mockUserId }),
@@ -181,7 +181,7 @@ describe('RecipesController', () => {
       mockRecipesService.findAll.mockResolvedValue(mockPaginatedResult);
 
       // No authenticated user - pass undefined/null request
-      await controller.findAll(1, 10, undefined, undefined, undefined, undefined, undefined);
+      await controller.findAll(1, 10, undefined, undefined, undefined, undefined, undefined, undefined);
 
       const callArg = mockRecipesService.findAll.mock.calls[0]?.[0] as {
         requesterId?: string;

@@ -108,6 +108,7 @@ export class RecipesService {
     requesterId?: string;
     dietaryTags?: string[];
     excludeAllergens?: string[];
+    categorySlug?: string;
   }) {
     const page = params.page || 1;
     const limit = Math.min(params.limit || 20, MAX_LIMIT);
@@ -146,6 +147,13 @@ export class RecipesService {
     // Filter by dietary tags (recipe must have ALL specified tags)
     if (params.dietaryTags && params.dietaryTags.length > 0) {
       where.dietaryTags = { hasEvery: params.dietaryTags as any };
+    }
+
+    // Filter by category
+    if (params.categorySlug) {
+      where.categories = {
+        some: { category: { slug: params.categorySlug } },
+      };
     }
 
     // Exclude recipes containing ingredients with specified allergens

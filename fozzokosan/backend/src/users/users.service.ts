@@ -45,8 +45,18 @@ export class UsersService {
     return user;
   }
 
-  async findAll() {
+  async findAll(search?: string) {
+    const where = search?.trim()
+      ? {
+          OR: [
+            { name: { contains: search.trim(), mode: 'insensitive' as const } },
+            { bio: { contains: search.trim(), mode: 'insensitive' as const } },
+          ],
+        }
+      : {};
+
     return this.prisma.user.findMany({
+      where,
       select: {
         id: true,
         email: true,
@@ -54,7 +64,10 @@ export class UsersService {
         bio: true,
         avatar: true,
         createdAt: true,
+        _count: { select: { recipes: true, followers: true } },
       },
+      orderBy: { createdAt: 'desc' },
+      take: 50,
     });
   }
 

@@ -1,17 +1,26 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Search } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
 import Layout from '../components/layout/Layout';
 import RecipeCard from '../components/recipe/RecipeCard';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import ErrorMessage from '../components/common/ErrorMessage';
 import { useRecipes } from '../hooks/useRecipes';
+import { categoryApi, type Category } from '../services/api';
 
 export default function RecipeListPage() {
   const [page, setPage] = useState(1);
   const [searchInput, setSearchInput] = useState('');
   const [search, setSearch] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('');
   const limit = 12;
+
+  const { data: categories } = useQuery({
+    queryKey: ['categories'],
+    queryFn: () => categoryApi.list(),
+    staleTime: 300_000,
+  });
 
   useEffect(() => {
     const timeout = setTimeout(() => {
@@ -25,13 +34,19 @@ export default function RecipeListPage() {
     page,
     limit,
     search: search || undefined,
+    category: selectedCategory || undefined,
   });
+
+  const handleCategoryChange = (slug: string) => {
+    setSelectedCategory(slug === selectedCategory ? '' : slug);
+    setPage(1);
+  };
 
   return (
     <Layout>
       <div className="animate-fade-in">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
             <h1 className="text-3xl font-bold text-text">Receptek</h1>
 
             <div className="relative w-full sm:w-80">
@@ -45,6 +60,26 @@ export default function RecipeListPage() {
               />
             </div>
           </div>
+
+          {/* Category filter */}
+          {categories && categories.length > 0 && (
+            <div className="flex flex-wrap gap-2 mb-6">
+              {categories.map((cat: Category) => (
+                <button
+                  key={cat.id}
+                  type="button"
+                  onClick={() => handleCategoryChange(cat.slug)}
+                  className={`rounded-full px-3 py-1 text-xs font-medium border transition-colors ${
+                    selectedCategory === cat.slug
+                      ? 'bg-primary border-primary text-white'
+                      : 'bg-gray-50 border-gray-200 text-text-secondary hover:bg-gray-100'
+                  }`}
+                >
+                  {cat.name}
+                </button>
+              ))}
+            </div>
+          )}
 
           {isLoading ? (
             <LoadingSpinner size="lg" />

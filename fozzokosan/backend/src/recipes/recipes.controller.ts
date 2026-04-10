@@ -45,6 +45,7 @@ export class RecipesController {
     @Query('search') search?: string,
     @Query('dietaryTags') dietaryTags?: string,
     @Query('excludeAllergens') excludeAllergens?: string,
+    @Query('category') categorySlug?: string,
     @Request() req?: ExpressRequest & { user?: ReqUser },
   ) {
     return this.recipesService.findAll({
@@ -55,6 +56,7 @@ export class RecipesController {
       requesterId: req?.user?.id,
       dietaryTags: dietaryTags ? dietaryTags.split(',') : undefined,
       excludeAllergens: excludeAllergens ? excludeAllergens.split(',') : undefined,
+      categorySlug,
     });
   }
 

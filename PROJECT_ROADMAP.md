@@ -358,8 +358,8 @@ Structured Output:
 - [x] User registration
 - [x] User login (JWT)
 - [x] User profile
-- [ ] Profile editing
-- [ ] Avatar upload
+- [x] Profile editing
+- [x] Avatar upload
 
 ### Recipes
 - [x] Create recipe
@@ -368,23 +368,23 @@ Structured Output:
 - [x] View recipe
 - [x] Recipe images
 - [x] Search recipes
-- [ ] Filter by category
+- [x] Filter by category
 
 ### Social Features
 - [x] Like recipes
 - [x] Comment on recipes
-- [ ] Follow users
+- [x] Follow users
 - [x] Recipe feed
-- [ ] User discovery
+- [x] User discovery
 
 ### Smart Features
-- [ ] NLP ingredient parsing
+- [x] NLP ingredient parsing
 - [x] Unit conversion
-- [ ] Shopping list generation
-- [ ] Multi-recipe merge
-- [ ] Allergen filtering
-- [ ] Diet filtering
-- [ ] Weekly menu planner
+- [x] Shopping list generation
+- [x] Multi-recipe merge
+- [x] Allergen filtering
+- [x] Diet filtering
+- [x] Weekly menu planner
 
 ---
 

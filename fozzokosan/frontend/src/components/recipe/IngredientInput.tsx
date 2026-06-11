@@ -41,7 +41,7 @@ function IngredientRow({
 }) {
   const [suggestions, setSuggestions] = useState<IngredientSuggestion[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
-  const debounceRef = useRef<ReturnType<typeof setTimeout>>();
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const wrapperRef = useRef<HTMLDivElement>(null);
 
   const fetchSuggestions = useCallback((query: string) => {
@@ -191,10 +191,11 @@ export default function IngredientInput({ ingredients, onChange }: IngredientInp
         const newItems: IngredientFormItemWithId[] = parsed.map((p) => ({
           id: crypto.randomUUID(),
           ingredientName: p.name,
-          quantity: p.quantity,
+          // null mennyiség = "ízlés szerint" → opcionális hozzávaló
+          quantity: p.quantity ?? 0,
           unit: p.unit,
           notes: p.notes,
-          isOptional: false,
+          isOptional: p.quantity === null,
         }));
         // Replace empty first row or append
         const hasOnlyEmptyRow = ingredients.length === 1 && !ingredients[0].ingredientName;

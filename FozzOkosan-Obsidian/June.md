@@ -11,17 +11,17 @@
 ## Tasks
 
 ### NLP Implementation
-- [ ] Set up Google Gemini API
-- [ ] Create NLP service in [Backend](Backend.md)
-- [ ] Design prompt for ingredient parsing
-- [ ] Handle edge cases (fractions, "ízlés szerint")
-- [ ] Integrate with recipe creation flow
-- [ ] Add fallback for parsing errors
+- [x] Set up Google Gemini API (élesben tesztelve, modell: `gemini-2.5-flash` — a 2.0-flash free kvótája az új kulcsokon 0)
+- [x] Create NLP service in [Backend](Backend.md)
+- [x] Design prompt for ingredient parsing
+- [x] Handle edge cases (fractions, "ízlés szerint", tartományok "1-2")
+- [x] Integrate with recipe creation flow
+- [x] Add fallback for parsing errors (szabály alapú magyar parser, ha a Gemini nem elérhető)
 
 ### NLP Testing
-- [ ] Create test cases for common inputs
-- [ ] Test Hungarian-specific patterns
-- [ ] Measure accuracy
+- [x] Create test cases for common inputs (21 unit teszt, `nlp.service.spec.ts`)
+- [x] Test Hungarian-specific patterns
+- [ ] Measure accuracy (éles Gemini API kulccsal mérendő)
 - [ ] Document failure cases
 
 ### Documentation - Thesis Chapters
@@ -78,11 +78,11 @@ Return ONLY valid JSON array.
 
 | Input | Expected Output | Status |
 |-------|-----------------|--------|
-| "2 ek olaj" | qty: 2, unit: ek | ⬜ |
-| "fél kg liszt" | qty: 0.5, unit: kg | ⬜ |
-| "3 tojás" | qty: 3, unit: db | ⬜ |
-| "só ízlés szerint" | qty: null | ⬜ |
-| "1-2 gerezd fokhagyma" | qty: 1.5 | ⬜ |
+| "2 ek olaj" | qty: 2, unit: ek | ✅ |
+| "fél kg liszt" | qty: 0.5, unit: kg | ✅ |
+| "3 tojás" | qty: 3, unit: db | ✅ |
+| "só ízlés szerint" | qty: null | ✅ |
+| "1-2 gerezd fokhagyma" | qty: 1.5 | ✅ |
 
 ---
 
@@ -115,9 +115,9 @@ Return ONLY valid JSON array.
 
 | Deliverable | Status |
 |-------------|--------|
-| Gemini API integration | ⬜ |
-| NLP service complete | ⬜ |
-| Unit tests for NLP | ⬜ |
+| Gemini API integration | ✅ |
+| NLP service complete | ✅ |
+| Unit tests for NLP | ✅ |
 | Chapter 1 draft | ⬜ |
 | Chapter 2 draft | ⬜ |
 

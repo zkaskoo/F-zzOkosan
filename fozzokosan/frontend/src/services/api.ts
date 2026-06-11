@@ -121,7 +121,8 @@ export interface IngredientSuggestion {
 
 export interface ParsedNlpIngredient {
   name: string;
-  quantity: number;
+  // null = nincs konkrét mennyiség (pl. "ízlés szerint")
+  quantity: number | null;
   unit: string;
   notes?: string;
 }

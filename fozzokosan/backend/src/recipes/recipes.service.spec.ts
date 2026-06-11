@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
 import { RecipesService } from './recipes.service';
 import { PrismaService } from '../prisma/prisma.service';
+import { UnitsService } from '../units/units.service';
 
 // ============================================================
 // Shared test fixtures
@@ -123,6 +124,7 @@ describe('RecipesService', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         RecipesService,
+        UnitsService,
         { provide: PrismaService, useValue: mockPrisma },
       ],
     }).compile();

@@ -46,7 +46,7 @@ export default function RegisterPage() {
               onChange={(e) => setName(e.target.value)}
               required
               placeholder="Kovács János"
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none"
+              className="input w-full"
             />
           </div>
           <div>
@@ -57,7 +57,7 @@ export default function RegisterPage() {
               onChange={(e) => setEmail(e.target.value)}
               required
               placeholder="pelda@email.com"
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none"
+              className="input w-full"
             />
           </div>
           <div>
@@ -68,7 +68,7 @@ export default function RegisterPage() {
               onChange={(e) => setPassword(e.target.value)}
               required
               placeholder="Legalább 6 karakter"
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none"
+              className="input w-full"
             />
           </div>
           <div>
@@ -78,7 +78,7 @@ export default function RegisterPage() {
               onChange={(e) => setBio(e.target.value)}
               placeholder="Pár szó magadról..."
               rows={2}
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none resize-y"
+              className="input w-full resize-y"
             />
           </div>
           <button type="submit" disabled={isLoading} className="btn-primary w-full">

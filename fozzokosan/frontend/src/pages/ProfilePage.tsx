@@ -161,14 +161,14 @@ export default function ProfilePage() {
                       type="text"
                       value={editName}
                       onChange={(e) => setEditName(e.target.value)}
-                      className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none"
+                      className="input w-full"
                       placeholder="Név"
                     />
                     <textarea
                       value={editBio}
                       onChange={(e) => setEditBio(e.target.value)}
                       rows={2}
-                      className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none resize-none"
+                      className="input w-full resize-none"
                       placeholder="Bio"
                     />
                     <div className="flex gap-2">

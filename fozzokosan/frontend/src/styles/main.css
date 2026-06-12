@@ -35,6 +35,53 @@ body {
     @apply bg-white rounded-2xl shadow-md hover:shadow-lg transition-shadow duration-200 overflow-hidden;
   }
 
+  .input {
+    @apply rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none;
+  }
+
+  /* Oldalszintű elrendezés */
+  .page-container {
+    @apply mx-auto max-w-7xl px-4 sm:px-6 lg:px-8;
+  }
+
+  /* Fejléc */
+  .site-header {
+    @apply sticky top-0 z-50 bg-white/70 backdrop-blur-md border border-white/20;
+  }
+
+  .header-bar {
+    @apply flex h-16 items-center justify-between;
+  }
+
+  .header-logo {
+    @apply flex items-center gap-2 text-xl font-bold text-primary;
+  }
+
+  .header-nav {
+    @apply hidden sm:flex items-center gap-6;
+  }
+
+  .header-actions {
+    @apply flex items-center gap-3;
+  }
+
+  .nav-link {
+    @apply flex items-center gap-1 text-text-secondary hover:text-primary font-medium transition-colors;
+  }
+
+  .link-subtle {
+    @apply text-sm text-text-secondary hover:text-primary transition-colors;
+  }
+
+  /* Gomb-variánsok */
+  .btn-sm {
+    @apply flex items-center gap-1.5 text-sm;
+  }
+
+  .icon-btn-danger {
+    @apply p-2 text-text-secondary hover:text-red-500 transition-colors;
+  }
+
   .animate-fade-in {
     animation: var(--animate-fade-in);
   }

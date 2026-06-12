@@ -38,7 +38,7 @@ export default function StepInput({ steps, onChange }: StepInputProps) {
             value={item.instruction}
             onChange={(e) => handleChange(item.id, e.target.value)}
             rows={2}
-            className="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none resize-y"
+            className="input flex-1 resize-y"
           />
           <button
             type="button"

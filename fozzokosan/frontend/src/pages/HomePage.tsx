@@ -42,7 +42,7 @@ export default function HomePage() {
 
         {/* Features */}
         <section className="py-16">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="page-container">
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 text-center">
               <div className="space-y-3">
                 <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-primary/10">
@@ -77,7 +77,7 @@ export default function HomePage() {
 
         {/* Latest recipes */}
         <section className="py-16 bg-gray-50/50">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="page-container">
             <div className="flex items-center justify-between mb-8">
               <h2 className="text-2xl font-bold text-text">Legújabb receptek</h2>
               <Link to="/receptek" className="text-primary hover:text-primary-dark font-medium text-sm">

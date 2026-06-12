@@ -78,7 +78,7 @@ export default function CreateShoppingListPage() {
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="pl. Hétvégi bevásárlás"
-            className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none"
+            className="input w-full"
           />
         </div>
 
@@ -113,7 +113,7 @@ export default function CreateShoppingListPage() {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Recept keresése..."
-              className="w-full rounded-lg border border-gray-300 pl-9 pr-3 py-2 text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none"
+              className="input w-full pl-9"
             />
           </div>
         </div>

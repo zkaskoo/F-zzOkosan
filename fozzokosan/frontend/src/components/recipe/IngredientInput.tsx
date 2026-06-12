@@ -98,7 +98,7 @@ function IngredientRow({
           onFocus={() => {
             if (suggestions.length > 0) setShowSuggestions(true);
           }}
-          className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none"
+          className="input w-full"
         />
         {showSuggestions && suggestions.length > 0 && (
           <ul className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-48 overflow-y-auto">
@@ -124,12 +124,12 @@ function IngredientRow({
         placeholder="Mennyiség"
         value={item.quantity || ''}
         onChange={(e) => onFieldChange(item.id, 'quantity', parseFloat(e.target.value) || 0)}
-        className="w-24 rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none"
+        className="input w-24"
       />
       <select
         value={item.unit}
         onChange={(e) => onFieldChange(item.id, 'unit', e.target.value)}
-        className="w-36 rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none bg-white"
+        className="input w-36 bg-white"
       >
         <option value="">Egység...</option>
         {HUNGARIAN_UNITS.map((u) => (
@@ -234,7 +234,7 @@ export default function IngredientInput({ ingredients, onChange }: IngredientInp
             onChange={(e) => setFreeText(e.target.value)}
             placeholder="pl. 2 evőkanál olívaolaj, fél kiló csirkemell, 3 gerezd fokhagyma finomra vágva"
             rows={3}
-            className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none resize-none"
+            className="input w-full resize-none"
           />
           <button
             type="button"

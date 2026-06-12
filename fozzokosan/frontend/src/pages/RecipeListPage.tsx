@@ -45,7 +45,7 @@ export default function RecipeListPage() {
   return (
     <Layout>
       <div className="animate-fade-in">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
+        <div className="page-container py-8">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
             <h1 className="text-3xl font-bold text-text">Receptek</h1>
 
@@ -56,7 +56,7 @@ export default function RecipeListPage() {
                 value={searchInput}
                 onChange={(e) => setSearchInput(e.target.value)}
                 placeholder="Keresés..."
-                className="w-full rounded-lg border border-gray-300 pl-10 pr-3 py-2 text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none"
+                className="input w-full pl-10"
               />
             </div>
           </div>

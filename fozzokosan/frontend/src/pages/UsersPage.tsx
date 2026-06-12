@@ -35,7 +35,7 @@ export default function UsersPage() {
                 value={searchInput}
                 onChange={(e) => setSearchInput(e.target.value)}
                 placeholder="Felhasználó keresése..."
-                className="w-full rounded-lg border border-gray-300 pl-10 pr-3 py-2 text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none"
+                className="input w-full pl-10"
               />
             </div>
           </div>

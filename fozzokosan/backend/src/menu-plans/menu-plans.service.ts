@@ -11,7 +11,7 @@ const MENU_PLAN_INCLUDE = {
   items: {
     include: {
       recipe: {
-        select: { id: true, title: true, imageUrl: true, cookingTime: true, servings: true },
+        select: { id: true, slug: true, title: true, imageUrl: true, cookingTime: true, servings: true },
       },
     },
     orderBy: [{ date: 'asc' as const }, { mealType: 'asc' as const }],

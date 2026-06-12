@@ -12,7 +12,7 @@ export default function CreateRecipePage() {
   const handleSubmit = (data: CreateRecipeDto) => {
     createMutation.mutate(data, {
       onSuccess: (recipe) => {
-        navigate(`/receptek/${recipe.id}`);
+        navigate(`/receptek/${recipe.slug}`);
       },
     });
   };

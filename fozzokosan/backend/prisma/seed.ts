@@ -1,5 +1,6 @@
 import { PrismaClient, IngredientCategory, Difficulty, Allergen } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
+import { slugify } from '../src/common/slugify';
 
 const prisma = new PrismaClient();
 
@@ -543,6 +544,7 @@ async function main() {
         data: {
           userId: user.id,
           title: r.title,
+          slug: slugify(r.title),
           description: r.description,
           imageUrl: r.imageUrl,
           cookingTime: r.cookingTime,

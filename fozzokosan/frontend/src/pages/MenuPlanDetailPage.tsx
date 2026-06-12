@@ -142,7 +142,7 @@ export default function MenuPlanDetailPage() {
                           className="flex items-center justify-between bg-primary/10 rounded px-2 py-1 mb-1"
                         >
                           <Link
-                            to={`/receptek/${item.recipe.id}`}
+                            to={`/receptek/${item.recipe.slug}`}
                             className="text-xs text-text hover:text-primary truncate flex-1"
                           >
                             {item.recipe.title}
@@ -188,7 +188,7 @@ export default function MenuPlanDetailPage() {
                   value={recipeSearch}
                   onChange={(e) => setRecipeSearch(e.target.value)}
                   placeholder="Recept keresése..."
-                  className="w-full rounded-lg border border-gray-300 pl-9 pr-3 py-2 text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none"
+                  className="input w-full pl-9"
                   autoFocus
                 />
               </div>

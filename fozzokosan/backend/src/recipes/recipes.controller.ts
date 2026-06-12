@@ -60,13 +60,13 @@ export class RecipesController {
     });
   }
 
-  @Get(':id')
+  @Get(':slugOrId')
   @UseGuards(OptionalJwtAuthGuard)
   findOne(
-    @Param('id') id: string,
+    @Param('slugOrId') slugOrId: string,
     @Request() req?: ExpressRequest & { user?: ReqUser },
   ) {
-    return this.recipesService.findOne(id, req?.user?.id);
+    return this.recipesService.findOne(slugOrId, req?.user?.id);
   }
 
   @Patch(':id')

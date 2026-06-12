@@ -34,6 +34,7 @@ export interface RecipeStep {
 
 export interface Recipe {
   id: string;
+  slug: string;
   title: string;
   description: string | null;
   imageUrl: string | null;
@@ -113,6 +114,7 @@ export interface MenuItem {
   servings: number;
   recipe: {
     id: string;
+    slug: string;
     title: string;
     imageUrl: string | null;
     cookingTime: number | null;

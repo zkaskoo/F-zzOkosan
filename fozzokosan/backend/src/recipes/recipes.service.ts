@@ -6,6 +6,7 @@ import {
 import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { UnitsService } from '../units/units.service';
+import { slugify } from '../common/slugify';
 import { CreateRecipeDto } from './dto/create-recipe.dto';
 import { UpdateRecipeDto } from './dto/update-recipe.dto';
 import { CreateRecipeIngredientDto } from './dto/create-recipe-ingredient.dto';
@@ -38,13 +39,32 @@ export class RecipesService {
     };
   }
 
+  /**
+   * Egyedi, URL-barát slug a recept címéből.
+   * Ütközéskor sorszámot fűz hozzá: hazi-hamburger-2, hazi-hamburger-3...
+   */
+  private async generateUniqueSlug(title: string): Promise<string> {
+    const base = slugify(title) || 'recept';
+    let slug = base;
+    for (
+      let i = 2;
+      await this.prisma.recipe.findFirst({ where: { slug } });
+      i++
+    ) {
+      slug = `${base}-${i}`;
+    }
+    return slug;
+  }
+
   async create(createRecipeDto: CreateRecipeDto, userId: string) {
     const { steps, ingredients, ...recipeData } = createRecipeDto;
+    const slug = await this.generateUniqueSlug(createRecipeDto.title);
 
     return this.prisma.$transaction(async (prisma) => {
       const recipe = await prisma.recipe.create({
         data: {
           ...recipeData,
+          slug,
           userId,
         },
       });
@@ -190,9 +210,13 @@ export class RecipesService {
     };
   }
 
-  async findOne(id: string, requesterId?: string) {
-    const recipe = await this.prisma.recipe.findUnique({
-      where: { id },
+  /**
+   * Recept lekérése slug VAGY UUID alapján — a régi /receptek/<uuid>
+   * linkek így továbbra is működnek.
+   */
+  async findOne(slugOrId: string, requesterId?: string) {
+    const recipe = await this.prisma.recipe.findFirst({
+      where: { OR: [{ slug: slugOrId }, { id: slugOrId }] },
       include: RECIPE_FULL_INCLUDE,
     });
 

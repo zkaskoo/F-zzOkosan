@@ -92,6 +92,7 @@ const mockPrisma = {
     create: jest.fn(),
     findMany: jest.fn(),
     findUnique: jest.fn(),
+    findFirst: jest.fn(),
     update: jest.fn(),
     delete: jest.fn(),
     count: jest.fn(),
@@ -161,6 +162,28 @@ describe('RecipesService', () => {
       expect(mockPrisma.recipe.create).toHaveBeenCalledWith(
         expect.objectContaining({
           data: expect.objectContaining({ userId: mockUserId }),
+        }),
+      );
+    });
+
+    it('testBR001b_CreateRecipeGeneratesSlug - slug is generated from the title, with numeric suffix on collision', async () => {
+      mockPrisma.$transaction.mockImplementation(
+        async (fn: (prisma: typeof mockPrisma) => Promise<unknown>) =>
+          fn(mockPrisma),
+      );
+      mockPrisma.recipe.create.mockResolvedValue(mockRecipe);
+      mockPrisma.recipe.findUnique.mockResolvedValue(mockRecipeFull);
+      mockPrisma.ingredient.upsert.mockResolvedValue(mockIngredient.ingredient);
+      // Given: "gulyas-leves" is already taken, "gulyas-leves-2" is free
+      mockPrisma.recipe.findFirst
+        .mockResolvedValueOnce(mockRecipe)
+        .mockResolvedValueOnce(null);
+
+      await service.create(mockCreateRecipeDto, mockUserId);
+
+      expect(mockPrisma.recipe.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({ slug: 'gulyas-leves-2' }),
         }),
       );
     });
@@ -362,14 +385,14 @@ describe('RecipesService', () => {
 
   describe('findOne()', () => {
     it('testBR010_FindOneReturnsRecipeWithAllRelations - returns recipe with steps, ingredients and user', async () => {
-      mockPrisma.recipe.findUnique.mockResolvedValue(mockRecipeFull);
+      mockPrisma.recipe.findFirst.mockResolvedValue(mockRecipeFull);
 
       const result = await service.findOne(mockRecipeId, mockUserId);
 
       expect(result).toEqual(mockRecipeFull);
-      expect(mockPrisma.recipe.findUnique).toHaveBeenCalledWith(
+      expect(mockPrisma.recipe.findFirst).toHaveBeenCalledWith(
         expect.objectContaining({
-          where: { id: mockRecipeId },
+          where: { OR: [{ slug: mockRecipeId }, { id: mockRecipeId }] },
           include: expect.objectContaining({
             user: expect.anything(),
             steps: expect.anything(),
@@ -380,7 +403,7 @@ describe('RecipesService', () => {
     });
 
     it('testError_FindOneThrowsNotFoundForNonExistentRecipe - throws NotFoundException when recipe does not exist', async () => {
-      mockPrisma.recipe.findUnique.mockResolvedValue(null);
+      mockPrisma.recipe.findFirst.mockResolvedValue(null);
 
       await expect(
         service.findOne('non-existent-id', mockUserId),
@@ -393,7 +416,7 @@ describe('RecipesService', () => {
         isPublic: false,
         userId: mockUserId,
       };
-      mockPrisma.recipe.findUnique.mockResolvedValue(privateRecipe);
+      mockPrisma.recipe.findFirst.mockResolvedValue(privateRecipe);
 
       await expect(service.findOne(mockRecipeId, otherUserId)).rejects.toThrow(
         NotFoundException,
@@ -406,7 +429,7 @@ describe('RecipesService', () => {
         isPublic: false,
         userId: mockUserId,
       };
-      mockPrisma.recipe.findUnique.mockResolvedValue(privateRecipe);
+      mockPrisma.recipe.findFirst.mockResolvedValue(privateRecipe);
 
       const result = await service.findOne(mockRecipeId, mockUserId);
 
@@ -414,7 +437,7 @@ describe('RecipesService', () => {
     });
 
     it('testBR012_FindOneAllowsUnauthenticatedAccessToPublicRecipe - unauthenticated user can view public recipe', async () => {
-      mockPrisma.recipe.findUnique.mockResolvedValue(mockRecipeFull);
+      mockPrisma.recipe.findFirst.mockResolvedValue(mockRecipeFull);
 
       const result = await service.findOne(mockRecipeId, undefined);
 
@@ -427,7 +450,7 @@ describe('RecipesService', () => {
         isPublic: false,
         userId: mockUserId,
       };
-      mockPrisma.recipe.findUnique.mockResolvedValue(privateRecipe);
+      mockPrisma.recipe.findFirst.mockResolvedValue(privateRecipe);
 
       await expect(service.findOne(mockRecipeId, undefined)).rejects.toThrow(
         NotFoundException,

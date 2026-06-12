@@ -27,7 +27,7 @@ export default function RecipeCard({ recipe }: RecipeCardProps) {
   const difficulty = difficultyConfig[recipe.difficulty];
 
   return (
-    <Link to={`/receptek/${recipe.id}`} className="card group block">
+    <Link to={`/receptek/${recipe.slug}`} className="card group block">
       {isValidImageUrl(recipe.imageUrl) ? (
         <img
           src={recipe.imageUrl}

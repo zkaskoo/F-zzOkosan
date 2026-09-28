@@ -107,7 +107,9 @@ describe('NlpService', () => {
   describe('parseIngredients without API key', () => {
     it('should use the rule-based fallback', async () => {
       const service = createService();
-      const result = await service.parseIngredients('2 ek olaj, só ízlés szerint');
+      const result = await service.parseIngredients(
+        '2 ek olaj, só ízlés szerint',
+      );
       expect(result).toEqual([
         { name: 'olaj', quantity: 2, unit: 'ek' },
         { name: 'só', quantity: null, unit: '' },
@@ -136,9 +138,7 @@ describe('NlpService', () => {
         '[{"name": "olívaolaj", "quantity": 2, "unit": "ek"}]',
       );
       const result = await service.parseIngredients('2 ek olívaolaj');
-      expect(result).toEqual([
-        { name: 'olívaolaj', quantity: 2, unit: 'ek' },
-      ]);
+      expect(result).toEqual([{ name: 'olívaolaj', quantity: 2, unit: 'ek' }]);
     });
 
     it('should extract JSON from markdown code blocks', async () => {

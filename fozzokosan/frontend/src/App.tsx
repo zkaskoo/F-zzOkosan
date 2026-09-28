@@ -14,6 +14,7 @@ import ShoppingListDetailPage from './pages/ShoppingListDetailPage';
 import CreateShoppingListPage from './pages/CreateShoppingListPage';
 import MenuPlansPage from './pages/MenuPlansPage';
 import MenuPlanDetailPage from './pages/MenuPlanDetailPage';
+import FavoritesPage from './pages/FavoritesPage';
 import UsersPage from './pages/UsersPage';
 
 const queryClient = new QueryClient({
@@ -45,6 +46,7 @@ function App() {
             <Route path="/bevasarlolista/:id" element={<ShoppingListDetailPage />} />
             <Route path="/etlapterv" element={<MenuPlansPage />} />
             <Route path="/etlapterv/:id" element={<MenuPlanDetailPage />} />
+            <Route path="/kedvencek" element={<FavoritesPage />} />
           </Route>
 
           <Route path="/receptek/:id" element={<RecipeDetailPage />} />

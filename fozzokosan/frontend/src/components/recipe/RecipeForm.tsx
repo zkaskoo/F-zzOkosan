@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import type { CreateRecipeDto, Difficulty, Recipe } from '../../types';
+import type { CreateRecipeDto, Difficulty, Recipe, RecipeImportDraft } from '../../types';
 import IngredientInput from './IngredientInput';
 import StepInput from './StepInput';
 import ErrorMessage from '../common/ErrorMessage';
@@ -8,11 +8,13 @@ import type { IngredientFormItemWithId, StepFormItemWithId } from './formTypes';
 
 interface RecipeFormProps {
   initialValues?: Recipe;
+  /** Importált vázlat (pl. Instagram) — előre kitölti az űrlapot új recept esetén */
+  initialDraft?: RecipeImportDraft;
   onSubmit: (data: CreateRecipeDto) => void;
   isLoading: boolean;
 }
 
-function initIngredients(recipe?: Recipe): IngredientFormItemWithId[] {
+function initIngredients(recipe?: Recipe, draft?: RecipeImportDraft): IngredientFormItemWithId[] {
   if (recipe && recipe.ingredients.length > 0) {
     return recipe.ingredients.map((ing) => ({
       id: crypto.randomUUID(),
@@ -23,10 +25,20 @@ function initIngredients(recipe?: Recipe): IngredientFormItemWithId[] {
       isOptional: ing.isOptional,
     }));
   }
+  if (draft && draft.ingredients.length > 0) {
+    return draft.ingredients.map((ing) => ({
+      id: crypto.randomUUID(),
+      ingredientName: ing.name,
+      quantity: ing.quantity ?? 0,
+      unit: ing.unit,
+      notes: ing.notes ?? undefined,
+      isOptional: false,
+    }));
+  }
   return [{ id: crypto.randomUUID(), ingredientName: '', quantity: 0, unit: '', isOptional: false }];
 }
 
-function initSteps(recipe?: Recipe): StepFormItemWithId[] {
+function initSteps(recipe?: Recipe, draft?: RecipeImportDraft): StepFormItemWithId[] {
   if (recipe && recipe.steps.length > 0) {
     return recipe.steps
       .sort((a, b) => a.stepNumber - b.stepNumber)
@@ -36,19 +48,26 @@ function initSteps(recipe?: Recipe): StepFormItemWithId[] {
         instruction: s.instruction,
       }));
   }
+  if (draft && draft.steps.length > 0) {
+    return draft.steps.map((instruction, i) => ({
+      id: crypto.randomUUID(),
+      stepNumber: i + 1,
+      instruction,
+    }));
+  }
   return [{ id: crypto.randomUUID(), stepNumber: 1, instruction: '' }];
 }
 
-export default function RecipeForm({ initialValues, onSubmit, isLoading }: RecipeFormProps) {
-  const [title, setTitle] = useState(initialValues?.title ?? '');
-  const [description, setDescription] = useState(initialValues?.description ?? '');
+export default function RecipeForm({ initialValues, initialDraft, onSubmit, isLoading }: RecipeFormProps) {
+  const [title, setTitle] = useState(initialValues?.title ?? initialDraft?.title ?? '');
+  const [description, setDescription] = useState(initialValues?.description ?? initialDraft?.description ?? '');
   const [imageUrl, setImageUrl] = useState(initialValues?.imageUrl ?? '');
-  const [cookingTime, setCookingTime] = useState<number | ''>(initialValues?.cookingTime ?? '');
-  const [servings, setServings] = useState<number | ''>(initialValues?.servings || '');
-  const [difficulty, setDifficulty] = useState<Difficulty>(initialValues?.difficulty ?? 'MEDIUM');
+  const [cookingTime, setCookingTime] = useState<number | ''>(initialValues?.cookingTime ?? initialDraft?.cookingTime ?? '');
+  const [servings, setServings] = useState<number | ''>(initialValues?.servings || initialDraft?.servings || '');
+  const [difficulty, setDifficulty] = useState<Difficulty>(initialValues?.difficulty ?? initialDraft?.difficulty ?? 'MEDIUM');
   const [isPublic, setIsPublic] = useState(initialValues?.isPublic ?? true);
-  const [ingredients, setIngredients] = useState<IngredientFormItemWithId[]>(() => initIngredients(initialValues));
-  const [steps, setSteps] = useState<StepFormItemWithId[]>(() => initSteps(initialValues));
+  const [ingredients, setIngredients] = useState<IngredientFormItemWithId[]>(() => initIngredients(initialValues, initialDraft));
+  const [steps, setSteps] = useState<StepFormItemWithId[]>(() => initSteps(initialValues, initialDraft));
   const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = (e: React.FormEvent) => {

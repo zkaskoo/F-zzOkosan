@@ -3,6 +3,7 @@ import { Clock, MessageCircle, Users } from 'lucide-react';
 import type { Recipe } from '../../types';
 import { isValidImageUrl } from '../../utils/imageUrl';
 import LikeButton from './LikeButton';
+import FavoriteButton from './FavoriteButton';
 
 interface RecipeCardProps {
   recipe: Recipe;
@@ -71,6 +72,7 @@ export default function RecipeCard({ recipe }: RecipeCardProps) {
             </span>
             <div className="flex items-center gap-2">
               <LikeButton recipeId={recipe.id} compact />
+              <FavoriteButton recipeId={recipe.id} compact />
               {(recipe._count?.comments ?? 0) > 0 && (
                 <span className="flex items-center gap-1 text-xs text-text-secondary">
                   <MessageCircle className="h-3.5 w-3.5" />

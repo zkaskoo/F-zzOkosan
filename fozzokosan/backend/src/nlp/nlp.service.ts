@@ -11,6 +11,18 @@ export interface ParsedIngredient {
   notes?: string;
 }
 
+export type ParsedDifficulty = 'EASY' | 'MEDIUM' | 'HARD';
+
+export interface ParsedRecipeDraft {
+  title: string;
+  description: string | null;
+  servings: number | null;
+  cookingTime: number | null;
+  difficulty: ParsedDifficulty | null;
+  ingredients: ParsedIngredient[];
+  steps: string[];
+}
+
 const SYSTEM_PROMPT = `Te egy magyar nyelvű recept hozzávaló elemző vagy.
 A felhasználó magyar nyelvű szabadszöveges hozzávalólistát ad meg, és neked JSON tömböt kell visszaadnod.
 
@@ -37,6 +49,29 @@ Példa kimenet:
 ]
 
 CSAK a JSON tömböt add vissza, semmi mást.`;
+
+const RECIPE_SYSTEM_PROMPT = `Te egy magyar recept-kinyerő asszisztens vagy.
+A bemenet egy szabadszöveges recept (pl. egy közösségi média poszt vagy Instagram leírás),
+amely hashtageket, emojikat, linkeket és fölösleges reklámszöveget is tartalmazhat.
+Nyerd ki belőle a receptet, és CSAK egy JSON objektumot adj vissza a következő mezőkkel:
+- "title": rövid, magyar recept cím (string)
+- "description": 1-2 mondatos leírás, vagy null
+- "servings": adagok száma egész számként, vagy null
+- "cookingTime": elkészítési idő percben egész számként, vagy null
+- "difficulty": "EASY" | "MEDIUM" | "HARD", becsüld meg, vagy null
+- "ingredients": tömb, minden elem {"name": string (kisbetűvel, magyarul), "quantity": szám vagy null, "unit": string, "notes": opcionális string}
+- "steps": az elkészítési lépések tömbje (rövid magyar mondatok, helyes sorrendben)
+
+Egység- és mennyiség-szabályok (mint a hozzávaló-elemzésnél):
+- "fél" = 0.5, "negyed" = 0.25, "másfél" = 1.5
+- egységek: g, kg, dkg, ml, dl, l, ek, tk, db, csésze, csipet, gerezd, szál, fej, csokor, csomag, szelet
+- "evőkanál" = "ek", "teáskanál" = "tk", "darab" = "db", "kiló" = "kg", "deka" = "dkg"
+- "ízlés szerint" = quantity: null, unit: ""
+- ha csak darabszám van egység nélkül (pl. "3 tojás") = unit: "db"
+
+Hagyd ki a hashtageket, emojikat, linkeket és a reklámszöveget.
+Ha egy mező nem állapítható meg, használj null-t (vagy üres tömböt a listáknál).
+CSAK a JSON objektumot add vissza, semmi mást.`;
 
 const TASTE_PHRASES = ['ízlés szerint', 'izlés szerint', 'ízlés szerinti'];
 
@@ -187,6 +222,139 @@ export class NlpService {
     }
 
     return null;
+  }
+
+  /**
+   * Teljes recept kinyerése szabadszövegből (pl. Instagram leírásból).
+   * Gemini-vel, ha elérhető; egyébként minimális tartalék-vázlat.
+   */
+  async parseRecipe(text: string): Promise<ParsedRecipeDraft> {
+    const clean = (text || '').trim();
+    if (!clean) {
+      return this.emptyRecipeDraft();
+    }
+
+    if (!this.model) {
+      this.logger.warn(
+        'Gemini API kulcs nincs konfigurálva, minimális recept-vázlat',
+      );
+      return this.fallbackRecipe(clean);
+    }
+
+    try {
+      const result = await this.model.generateContent(
+        RECIPE_SYSTEM_PROMPT + '\n\nBemenet:\n' + clean,
+      );
+      const response = result.response.text();
+
+      const jsonMatch = response.match(/\{[\s\S]*\}/);
+      if (!jsonMatch) {
+        this.logger.warn('Nem sikerült JSON-t kinyerni, recept-fallback');
+        return this.fallbackRecipe(clean);
+      }
+
+      const parsed = JSON.parse(jsonMatch[0]) as Record<string, unknown>;
+      return this.normalizeRecipeDraft(parsed, clean);
+    } catch (error) {
+      this.logger.error('Gemini recept-kinyerés hiba, fallback:', error);
+      return this.fallbackRecipe(clean);
+    }
+  }
+
+  private normalizeRecipeDraft(
+    parsed: Record<string, unknown>,
+    original: string,
+  ): ParsedRecipeDraft {
+    const asString = (v: unknown): string | null =>
+      typeof v === 'string' && v.trim() ? v.trim() : null;
+    const asInt = (v: unknown): number | null => {
+      const n = typeof v === 'string' ? parseInt(v, 10) : (v as number);
+      return typeof n === 'number' && Number.isFinite(n) && n > 0
+        ? Math.round(n)
+        : null;
+    };
+
+    const difficultyRaw = asString(parsed.difficulty)?.toUpperCase();
+    const difficulty: ParsedDifficulty | null =
+      difficultyRaw === 'EASY' ||
+      difficultyRaw === 'MEDIUM' ||
+      difficultyRaw === 'HARD'
+        ? difficultyRaw
+        : null;
+
+    const ingredients: ParsedIngredient[] = Array.isArray(parsed.ingredients)
+      ? (parsed.ingredients as Record<string, unknown>[])
+          .filter((item) => item && typeof item.name === 'string')
+          .map((item) => ({
+            name: (item.name as string).trim(),
+            quantity: typeof item.quantity === 'number' ? item.quantity : null,
+            unit: typeof item.unit === 'string' ? item.unit : '',
+            notes:
+              typeof item.notes === 'string' && item.notes.trim()
+                ? item.notes.trim()
+                : undefined,
+          }))
+      : [];
+
+    const steps: string[] = Array.isArray(parsed.steps)
+      ? (parsed.steps as unknown[])
+          .filter(
+            (s): s is string => typeof s === 'string' && s.trim().length > 0,
+          )
+          .map((s) => s.trim())
+      : [];
+
+    const title =
+      asString(parsed.title) ??
+      this.firstLineAsTitle(original) ??
+      'Importált recept';
+
+    return {
+      title,
+      description: asString(parsed.description),
+      servings: asInt(parsed.servings),
+      cookingTime: asInt(parsed.cookingTime),
+      difficulty,
+      ingredients,
+      steps,
+    };
+  }
+
+  /**
+   * Gemini nélküli tartalék: a szöveget nyersen visszaadjuk, hogy a
+   * felhasználó kézzel tudja pontosítani az űrlapon.
+   */
+  private fallbackRecipe(text: string): ParsedRecipeDraft {
+    return {
+      title: this.firstLineAsTitle(text) ?? 'Importált recept',
+      description: text.length > 500 ? text.slice(0, 500) + '…' : text,
+      servings: null,
+      cookingTime: null,
+      difficulty: null,
+      ingredients: [],
+      steps: [],
+    };
+  }
+
+  private emptyRecipeDraft(): ParsedRecipeDraft {
+    return {
+      title: '',
+      description: null,
+      servings: null,
+      cookingTime: null,
+      difficulty: null,
+      ingredients: [],
+      steps: [],
+    };
+  }
+
+  private firstLineAsTitle(text: string): string | null {
+    const firstLine = text
+      .split('\n')
+      .map((l) => l.trim())
+      .find((l) => l.length > 0);
+    if (!firstLine) return null;
+    return firstLine.length > 100 ? firstLine.slice(0, 100) : firstLine;
   }
 
   isConfigured(): boolean {

@@ -1,0 +1,32 @@
+# Render Blueprint — FőzzOkosan backend (NestJS)
+# A repó gyökerében kell lennie; az app a fozzokosan/ almappában van.
+# Az adatbázist NEM itt hozzuk létre (a Render ingyenes Postgresa 30 nap után lejár),
+# hanem külön a Neonon; a kapcsolati sztringet a DATABASE_URL env változóba kell beírni.
+services:
+  - type: web
+    name: fozzokosan-backend
+    runtime: node
+    plan: free
+    rootDir: fozzokosan/backend
+    buildCommand: npm ci && npx prisma generate && npm run build
+    startCommand: npx prisma migrate deploy && npm run start:prod
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_VERSION
+        value: "20"
+      - key: NODE_ENV
+        value: production
+      # A Neon connection string — a Render felületén kézzel kell beállítani.
+      - key: DATABASE_URL
+        sync: false
+      # Automatikusan generált, biztonságos JWT titok.
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_EXPIRES_IN
+        value: 7d
+      # Google Gemini API kulcs (NLP) — a Render felületén állítandó be.
+      - key: GEMINI_API_KEY
+        sync: false
+      # A Vercel frontend URL-je a CORS-hoz, pl. https://fozzokosan.vercel.app
+      - key: CORS_ORIGIN
+        sync: false

@@ -1,8 +1,14 @@
 import axios from 'axios';
-import type { AuthResponse, Comment, CreateRecipeDto, LikeStatus, LoginCredentials, MealType, MenuPlan, PaginatedResponse, Recipe, RegisterData, ShoppingList, ShoppingListItem } from '../types';
+import type { AuthResponse, Comment, CreateRecipeDto, Difficulty, FavoriteStatus, LikeStatus, LoginCredentials, MealType, MenuPlan, PaginatedResponse, Recipe, RecipeImportResult, RegisterData, ShoppingList, ShoppingListItem } from '../types';
+
+// Production: a Render backend abszolút URL-je a VITE_API_URL-ből (build-időben beégetve).
+// Helyi fejlesztés: VITE_API_URL nincs beállítva → relatív '/api' → a Vite proxy továbbítja.
+const API_BASE_URL = import.meta.env.VITE_API_URL
+  ? `${import.meta.env.VITE_API_URL.replace(/\/$/, '')}/api`
+  : '/api';
 
 export const api = axios.create({
-  baseURL: '/api',
+  baseURL: API_BASE_URL,
 });
 
 api.interceptors.request.use((config) => {
@@ -76,6 +82,7 @@ export interface RecipeListParams {
   search?: string;
   userId?: string;
   category?: string;
+  difficulty?: Difficulty;
 }
 
 export const recipeApi = {
@@ -111,6 +118,21 @@ export const likeApi = {
   },
 };
 
+export const favoriteApi = {
+  getStatus: async (recipeId: string): Promise<FavoriteStatus> => {
+    const { data } = await api.get<FavoriteStatus>(`/recipes/${recipeId}/favorite`);
+    return data;
+  },
+  toggle: async (recipeId: string): Promise<FavoriteStatus> => {
+    const { data } = await api.post<FavoriteStatus>(`/recipes/${recipeId}/favorite`);
+    return data;
+  },
+  list: async (): Promise<Recipe[]> => {
+    const { data } = await api.get<Recipe[]>('/favorites');
+    return data;
+  },
+};
+
 export interface IngredientSuggestion {
   id: string;
   name: string;
@@ -134,6 +156,13 @@ export const nlpApi = {
   },
   status: async (): Promise<{ configured: boolean }> => {
     const { data } = await api.get<{ configured: boolean }>('/nlp/status');
+    return data;
+  },
+};
+
+export const recipeImportApi = {
+  import: async (payload: { url?: string; text?: string }): Promise<RecipeImportResult> => {
+    const { data } = await api.post<RecipeImportResult>('/recipe-import', payload);
     return data;
   },
 };

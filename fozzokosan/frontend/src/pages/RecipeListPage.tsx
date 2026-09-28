@@ -8,12 +8,20 @@ import LoadingSpinner from '../components/common/LoadingSpinner';
 import ErrorMessage from '../components/common/ErrorMessage';
 import { useRecipes } from '../hooks/useRecipes';
 import { categoryApi, type Category } from '../services/api';
+import type { Difficulty } from '../types';
+
+const DIFFICULTY_OPTIONS: { value: Difficulty; label: string }[] = [
+  { value: 'EASY', label: 'Könnyű' },
+  { value: 'MEDIUM', label: 'Közepes' },
+  { value: 'HARD', label: 'Nehéz' },
+];
 
 export default function RecipeListPage() {
   const [page, setPage] = useState(1);
   const [searchInput, setSearchInput] = useState('');
   const [search, setSearch] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
+  const [selectedDifficulty, setSelectedDifficulty] = useState<Difficulty | ''>('');
   const limit = 12;
 
   const { data: categories } = useQuery({
@@ -35,10 +43,16 @@ export default function RecipeListPage() {
     limit,
     search: search || undefined,
     category: selectedCategory || undefined,
+    difficulty: selectedDifficulty || undefined,
   });
 
   const handleCategoryChange = (slug: string) => {
     setSelectedCategory(slug === selectedCategory ? '' : slug);
+    setPage(1);
+  };
+
+  const handleDifficultyChange = (value: Difficulty) => {
+    setSelectedDifficulty(value === selectedDifficulty ? '' : value);
     setPage(1);
   };
 
@@ -63,7 +77,7 @@ export default function RecipeListPage() {
 
           {/* Category filter */}
           {categories && categories.length > 0 && (
-            <div className="flex flex-wrap gap-2 mb-6">
+            <div className="flex flex-wrap gap-2 mb-4">
               {categories.map((cat: Category) => (
                 <button
                   key={cat.id}
@@ -80,6 +94,25 @@ export default function RecipeListPage() {
               ))}
             </div>
           )}
+
+          {/* Difficulty filter */}
+          <div className="flex flex-wrap items-center gap-2 mb-6">
+            <span className="text-xs font-medium text-text-secondary mr-1">Nehézség:</span>
+            {DIFFICULTY_OPTIONS.map((opt) => (
+              <button
+                key={opt.value}
+                type="button"
+                onClick={() => handleDifficultyChange(opt.value)}
+                className={`rounded-full px-3 py-1 text-xs font-medium border transition-colors ${
+                  selectedDifficulty === opt.value
+                    ? 'bg-primary border-primary text-white'
+                    : 'bg-gray-50 border-gray-200 text-text-secondary hover:bg-gray-100'
+                }`}
+              >
+                {opt.label}
+              </button>
+            ))}
+          </div>
 
           {isLoading ? (
             <LoadingSpinner size="lg" />

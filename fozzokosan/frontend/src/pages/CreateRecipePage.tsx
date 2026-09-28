@@ -1,13 +1,23 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Layout from '../components/layout/Layout';
 import RecipeForm from '../components/recipe/RecipeForm';
+import RecipeImportPanel from '../components/recipe/RecipeImportPanel';
 import ErrorMessage from '../components/common/ErrorMessage';
 import { useCreateRecipe } from '../hooks/useRecipes';
-import type { CreateRecipeDto } from '../types';
+import type { CreateRecipeDto, RecipeImportDraft } from '../types';
 
 export default function CreateRecipePage() {
   const navigate = useNavigate();
   const createMutation = useCreateRecipe();
+  const [draft, setDraft] = useState<RecipeImportDraft | undefined>(undefined);
+  // A kulcs változása újrainicializálja az űrlapot az importált adatokkal
+  const [formKey, setFormKey] = useState(0);
+
+  const handleImported = (imported: RecipeImportDraft) => {
+    setDraft(imported);
+    setFormKey((k) => k + 1);
+  };
 
   const handleSubmit = (data: CreateRecipeDto) => {
     createMutation.mutate(data, {
@@ -23,13 +33,20 @@ export default function CreateRecipePage() {
         <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 py-8">
           <h1 className="text-3xl font-bold text-text mb-8">Új recept létrehozása</h1>
 
+          <RecipeImportPanel onImported={handleImported} />
+
           {createMutation.isError && (
             <div className="mb-6">
               <ErrorMessage message="Hiba történt a recept mentésekor. Kérjük, próbáld újra." />
             </div>
           )}
 
-          <RecipeForm onSubmit={handleSubmit} isLoading={createMutation.isPending} />
+          <RecipeForm
+            key={formKey}
+            initialDraft={draft}
+            onSubmit={handleSubmit}
+            isLoading={createMutation.isPending}
+          />
         </div>
       </div>
     </Layout>

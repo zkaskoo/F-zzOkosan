@@ -1,0 +1,7 @@
+# Word/LibreOffice ideiglenes zárolófájlok
+~$*.docx
+~$*.doc
+.~lock.*#
+
+# macOS
+.DS_Store

@@ -129,6 +129,7 @@ export class RecipesService {
     dietaryTags?: string[];
     excludeAllergens?: string[];
     categorySlug?: string;
+    difficulty?: string;
   }) {
     const page = params.page || 1;
     const limit = Math.min(params.limit || 20, MAX_LIMIT);
@@ -149,18 +150,18 @@ export class RecipesService {
       const searchTerm = params.search.trim();
       if (searchTerm.length > 0) {
         where.OR = [
-        { title: { contains: searchTerm, mode: 'insensitive' } },
-        { description: { contains: searchTerm, mode: 'insensitive' } },
-        {
-          ingredients: {
-            some: {
-              ingredient: {
-                name: { contains: searchTerm, mode: 'insensitive' },
+          { title: { contains: searchTerm, mode: 'insensitive' } },
+          { description: { contains: searchTerm, mode: 'insensitive' } },
+          {
+            ingredients: {
+              some: {
+                ingredient: {
+                  name: { contains: searchTerm, mode: 'insensitive' },
+                },
               },
             },
           },
-        },
-      ];
+        ];
       }
     }
 
@@ -174,6 +175,15 @@ export class RecipesService {
       where.categories = {
         some: { category: { slug: params.categorySlug } },
       };
+    }
+
+    // Filter by difficulty (EASY / MEDIUM / HARD)
+    if (
+      params.difficulty &&
+      ['EASY', 'MEDIUM', 'HARD'].includes(params.difficulty)
+    ) {
+      where.difficulty =
+        params.difficulty as Prisma.RecipeWhereInput['difficulty'];
     }
 
     // Exclude recipes containing ingredients with specified allergens

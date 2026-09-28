@@ -10,11 +10,13 @@ import { UsersModule } from './users/users.module';
 import { RecipesModule } from './recipes/recipes.module';
 import { UploadModule } from './upload/upload.module';
 import { LikesModule } from './likes/likes.module';
+import { FavoritesModule } from './favorites/favorites.module';
 import { CommentsModule } from './comments/comments.module';
 import { UnitsModule } from './units/units.module';
 import { IngredientsModule } from './ingredients/ingredients.module';
 import { ShoppingListsModule } from './shopping-lists/shopping-lists.module';
 import { NlpModule } from './nlp/nlp.module';
+import { RecipeImportModule } from './recipe-import/recipe-import.module';
 import { MenuPlansModule } from './menu-plans/menu-plans.module';
 import { CategoriesModule } from './categories/categories.module';
 import { FollowsModule } from './follows/follows.module';
@@ -44,11 +46,13 @@ import { FollowsModule } from './follows/follows.module';
     RecipesModule,
     UploadModule,
     LikesModule,
+    FavoritesModule,
     CommentsModule,
     UnitsModule,
     IngredientsModule,
     ShoppingListsModule,
     NlpModule,
+    RecipeImportModule,
     MenuPlansModule,
     CategoriesModule,
     FollowsModule,

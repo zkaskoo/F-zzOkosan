@@ -162,3 +162,30 @@ export interface LikeStatus {
   count: number;
   liked: boolean;
 }
+
+export interface FavoriteStatus {
+  favorited: boolean;
+}
+
+export interface RecipeImportIngredient {
+  name: string;
+  quantity: number | null;
+  unit: string;
+  notes?: string;
+}
+
+export interface RecipeImportDraft {
+  title: string;
+  description: string | null;
+  servings: number | null;
+  cookingTime: number | null;
+  difficulty: Difficulty | null;
+  ingredients: RecipeImportIngredient[];
+  steps: string[];
+}
+
+export interface RecipeImportResult {
+  draft: RecipeImportDraft;
+  source: 'url' | 'text';
+  caption: string;
+}

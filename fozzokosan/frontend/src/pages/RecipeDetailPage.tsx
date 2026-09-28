@@ -1,5 +1,6 @@
+import { useState } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
-import { ArrowLeft, Clock, Edit, Trash2, Users } from 'lucide-react';
+import { ArrowLeft, Clock, Edit, Minus, Plus, Trash2, Users } from 'lucide-react';
 import Layout from '../components/layout/Layout';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import ErrorMessage from '../components/common/ErrorMessage';
@@ -7,7 +8,10 @@ import { useRecipe, useDeleteRecipe } from '../hooks/useRecipes';
 import { useAuthStore } from '../stores/authStore';
 import { isValidImageUrl } from '../utils/imageUrl';
 import LikeButton from '../components/recipe/LikeButton';
+import FavoriteButton from '../components/recipe/FavoriteButton';
 import CommentSection from '../components/recipe/CommentSection';
+
+const MAX_SERVINGS = 50;
 
 const difficultyLabels = {
   EASY: { label: 'Könnyű', classes: 'bg-green-100 text-green-700' },
@@ -24,12 +28,19 @@ function formatCookingTime(minutes: number): string {
   return `${minutes} perc`;
 }
 
+/** Mennyiség formázása magyar tizedesvesszővel, felesleges nullák nélkül. */
+function formatQuantity(value: number): string {
+  const rounded = Math.round(value * 100) / 100;
+  return rounded.toLocaleString('hu-HU', { maximumFractionDigits: 2 });
+}
+
 export default function RecipeDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { data: recipe, isLoading, isError } = useRecipe(id);
   const deleteMutation = useDeleteRecipe();
   const user = useAuthStore((s) => s.user);
+  const [customServings, setCustomServings] = useState<number | null>(null);
 
   const isOwner = user && recipe && user.id === recipe.userId;
 
@@ -64,6 +75,18 @@ export default function RecipeDetailPage() {
   }
 
   const difficulty = difficultyLabels[recipe.difficulty];
+  const baseServings = recipe.servings > 0 ? recipe.servings : 1;
+  const targetServings = customServings ?? baseServings;
+  const scaleFactor = targetServings / baseServings;
+  const isScaled = targetServings !== baseServings;
+
+  const changeServings = (delta: number) => {
+    setCustomServings((prev) => {
+      const current = prev ?? baseServings;
+      const next = Math.min(MAX_SERVINGS, Math.max(1, current + delta));
+      return next;
+    });
+  };
 
   return (
     <Layout>
@@ -100,6 +123,7 @@ export default function RecipeDetailPage() {
 
             <div className="flex items-center gap-2 shrink-0">
               <LikeButton recipeId={recipe.id} />
+              <FavoriteButton recipeId={recipe.id} />
               {isOwner && (
                 <>
                   <Link
@@ -133,12 +157,10 @@ export default function RecipeDetailPage() {
                 {formatCookingTime(recipe.cookingTime)}
               </span>
             )}
-            {recipe.servings > 0 && (
-              <span className="flex items-center gap-1.5 text-text-secondary">
-                <Users className="h-4 w-4" />
-                {recipe.servings} adag
-              </span>
-            )}
+            <span className="flex items-center gap-1.5 text-text-secondary">
+              <Users className="h-4 w-4" />
+              {recipe.servings} adagra megadva
+            </span>
           </div>
 
           {/* Author */}
@@ -161,12 +183,57 @@ export default function RecipeDetailPage() {
             <div className="lg:col-span-1">
               <div className="card p-6">
                 <h2 className="text-lg font-bold text-text mb-4">Hozzávalók</h2>
+
+                {/* Adagszám-választó — a mennyiségek automatikusan átszámolódnak */}
+                <div className="mb-4 rounded-xl bg-gray-50 p-3">
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-sm font-medium text-text flex items-center gap-1.5">
+                      <Users className="h-4 w-4 text-primary" />
+                      Adagok
+                    </span>
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => changeServings(-1)}
+                        disabled={targetServings <= 1}
+                        className="flex h-8 w-8 items-center justify-center rounded-lg bg-white border border-gray-200 text-text hover:bg-gray-100 transition-colors disabled:opacity-40"
+                        aria-label="Kevesebb adag"
+                      >
+                        <Minus className="h-4 w-4" />
+                      </button>
+                      <span className="min-w-[2rem] text-center text-base font-bold text-text tabular-nums">
+                        {targetServings}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => changeServings(1)}
+                        disabled={targetServings >= MAX_SERVINGS}
+                        className="flex h-8 w-8 items-center justify-center rounded-lg bg-white border border-gray-200 text-text hover:bg-gray-100 transition-colors disabled:opacity-40"
+                        aria-label="Több adag"
+                      >
+                        <Plus className="h-4 w-4" />
+                      </button>
+                    </div>
+                  </div>
+                  {isScaled && (
+                    <button
+                      type="button"
+                      onClick={() => setCustomServings(null)}
+                      className="mt-2 text-xs text-primary hover:text-primary-dark font-medium"
+                    >
+                      Vissza az eredeti {baseServings} adagra
+                    </button>
+                  )}
+                </div>
+
                 <ul className="space-y-2">
                   {recipe.ingredients.map((ing) => (
                     <li key={ing.id} className="flex items-start gap-2 text-sm">
                       <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-primary shrink-0" />
                       <span className="text-text">
-                        <span className="font-medium">{ing.quantity} {ing.unit}</span>{' '}
+                        <span className="font-medium">
+                          {formatQuantity(ing.quantity * scaleFactor)} {ing.unit}
+                        </span>{' '}
                         {ing.ingredient.name}
                         {ing.isOptional && (
                           <span className="text-text-secondary ml-1">(opcionális)</span>

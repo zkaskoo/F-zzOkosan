@@ -23,6 +23,10 @@ COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/package.json ./package.json
 COPY --from=builder /app/prisma ./prisma
+# A seed-scriptek (prisma/*.ts) a src-ből importálnak (pl. slugify), és ts-node-dal
+# futnak, ezért a src és a tsconfig is kell a demó-adatok feltöltéséhez.
+COPY --from=builder /app/src ./src
+COPY --from=builder /app/tsconfig.json ./tsconfig.json
 # A seed-képek (ha a build kontextusban jelen vannak) – a volume első indításkor
 # ebből töltődik fel. Fresh klónnál üres, ezt a seed-folyamat pótolja.
 COPY --from=builder /app/uploads ./uploads

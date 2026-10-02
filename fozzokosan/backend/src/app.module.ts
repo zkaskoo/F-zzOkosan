@@ -27,7 +27,10 @@ import { FollowsModule } from './follows/follows.module';
       isGlobal: true,
     }),
     ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', 'uploads'),
+      // A feltöltések a process.cwd()/uploads mappába kerülnek (Multer: './uploads'),
+      // ezért innen is kell kiszolgálni. A __dirname a fordítás után dist/src-re
+      // mutatna, ami hibás útvonalat adna.
+      rootPath: join(process.cwd(), 'uploads'),
       serveRoot: '/uploads',
       serveStaticOptions: {
         setHeaders: (res) => {

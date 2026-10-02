@@ -1,8 +1,9 @@
 /**
- * Validates that a URL string starts with http:// or https://.
- * Returns true only for valid HTTP(S) URLs, preventing javascript: URIs
- * and other potentially dangerous schemes.
+ * Validates an image URL. Elfogad abszolút http(s) URL-t, valamint a saját
+ * szerverről származó, relatív /uploads/... útvonalat (feltöltött és seed-képek).
+ * A javascript: és egyéb veszélyes sémák így továbbra is kiszűrődnek.
  */
 export function isValidImageUrl(url?: string | null): url is string {
-  return !!url && /^https?:\/\//.test(url);
+  if (!url) return false;
+  return /^https?:\/\//.test(url) || url.startsWith('/uploads/');
 }

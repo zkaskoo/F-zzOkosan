@@ -1,0 +1,6 @@
+# A DOMAIN környezeti változóból jön (.env). A Caddy automatikusan kér és
+# megújít Let's Encrypt tanúsítványt, és a HTTP-t HTTPS-re irányítja.
+{$DOMAIN} {
+	encode gzip
+	reverse_proxy nginx:80
+}

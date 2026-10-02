@@ -48,19 +48,36 @@ services:
       retries: 5
       start_period: 40s
 
-  # ---- Nginx: statikus frontend + reverse proxy ----
+  # ---- Nginx: statikus frontend + reverse proxy (belső; a Caddy proxyzza) ----
   nginx:
     build:
       context: ./frontend
       dockerfile: Dockerfile.prod
     restart: unless-stopped
-    ports:
-      - "80:80"
-      # HTTPS-hez (lásd DEPLOY-VPS.md): - "443:443"
+    expose:
+      - "80"
     depends_on:
       backend:
         condition: service_healthy
 
+  # ---- Caddy: nyilvános belépési pont, automatikus HTTPS (Let's Encrypt) ----
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      DOMAIN: ${DOMAIN}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - nginx
+
 volumes:
   postgres_data:
   uploads_data:
+  caddy_data:
+  caddy_config:

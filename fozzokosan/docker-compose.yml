@@ -5,15 +5,15 @@ services:
     container_name: fozzokosan-db
     restart: unless-stopped
     environment:
-      POSTGRES_USER: fozzokosan
-      POSTGRES_PASSWORD: fozzokosan123
-      POSTGRES_DB: fozzokosan
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
     ports:
       - "5433:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U fozzokosan"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -48,12 +48,12 @@ services:
     ports:
       - "3001:3001"
     environment:
-      DATABASE_URL: "postgresql://fozzokosan:fozzokosan123@postgres:5432/fozzokosan?schema=public"
-      JWT_SECRET: "${JWT_SECRET:-dev-secret-change-in-production}"
-      JWT_EXPIRES_IN: "7d"
+      DATABASE_URL: "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?schema=public"
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-7d}
       PORT: "3001"
       NODE_ENV: "development"
-      GEMINI_API_KEY: "${GEMINI_API_KEY:-}"
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
     volumes:
       - ./backend/src:/app/src
       - ./backend/prisma:/app/prisma

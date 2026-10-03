@@ -38,6 +38,7 @@ services:
       NODE_ENV: production
       PORT: "3001"
       GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      GEMINI_MODEL: ${GEMINI_MODEL:-}
       CORS_ORIGIN: ${CORS_ORIGIN:-}
       # Az emailekben szereplő linkek alapja (pl. https://domain vagy http://IP)
       APP_URL: ${APP_URL:-}

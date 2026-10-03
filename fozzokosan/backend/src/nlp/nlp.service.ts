@@ -89,9 +89,12 @@ export class NlpService {
     const apiKey = this.configService.get<string>('GEMINI_API_KEY');
     if (apiKey && apiKey !== 'your-gemini-api-key') {
       const genAI = new GoogleGenerativeAI(apiKey);
-      // gemini-2.5-flash: a 2026-os free tierben elérhető modell
-      // (a gemini-2.0-flash kvótája az új kulcsokon 0)
-      this.model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
+      // A modell env-ből felülírható (GEMINI_MODEL), mert a Google időnként
+      // kivezet régi modelleket új kulcsokhoz. Alapértelmezett: gemini-3.8-flash.
+      const modelName =
+        this.configService.get<string>('GEMINI_MODEL') || 'gemini-3.8-flash';
+      this.model = genAI.getGenerativeModel({ model: modelName });
+      this.logger.log(`Gemini modell: ${modelName}`);
     }
 
     const { conversions, fractions, aliases } =

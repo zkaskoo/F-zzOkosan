@@ -3,6 +3,7 @@ import type { CreateRecipeDto, Difficulty, Recipe, RecipeImportDraft } from '../
 import IngredientInput from './IngredientInput';
 import StepInput from './StepInput';
 import ErrorMessage from '../common/ErrorMessage';
+import ImageUpload from '../upload/ImageUpload';
 import { isValidImageUrl } from '../../utils/imageUrl';
 import { genId } from '../../utils/id';
 import type { IngredientFormItemWithId, StepFormItemWithId } from './formTypes';
@@ -151,17 +152,11 @@ export default function RecipeForm({ initialValues, initialDraft, onSubmit, isLo
         />
       </div>
 
-      <div>
-        <label htmlFor="recipe-image-url" className="block text-sm font-medium text-text mb-1">Kép URL</label>
-        <input
-          id="recipe-image-url"
-          type="url"
-          value={imageUrl}
-          onChange={(e) => setImageUrl(e.target.value)}
-          placeholder="https://example.com/kep.jpg"
-          className={inputClass}
-        />
-      </div>
+      <ImageUpload
+        value={imageUrl}
+        onChange={setImageUrl}
+        label="Recept képe"
+      />
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div>

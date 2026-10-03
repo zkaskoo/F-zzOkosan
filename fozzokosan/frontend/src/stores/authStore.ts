@@ -1,14 +1,14 @@
 import { create } from 'zustand';
 import { devtools, persist } from 'zustand/middleware';
 import { authApi } from '../services/api';
-import type { LoginCredentials, RegisterData, User } from '../types';
+import type { LoginCredentials, MessageResponse, RegisterData, User } from '../types';
 
 interface AuthState {
   user: User | null;
   token: string | null;
   isAuthenticated: boolean;
   login: (credentials: LoginCredentials) => Promise<void>;
-  register: (data: RegisterData) => Promise<void>;
+  register: (data: RegisterData) => Promise<MessageResponse>;
   logout: () => void;
 }
 
@@ -29,13 +29,9 @@ export const useAuthStore = create<AuthState>()(
           });
         },
 
+        // A regisztráció NEM jelentkeztet be: előbb meg kell erősíteni az emailt.
         register: async (data: RegisterData) => {
-          const response = await authApi.register(data);
-          set({
-            user: response.user,
-            token: response.accessToken,
-            isAuthenticated: true,
-          });
+          return authApi.register(data);
         },
 
         logout: () => {

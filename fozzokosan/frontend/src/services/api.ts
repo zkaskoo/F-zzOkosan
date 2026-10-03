@@ -1,5 +1,5 @@
 import axios from 'axios';
-import type { AuthResponse, Comment, CreateRecipeDto, Difficulty, FavoriteStatus, LikeStatus, LoginCredentials, MealType, MenuPlan, PaginatedResponse, Recipe, RecipeImportResult, RegisterData, ShoppingList, ShoppingListItem } from '../types';
+import type { AuthResponse, Comment, CreateRecipeDto, Difficulty, FavoriteStatus, LikeStatus, LoginCredentials, MealType, MenuPlan, MessageResponse, PaginatedResponse, Recipe, RecipeImportResult, RegisterData, ShoppingList, ShoppingListItem } from '../types';
 
 // Production: a Render backend abszolút URL-je a VITE_API_URL-ből (build-időben beégetve).
 // Helyi fejlesztés: VITE_API_URL nincs beállítva → relatív '/api' → a Vite proxy továbbítja.
@@ -57,8 +57,24 @@ export const authApi = {
     const { data } = await api.post<AuthResponse>('/auth/login', credentials);
     return data;
   },
-  register: async (registerData: RegisterData): Promise<AuthResponse> => {
-    const { data } = await api.post<AuthResponse>('/auth/register', registerData);
+  register: async (registerData: RegisterData): Promise<MessageResponse> => {
+    const { data } = await api.post<MessageResponse>('/auth/register', registerData);
+    return data;
+  },
+  verifyEmail: async (token: string): Promise<MessageResponse> => {
+    const { data } = await api.post<MessageResponse>('/auth/verify-email', { token });
+    return data;
+  },
+  resendVerification: async (email: string): Promise<MessageResponse> => {
+    const { data } = await api.post<MessageResponse>('/auth/resend-verification', { email });
+    return data;
+  },
+  forgotPassword: async (email: string): Promise<MessageResponse> => {
+    const { data } = await api.post<MessageResponse>('/auth/forgot-password', { email });
+    return data;
+  },
+  resetPassword: async (token: string, password: string): Promise<MessageResponse> => {
+    const { data } = await api.post<MessageResponse>('/auth/reset-password', { token, password });
     return data;
   },
 };

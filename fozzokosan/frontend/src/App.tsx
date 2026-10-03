@@ -4,6 +4,9 @@ import PrivateRoute from './components/common/PrivateRoute';
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
+import VerifyEmailPage from './pages/VerifyEmailPage';
+import ForgotPasswordPage from './pages/ForgotPasswordPage';
+import ResetPasswordPage from './pages/ResetPasswordPage';
 import RecipeListPage from './pages/RecipeListPage';
 import RecipeDetailPage from './pages/RecipeDetailPage';
 import CreateRecipePage from './pages/CreateRecipePage';
@@ -34,6 +37,9 @@ function App() {
           <Route path="/" element={<HomePage />} />
           <Route path="/bejelentkezes" element={<LoginPage />} />
           <Route path="/regisztracio" element={<RegisterPage />} />
+          <Route path="/verifikacio" element={<VerifyEmailPage />} />
+          <Route path="/elfelejtett-jelszo" element={<ForgotPasswordPage />} />
+          <Route path="/jelszo-visszaallitas" element={<ResetPasswordPage />} />
           <Route path="/receptek" element={<RecipeListPage />} />
           <Route path="/felhasznalok" element={<UsersPage />} />
 

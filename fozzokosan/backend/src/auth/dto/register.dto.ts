@@ -1,16 +1,22 @@
-import { IsEmail, IsString, MinLength, MaxLength, IsOptional } from 'class-validator';
+import {
+  IsEmail,
+  IsString,
+  MinLength,
+  MaxLength,
+  IsOptional,
+} from 'class-validator';
 
 export class RegisterDto {
-  @IsEmail({}, { message: 'Please provide a valid email address' })
+  @IsEmail({}, { message: 'Érvénytelen email-cím' })
   email: string;
 
   @IsString()
-  @MinLength(6, { message: 'Password must be at least 6 characters long' })
+  @MinLength(6, { message: 'A jelszó legalább 6 karakter legyen' })
   @MaxLength(100)
   password: string;
 
   @IsString()
-  @MinLength(2, { message: 'Name must be at least 2 characters long' })
+  @MinLength(2, { message: 'A név legalább 2 karakter legyen' })
   @MaxLength(50)
   name: string;
 

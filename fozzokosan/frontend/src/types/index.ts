@@ -148,6 +148,11 @@ export interface AuthResponse {
   user: User;
 }
 
+export interface MessageResponse {
+  message: string;
+  requiresVerification?: boolean;
+}
+
 export interface Comment {
   id: string;
   content: string;

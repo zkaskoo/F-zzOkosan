@@ -39,6 +39,15 @@ services:
       PORT: "3001"
       GEMINI_API_KEY: ${GEMINI_API_KEY:-}
       CORS_ORIGIN: ${CORS_ORIGIN:-}
+      # Az emailekben szereplő linkek alapja (pl. https://domain vagy http://IP)
+      APP_URL: ${APP_URL:-}
+      # SMTP (email-küldés). Üres SMTP_HOST esetén az emailek a logba kerülnek.
+      SMTP_HOST: ${SMTP_HOST:-}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_SECURE: ${SMTP_SECURE:-false}
+      SMTP_USER: ${SMTP_USER:-}
+      SMTP_PASS: ${SMTP_PASS:-}
+      MAIL_FROM: ${MAIL_FROM:-}
     volumes:
       # A feltöltött és seed-képek tartós tárolása
       - uploads_data:/app/uploads

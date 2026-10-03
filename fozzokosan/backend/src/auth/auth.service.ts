@@ -1,82 +1,80 @@
-import { Injectable, UnauthorizedException, ConflictException } from '@nestjs/common';
+import {
+  Injectable,
+  UnauthorizedException,
+  ConflictException,
+  ForbiddenException,
+  BadRequestException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { randomBytes } from 'crypto';
+import { TokenType } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
+import { MailService } from '../mail/mail.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import * as bcrypt from 'bcrypt';
+
+const VERIFICATION_TTL_MS = 24 * 60 * 60 * 1000; // 24 óra
+const RESET_TTL_MS = 60 * 60 * 1000; // 1 óra
+const GENERIC_OK = {
+  message:
+    'Ha létezik fiók ezzel az email-címmel, elküldtük rá a szükséges levelet.',
+};
 
 @Injectable()
 export class AuthService {
   constructor(
     private prisma: PrismaService,
     private jwtService: JwtService,
+    private mail: MailService,
   ) {}
 
   async register(registerDto: RegisterDto) {
     const { email, password, name, bio } = registerDto;
 
-    // Check if user already exists
     const existingUser = await this.prisma.user.findUnique({
       where: { email },
     });
-
     if (existingUser) {
-      throw new ConflictException('Email already registered');
+      throw new ConflictException('Ez az email-cím már regisztrálva van');
     }
 
-    // Hash password
-    const saltRounds = 10;
-    const passwordHash = await bcrypt.hash(password, saltRounds);
+    const passwordHash = await bcrypt.hash(password, 10);
 
-    // Create user
     const user = await this.prisma.user.create({
-      data: {
-        email,
-        passwordHash,
-        name,
-        bio,
-      },
-      select: {
-        id: true,
-        email: true,
-        name: true,
-        bio: true,
-        avatar: true,
-        createdAt: true,
-      },
+      data: { email, passwordHash, name, bio },
+      select: { id: true, email: true, name: true },
     });
 
-    // Generate JWT token
-    const token = this.generateToken(user.id, user.email);
+    await this.createAndSendVerification(user.id, user.email, user.name);
 
     return {
-      user,
-      accessToken: token,
+      requiresVerification: true,
+      message:
+        'Sikeres regisztráció! Küldtünk egy megerősítő emailt – kattints benne a linkre a belépéshez.',
     };
   }
 
   async login(loginDto: LoginDto) {
     const { email, password } = loginDto;
 
-    // Find user by email
-    const user = await this.prisma.user.findUnique({
-      where: { email },
-    });
-
+    const user = await this.prisma.user.findUnique({ where: { email } });
     if (!user) {
-      throw new UnauthorizedException('Invalid email or password');
+      throw new UnauthorizedException('Hibás email-cím vagy jelszó');
     }
 
-    // Verify password
     const isPasswordValid = await bcrypt.compare(password, user.passwordHash);
-
     if (!isPasswordValid) {
-      throw new UnauthorizedException('Invalid email or password');
+      throw new UnauthorizedException('Hibás email-cím vagy jelszó');
     }
 
-    // Generate JWT token
-    const token = this.generateToken(user.id, user.email);
+    if (!user.emailVerified) {
+      throw new ForbiddenException(
+        'Erősítsd meg az email-címed a belépéshez. Nézd meg a postaládád, vagy kérj új megerősítő emailt.',
+      );
+    }
 
+    const token = this.generateToken(user.id, user.email);
     return {
       user: {
         id: user.id,
@@ -88,6 +86,128 @@ export class AuthService {
       },
       accessToken: token,
     };
+  }
+
+  async verifyEmail(token: string) {
+    const record = await this.prisma.verificationToken.findUnique({
+      where: { token },
+    });
+
+    if (
+      !record ||
+      record.type !== TokenType.EMAIL_VERIFICATION ||
+      record.expiresAt < new Date()
+    ) {
+      throw new BadRequestException(
+        'Érvénytelen vagy lejárt megerősítő link. Kérj újat.',
+      );
+    }
+
+    await this.prisma.$transaction([
+      this.prisma.user.update({
+        where: { id: record.userId },
+        data: { emailVerified: true },
+      }),
+      this.prisma.verificationToken.deleteMany({
+        where: { userId: record.userId, type: TokenType.EMAIL_VERIFICATION },
+      }),
+    ]);
+
+    return {
+      message: 'Az email-címed sikeresen megerősítve. Most már beléphetsz.',
+    };
+  }
+
+  async resendVerification(email: string) {
+    const user = await this.prisma.user.findUnique({ where: { email } });
+    if (user && !user.emailVerified) {
+      await this.prisma.verificationToken.deleteMany({
+        where: { userId: user.id, type: TokenType.EMAIL_VERIFICATION },
+      });
+      await this.createAndSendVerification(user.id, user.email, user.name);
+    }
+    return GENERIC_OK;
+  }
+
+  async forgotPassword(email: string) {
+    const user = await this.prisma.user.findUnique({ where: { email } });
+    if (user) {
+      await this.prisma.verificationToken.deleteMany({
+        where: { userId: user.id, type: TokenType.PASSWORD_RESET },
+      });
+      const token = await this.createToken(
+        user.id,
+        TokenType.PASSWORD_RESET,
+        RESET_TTL_MS,
+      );
+      await this.mail.sendPasswordResetEmail(user.email, user.name, token);
+    }
+    return GENERIC_OK;
+  }
+
+  async resetPassword(token: string, newPassword: string) {
+    const record = await this.prisma.verificationToken.findUnique({
+      where: { token },
+    });
+
+    if (
+      !record ||
+      record.type !== TokenType.PASSWORD_RESET ||
+      record.expiresAt < new Date()
+    ) {
+      throw new BadRequestException(
+        'Érvénytelen vagy lejárt jelszó-visszaállító link. Kérj újat.',
+      );
+    }
+
+    const passwordHash = await bcrypt.hash(newPassword, 10);
+
+    await this.prisma.$transaction([
+      this.prisma.user.update({
+        where: { id: record.userId },
+        // A jelszó-reset egyben bizonyítja az email-cím feletti kontrollt
+        data: { passwordHash, emailVerified: true },
+      }),
+      this.prisma.verificationToken.deleteMany({
+        where: { userId: record.userId, type: TokenType.PASSWORD_RESET },
+      }),
+    ]);
+
+    return {
+      message: 'A jelszavad megváltozott. Most már beléphetsz az újjal.',
+    };
+  }
+
+  // ---- segédfüggvények ----
+
+  private async createAndSendVerification(
+    userId: string,
+    email: string,
+    name: string,
+  ): Promise<void> {
+    const token = await this.createToken(
+      userId,
+      TokenType.EMAIL_VERIFICATION,
+      VERIFICATION_TTL_MS,
+    );
+    await this.mail.sendVerificationEmail(email, name, token);
+  }
+
+  private async createToken(
+    userId: string,
+    type: TokenType,
+    ttlMs: number,
+  ): Promise<string> {
+    const token = randomBytes(32).toString('hex');
+    await this.prisma.verificationToken.create({
+      data: {
+        userId,
+        token,
+        type,
+        expiresAt: new Date(Date.now() + ttlMs),
+      },
+    });
+    return token;
   }
 
   private generateToken(userId: string, email: string): string {

@@ -1,8 +1,10 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
+import { MailCheck } from 'lucide-react';
 import { useAuthStore } from '../stores/authStore';
 import AnimatedBackground from '../components/layout/AnimatedBackground';
 import ErrorMessage from '../components/common/ErrorMessage';
+import { getApiErrorMessage } from '../utils/apiError';
 
 export default function RegisterPage() {
   const [name, setName] = useState('');
@@ -11,8 +13,8 @@ export default function RegisterPage() {
   const [bio, setBio] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
   const register = useAuthStore((s) => s.register);
-  const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -21,13 +23,37 @@ export default function RegisterPage() {
 
     try {
       await register({ name, email, password, bio: bio.trim() || undefined });
-      navigate('/');
-    } catch {
-      setError('A regisztráció sikertelen. Kérjük, próbáld újra.');
+      setSubmitted(true);
+    } catch (err) {
+      setError(getApiErrorMessage(err, 'A regisztráció sikertelen. Kérjük, próbáld újra.'));
     } finally {
       setIsLoading(false);
     }
   };
+
+  if (submitted) {
+    return (
+      <div className="flex min-h-screen items-center justify-center px-4">
+        <AnimatedBackground />
+        <div className="glass w-full max-w-md rounded-2xl p-8 animate-fade-in text-center">
+          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-primary/10">
+            <MailCheck className="h-7 w-7 text-primary" />
+          </div>
+          <h1 className="text-2xl font-bold text-text mb-3">Erősítsd meg az emailed</h1>
+          <p className="text-text-secondary text-sm mb-6">
+            Küldtünk egy megerősítő emailt a(z) <span className="font-medium text-text">{email}</span> címre.
+            Kattints a benne lévő linkre, hogy aktiváld a fiókod és beléphess.
+          </p>
+          <p className="text-xs text-text-secondary mb-6">
+            Nem jött meg? Nézd meg a spam mappát is, vagy kérj új emailt a bejelentkezési oldalon.
+          </p>
+          <Link to="/bejelentkezes" className="btn-primary w-full inline-block">
+            Tovább a bejelentkezéshez
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex min-h-screen items-center justify-center px-4">

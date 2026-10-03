@@ -116,7 +116,7 @@ export class NlpService {
     }
 
     try {
-      const result = await this.model.generateContent(
+      const result = await this.generateContentWithRetry(
         SYSTEM_PROMPT + '\n\nBemenet:\n' + text,
       );
 
@@ -245,7 +245,7 @@ export class NlpService {
     }
 
     try {
-      const result = await this.model.generateContent(
+      const result = await this.generateContentWithRetry(
         RECIPE_SYSTEM_PROMPT + '\n\nBemenet:\n' + clean,
       );
       const response = result.response.text();
@@ -358,6 +358,37 @@ export class NlpService {
       .find((l) => l.length > 0);
     if (!firstLine) return null;
     return firstLine.length > 100 ? firstLine.slice(0, 100) : firstLine;
+  }
+
+  /**
+   * Gemini-hívás újrapróbálkozással átmeneti hibákra (503 túlterheltség, 429).
+   * Rövid, növekvő várakozással (1s, 2s) próbálkozik újra.
+   */
+  private async generateContentWithRetry(
+    prompt: string,
+    attempts = 3,
+  ): Promise<any> {
+    let lastError: unknown;
+    for (let i = 0; i < attempts; i++) {
+      try {
+        return await this.model.generateContent(prompt);
+      } catch (error) {
+        lastError = error;
+        const msg = String(error);
+        const transient =
+          msg.includes('503') ||
+          msg.includes('429') ||
+          msg.includes('overloaded') ||
+          msg.includes('high demand') ||
+          msg.includes('Service Unavailable');
+        if (!transient || i === attempts - 1) throw error;
+        this.logger.warn(
+          `Gemini átmeneti hiba, újrapróbálkozás (${i + 1}/${attempts - 1})...`,
+        );
+        await new Promise((resolve) => setTimeout(resolve, 1000 * (i + 1)));
+      }
+    }
+    throw lastError;
   }
 
   isConfigured(): boolean {

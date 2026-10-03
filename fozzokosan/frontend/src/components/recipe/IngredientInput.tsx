@@ -2,6 +2,7 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 import { Trash2, Wand2 } from 'lucide-react';
 import type { IngredientFormItemWithId } from './formTypes';
 import { ingredientApi, nlpApi, type IngredientSuggestion } from '../../services/api';
+import { genId } from '../../utils/id';
 
 const HUNGARIAN_UNITS = [
   { value: 'g', label: 'g (gramm)' },
@@ -174,7 +175,7 @@ export default function IngredientInput({ ingredients, onChange }: IngredientInp
   };
 
   const handleAdd = () => {
-    onChange([...ingredients, { id: crypto.randomUUID(), ingredientName: '', quantity: 0, unit: '', isOptional: false }]);
+    onChange([...ingredients, { id: genId(), ingredientName: '', quantity: 0, unit: '', isOptional: false }]);
   };
 
   const handleRemove = (id: string) => {
@@ -189,7 +190,7 @@ export default function IngredientInput({ ingredients, onChange }: IngredientInp
       const parsed = await nlpApi.parseIngredients(freeText);
       if (parsed.length > 0) {
         const newItems: IngredientFormItemWithId[] = parsed.map((p) => ({
-          id: crypto.randomUUID(),
+          id: genId(),
           ingredientName: p.name,
           // null mennyiség = "ízlés szerint" → opcionális hozzávaló
           quantity: p.quantity ?? 0,

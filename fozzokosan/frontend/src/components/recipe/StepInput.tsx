@@ -1,5 +1,6 @@
 import { Trash2 } from 'lucide-react';
 import type { StepFormItemWithId } from './formTypes';
+import { genId } from '../../utils/id';
 
 interface StepInputProps {
   steps: StepFormItemWithId[];
@@ -15,7 +16,7 @@ export default function StepInput({ steps, onChange }: StepInputProps) {
   };
 
   const handleAdd = () => {
-    onChange([...steps, { id: crypto.randomUUID(), stepNumber: steps.length + 1, instruction: '' }]);
+    onChange([...steps, { id: genId(), stepNumber: steps.length + 1, instruction: '' }]);
   };
 
   const handleRemove = (id: string) => {

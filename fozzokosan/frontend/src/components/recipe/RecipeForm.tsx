@@ -4,6 +4,7 @@ import IngredientInput from './IngredientInput';
 import StepInput from './StepInput';
 import ErrorMessage from '../common/ErrorMessage';
 import { isValidImageUrl } from '../../utils/imageUrl';
+import { genId } from '../../utils/id';
 import type { IngredientFormItemWithId, StepFormItemWithId } from './formTypes';
 
 interface RecipeFormProps {
@@ -17,7 +18,7 @@ interface RecipeFormProps {
 function initIngredients(recipe?: Recipe, draft?: RecipeImportDraft): IngredientFormItemWithId[] {
   if (recipe && recipe.ingredients.length > 0) {
     return recipe.ingredients.map((ing) => ({
-      id: crypto.randomUUID(),
+      id: genId(),
       ingredientName: ing.ingredient.name,
       quantity: ing.quantity,
       unit: ing.unit,
@@ -27,7 +28,7 @@ function initIngredients(recipe?: Recipe, draft?: RecipeImportDraft): Ingredient
   }
   if (draft && draft.ingredients.length > 0) {
     return draft.ingredients.map((ing) => ({
-      id: crypto.randomUUID(),
+      id: genId(),
       ingredientName: ing.name,
       quantity: ing.quantity ?? 0,
       unit: ing.unit,
@@ -35,7 +36,7 @@ function initIngredients(recipe?: Recipe, draft?: RecipeImportDraft): Ingredient
       isOptional: false,
     }));
   }
-  return [{ id: crypto.randomUUID(), ingredientName: '', quantity: 0, unit: '', isOptional: false }];
+  return [{ id: genId(), ingredientName: '', quantity: 0, unit: '', isOptional: false }];
 }
 
 function initSteps(recipe?: Recipe, draft?: RecipeImportDraft): StepFormItemWithId[] {
@@ -43,19 +44,19 @@ function initSteps(recipe?: Recipe, draft?: RecipeImportDraft): StepFormItemWith
     return recipe.steps
       .sort((a, b) => a.stepNumber - b.stepNumber)
       .map((s) => ({
-        id: crypto.randomUUID(),
+        id: genId(),
         stepNumber: s.stepNumber,
         instruction: s.instruction,
       }));
   }
   if (draft && draft.steps.length > 0) {
     return draft.steps.map((instruction, i) => ({
-      id: crypto.randomUUID(),
+      id: genId(),
       stepNumber: i + 1,
       instruction,
     }));
   }
-  return [{ id: crypto.randomUUID(), stepNumber: 1, instruction: '' }];
+  return [{ id: genId(), stepNumber: 1, instruction: '' }];
 }
 
 export default function RecipeForm({ initialValues, initialDraft, onSubmit, isLoading }: RecipeFormProps) {

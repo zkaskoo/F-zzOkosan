@@ -1,5 +1,6 @@
 import {
   Injectable,
+  Logger,
   UnauthorizedException,
   ConflictException,
   ForbiddenException,
@@ -23,6 +24,8 @@ const GENERIC_OK = {
 
 @Injectable()
 export class AuthService {
+  private readonly logger = new Logger(AuthService.name);
+
   constructor(
     private prisma: PrismaService,
     private jwtService: JwtService,
@@ -140,7 +143,13 @@ export class AuthService {
         TokenType.PASSWORD_RESET,
         RESET_TTL_MS,
       );
-      await this.mail.sendPasswordResetEmail(user.email, user.name, token);
+      try {
+        await this.mail.sendPasswordResetEmail(user.email, user.name, token);
+      } catch (error) {
+        this.logger.error(
+          `Jelszó-reset email küldése sikertelen (${user.email}): ${String(error)}`,
+        );
+      }
     }
     return GENERIC_OK;
   }
@@ -190,7 +199,15 @@ export class AuthService {
       TokenType.EMAIL_VERIFICATION,
       VERIFICATION_TTL_MS,
     );
-    await this.mail.sendVerificationEmail(email, name, token);
+    // Az email-küldés hibája NE buktassa el a regisztrációt – a felhasználó
+    // létrejön, és később újraküldheti a megerősítő emailt.
+    try {
+      await this.mail.sendVerificationEmail(email, name, token);
+    } catch (error) {
+      this.logger.error(
+        `Megerősítő email küldése sikertelen (${email}): ${String(error)}`,
+      );
+    }
   }
 
   private async createToken(

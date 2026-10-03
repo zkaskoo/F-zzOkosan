@@ -2,41 +2,67 @@ import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as nodemailer from 'nodemailer';
 
+type Provider = 'resend' | 'sendgrid' | 'smtp' | 'none';
+
 @Injectable()
 export class MailService {
   private readonly logger = new Logger(MailService.name);
+  private provider: Provider = 'none';
   private transporter: nodemailer.Transporter | null = null;
-  private readonly from: string;
+  private readonly fromRaw: string;
+  private readonly fromEmail: string;
+  private readonly fromName: string;
   private readonly appUrl: string;
+  private readonly resendKey?: string;
+  private readonly sendgridKey?: string;
 
   constructor(private config: ConfigService) {
-    this.from =
+    this.fromRaw =
       this.config.get<string>('MAIL_FROM') ||
       'FőzzOkosan <no-reply@fozzokosan.local>';
+    const parsed = this.parseFrom(this.fromRaw);
+    this.fromEmail = parsed.email;
+    this.fromName = parsed.name;
+
     this.appUrl = (
       this.config.get<string>('APP_URL') || 'http://localhost:3000'
     ).replace(/\/$/, '');
 
-    const host = this.config.get<string>('SMTP_HOST');
-    if (host) {
+    this.resendKey = this.config.get<string>('RESEND_API_KEY') || undefined;
+    this.sendgridKey = this.config.get<string>('SENDGRID_API_KEY') || undefined;
+    const smtpHost = this.config.get<string>('SMTP_HOST');
+
+    if (this.resendKey) {
+      this.provider = 'resend';
+    } else if (this.sendgridKey) {
+      this.provider = 'sendgrid';
+    } else if (smtpHost) {
+      this.provider = 'smtp';
       this.transporter = nodemailer.createTransport({
-        host,
+        host: smtpHost,
         port: parseInt(this.config.get<string>('SMTP_PORT') || '587', 10),
-        secure: this.config.get<string>('SMTP_SECURE') === 'true', // 465 esetén true
+        secure: this.config.get<string>('SMTP_SECURE') === 'true',
         auth: {
           user: this.config.get<string>('SMTP_USER'),
           pass: this.config.get<string>('SMTP_PASS'),
         },
+        // Gyors bukás, ha a kapcsolat nem jön létre (pl. blokkolt port)
+        connectionTimeout: 10000,
+        greetingTimeout: 10000,
+        socketTimeout: 15000,
       });
-    } else {
+    }
+
+    this.logger.log(`Email szolgáltató: ${this.provider}`);
+    if (this.provider === 'none') {
       this.logger.warn(
-        'SMTP nincs konfigurálva (SMTP_HOST hiányzik). Az emailek tartalma a logba kerül.',
+        'Nincs email szolgáltató konfigurálva. Az emailek tartalma (link) a logba kerül.',
       );
     }
   }
 
   isConfigured(): boolean {
-    return !!this.transporter;
+    return this.provider !== 'none';
   }
 
   async sendVerificationEmail(
@@ -45,15 +71,18 @@ export class MailService {
     token: string,
   ): Promise<void> {
     const link = `${this.appUrl}/verifikacio?token=${token}`;
-    const subject = 'Erősítsd meg az email-címed – FőzzOkosan';
-    const html = this.layout(
-      `Szia ${this.escape(name)}!`,
-      `Köszönjük a regisztrációt a FőzzOkosanon. A fiókod aktiválásához erősítsd meg az email-címed:`,
-      'Email megerősítése',
+    await this.send(
+      to,
+      'Erősítsd meg az email-címed – FőzzOkosan',
+      this.layout(
+        `Szia ${this.escape(name)}!`,
+        'Köszönjük a regisztrációt a FőzzOkosanon. A fiókod aktiválásához erősítsd meg az email-címed:',
+        'Email megerősítése',
+        link,
+        'Ha nem te regisztráltál, hagyd figyelmen kívül ezt a levelet.',
+      ),
       link,
-      'Ha nem te regisztráltál, hagyd figyelmen kívül ezt a levelet.',
     );
-    await this.send(to, subject, html, link);
   }
 
   async sendPasswordResetEmail(
@@ -62,15 +91,18 @@ export class MailService {
     token: string,
   ): Promise<void> {
     const link = `${this.appUrl}/jelszo-visszaallitas?token=${token}`;
-    const subject = 'Jelszó visszaállítása – FőzzOkosan';
-    const html = this.layout(
-      `Szia ${this.escape(name)}!`,
-      `Jelszó-visszaállítást kértél. Kattints az alábbi gombra az új jelszó beállításához. A link 1 óráig érvényes:`,
-      'Új jelszó beállítása',
+    await this.send(
+      to,
+      'Jelszó visszaállítása – FőzzOkosan',
+      this.layout(
+        `Szia ${this.escape(name)}!`,
+        'Jelszó-visszaállítást kértél. Kattints a gombra az új jelszó beállításához. A link 1 óráig érvényes:',
+        'Új jelszó beállítása',
+        link,
+        'Ha nem te kérted, hagyd figyelmen kívül ezt a levelet – a jelszavad változatlan marad.',
+      ),
       link,
-      'Ha nem te kérted, hagyd figyelmen kívül ezt a levelet – a jelszavad változatlan marad.',
     );
-    await this.send(to, subject, html, link);
   }
 
   private async send(
@@ -79,19 +111,80 @@ export class MailService {
     html: string,
     link: string,
   ): Promise<void> {
-    if (!this.transporter) {
-      // Fallback fejlesztéshez: nincs SMTP, csak logoljuk a linket
-      this.logger.warn(`[EMAIL NEM KÜLDVE – nincs SMTP] ${to} | ${subject}`);
-      this.logger.warn(`[EMAIL LINK] ${link}`);
-      return;
+    switch (this.provider) {
+      case 'resend':
+        await this.sendViaResend(to, subject, html);
+        break;
+      case 'sendgrid':
+        await this.sendViaSendgrid(to, subject, html);
+        break;
+      case 'smtp':
+        await this.transporter!.sendMail({
+          from: this.fromRaw,
+          to,
+          subject,
+          html,
+        });
+        break;
+      default:
+        this.logger.warn(
+          `[EMAIL NEM KÜLDVE – nincs szolgáltató] ${to} | ${subject}`,
+        );
+        this.logger.warn(`[EMAIL LINK] ${link}`);
+        return;
     }
-    try {
-      await this.transporter.sendMail({ from: this.from, to, subject, html });
-      this.logger.log(`Email elküldve: ${to} | ${subject}`);
-    } catch (error) {
-      this.logger.error(`Email küldési hiba (${to}): ${String(error)}`);
-      throw error;
+    this.logger.log(`Email elküldve (${this.provider}): ${to} | ${subject}`);
+  }
+
+  private async sendViaResend(
+    to: string,
+    subject: string,
+    html: string,
+  ): Promise<void> {
+    const res = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${this.resendKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ from: this.fromRaw, to, subject, html }),
+      signal: AbortSignal.timeout(15000),
+    });
+    if (!res.ok) {
+      throw new Error(`Resend API ${res.status}: ${await res.text()}`);
     }
+  }
+
+  private async sendViaSendgrid(
+    to: string,
+    subject: string,
+    html: string,
+  ): Promise<void> {
+    const res = await fetch('https://api.sendgrid.com/v3/mail/send', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${this.sendgridKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        personalizations: [{ to: [{ email: to }] }],
+        from: { email: this.fromEmail, name: this.fromName },
+        subject,
+        content: [{ type: 'text/html', value: html }],
+      }),
+      signal: AbortSignal.timeout(15000),
+    });
+    if (!res.ok) {
+      throw new Error(`SendGrid API ${res.status}: ${await res.text()}`);
+    }
+  }
+
+  private parseFrom(raw: string): { email: string; name: string } {
+    const match = raw.match(/^\s*(.*?)\s*<([^>]+)>\s*$/);
+    if (match) {
+      return { name: match[1] || 'FőzzOkosan', email: match[2].trim() };
+    }
+    return { name: 'FőzzOkosan', email: raw.trim() };
   }
 
   private layout(

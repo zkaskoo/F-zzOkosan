@@ -227,23 +227,40 @@ export default function RecipeDetailPage() {
                 </div>
 
                 <ul className="space-y-2">
-                  {recipe.ingredients.map((ing) => (
-                    <li key={ing.id} className="flex items-start gap-2 text-sm">
-                      <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-primary shrink-0" />
-                      <span className="text-text">
-                        <span className="font-medium">
-                          {formatQuantity(ing.quantity * scaleFactor)} {ing.unit}
-                        </span>{' '}
-                        {ing.ingredient.name}
-                        {ing.isOptional && (
-                          <span className="text-text-secondary ml-1">(opcionális)</span>
-                        )}
-                        {ing.notes && (
-                          <span className="text-text-secondary ml-1">- {ing.notes}</span>
-                        )}
-                      </span>
-                    </li>
-                  ))}
+                  {recipe.ingredients.map((ing) => {
+                    const amount = ing.quantity * scaleFactor;
+                    // 0 (vagy hiányzó) mennyiség → "ízlés szerint"
+                    const toTaste = !amount || amount <= 0;
+                    const hasTasteNote = ing.notes
+                      ? /ízl[eé]s szerint/i.test(ing.notes)
+                      : false;
+                    return (
+                      <li key={ing.id} className="flex items-start gap-2 text-sm">
+                        <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-primary shrink-0" />
+                        <span className="text-text">
+                          {toTaste ? (
+                            <>
+                              {ing.ingredient.name}
+                              <span className="text-text-secondary ml-1">– ízlés szerint</span>
+                            </>
+                          ) : (
+                            <>
+                              <span className="font-medium">
+                                {formatQuantity(amount)} {ing.unit}
+                              </span>{' '}
+                              {ing.ingredient.name}
+                            </>
+                          )}
+                          {ing.isOptional && (
+                            <span className="text-text-secondary ml-1">(opcionális)</span>
+                          )}
+                          {ing.notes && !(toTaste && hasTasteNote) && (
+                            <span className="text-text-secondary ml-1">- {ing.notes}</span>
+                          )}
+                        </span>
+                      </li>
+                    );
+                  })}
                 </ul>
               </div>
             </div>

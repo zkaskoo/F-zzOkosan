@@ -245,23 +245,6 @@ export const menuPlanApi = {
   },
 };
 
-export interface UserListItem {
-  id: string;
-  name: string;
-  bio: string | null;
-  avatar: string | null;
-  _count: { recipes: number; followers: number };
-}
-
-export const userApi = {
-  list: async (search?: string): Promise<UserListItem[]> => {
-    const { data } = await api.get<UserListItem[]>('/users', {
-      params: search ? { search } : undefined,
-    });
-    return data;
-  },
-};
-
 export const followApi = {
   getStatus: async (userId: string): Promise<{ following: boolean }> => {
     const { data } = await api.get<{ following: boolean }>(`/users/${userId}/follow`);

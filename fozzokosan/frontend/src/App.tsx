@@ -18,7 +18,6 @@ import CreateShoppingListPage from './pages/CreateShoppingListPage';
 import MenuPlansPage from './pages/MenuPlansPage';
 import MenuPlanDetailPage from './pages/MenuPlanDetailPage';
 import FavoritesPage from './pages/FavoritesPage';
-import UsersPage from './pages/UsersPage';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -41,7 +40,6 @@ function App() {
           <Route path="/elfelejtett-jelszo" element={<ForgotPasswordPage />} />
           <Route path="/jelszo-visszaallitas" element={<ResetPasswordPage />} />
           <Route path="/receptek" element={<RecipeListPage />} />
-          <Route path="/felhasznalok" element={<UsersPage />} />
 
           {/* Protected routes - static paths before dynamic */}
           <Route element={<PrivateRoute />}>

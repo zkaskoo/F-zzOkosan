@@ -5,7 +5,6 @@ import {
   Patch,
   Param,
   Delete,
-  Query,
   UseGuards,
   Request,
 } from '@nestjs/common';
@@ -16,11 +15,6 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
-
-  @Get()
-  findAll(@Query('search') search?: string) {
-    return this.usersService.findAll(search);
-  }
 
   @Get('me')
   @UseGuards(JwtAuthGuard)

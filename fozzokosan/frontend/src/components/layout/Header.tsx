@@ -1,5 +1,5 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { ChefHat, LogOut, Plus, ShoppingCart, CalendarDays, Users, Bookmark } from 'lucide-react';
+import { ChefHat, LogOut, Plus, ShoppingCart, CalendarDays, Bookmark } from 'lucide-react';
 import { useAuthStore } from '../../stores/authStore';
 
 export default function Header() {
@@ -23,10 +23,6 @@ export default function Header() {
           <nav className="header-nav">
             <Link to="/receptek" className="nav-link">
               Receptek
-            </Link>
-            <Link to="/felhasznalok" className="nav-link">
-              <Users className="h-4 w-4" />
-              Felhasználók
             </Link>
             {isAuthenticated && (
               <>

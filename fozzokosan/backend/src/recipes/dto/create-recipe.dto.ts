@@ -8,7 +8,7 @@ import {
   IsEnum,
   IsBoolean,
   IsArray,
-  IsUrl,
+  Matches,
   ValidateNested,
 } from 'class-validator';
 import { Type } from 'class-transformer';
@@ -28,7 +28,10 @@ export class CreateRecipeDto {
   description?: string;
 
   @IsOptional()
-  @IsUrl()
+  @IsString()
+  @Matches(/^(https?:\/\/|\/uploads\/)/, {
+    message: 'A kép http(s):// címmel vagy /uploads/ útvonallal kezdődjön',
+  })
   imageUrl?: string;
 
   @IsOptional()

@@ -4,7 +4,7 @@ import {
   MinLength,
   Min,
   IsOptional,
-  IsUrl,
+  Matches,
 } from 'class-validator';
 
 export class CreateRecipeStepDto {
@@ -17,6 +17,9 @@ export class CreateRecipeStepDto {
   instruction: string;
 
   @IsOptional()
-  @IsUrl()
+  @IsString()
+  @Matches(/^(https?:\/\/|\/uploads\/)/, {
+    message: 'A kép http(s):// címmel vagy /uploads/ útvonallal kezdődjön',
+  })
   imageUrl?: string;
 }

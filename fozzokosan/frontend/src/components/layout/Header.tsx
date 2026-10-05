@@ -63,10 +63,17 @@ export default function Header() {
               </>
             ) : (
               <>
-                <Link to="/bejelentkezes" className="btn-secondary text-sm">
-                  Bejelentkezés
+                <Link
+                  to="/bejelentkezes"
+                  className="btn-secondary text-sm whitespace-nowrap !px-3 !py-1.5 sm:!px-4 sm:!py-2"
+                >
+                  <span className="sm:hidden">Belépés</span>
+                  <span className="hidden sm:inline">Bejelentkezés</span>
                 </Link>
-                <Link to="/regisztracio" className="btn-primary text-sm">
+                <Link
+                  to="/regisztracio"
+                  className="btn-primary text-sm whitespace-nowrap !px-3 !py-1.5 sm:!px-4 sm:!py-2"
+                >
                   Regisztráció
                 </Link>
               </>

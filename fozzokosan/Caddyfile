@@ -4,3 +4,8 @@
 	encode gzip
 	reverse_proxy nginx:80
 }
+
+# www átirányítása a fő domainre (mindkettőre kér tanúsítványt a Caddy).
+www.{$DOMAIN} {
+	redir https://{$DOMAIN}{uri} permanent
+}

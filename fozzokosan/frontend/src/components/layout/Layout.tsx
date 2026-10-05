@@ -11,7 +11,7 @@ export default function Layout({ children }: LayoutProps) {
       <Header />
       <main className="flex-1">{children}</main>
       <footer className="border-t border-gray-200 py-6 text-center text-sm text-text-secondary">
-        FozzOkosan &copy; {new Date().getFullYear()}
+        &copy; {new Date().getFullYear()} FőzzOkosan. Minden jog fenntartva.
       </footer>
     </div>
   );

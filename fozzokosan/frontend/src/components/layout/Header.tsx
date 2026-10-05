@@ -17,7 +17,7 @@ export default function Header() {
         <div className="header-bar">
           <Link to="/" className="header-logo">
             <ChefHat className="h-7 w-7" />
-            FozzOkosan
+            OkosanFőzz
           </Link>
 
           <nav className="header-nav">

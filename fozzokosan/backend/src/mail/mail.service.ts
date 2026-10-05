@@ -19,7 +19,7 @@ export class MailService {
   constructor(private config: ConfigService) {
     this.fromRaw =
       this.config.get<string>('MAIL_FROM') ||
-      'FőzzOkosan <no-reply@fozzokosan.local>';
+      'OkosanFőzz <no-reply@okosanfozz.hu>';
     const parsed = this.parseFrom(this.fromRaw);
     this.fromEmail = parsed.email;
     this.fromName = parsed.name;
@@ -73,10 +73,10 @@ export class MailService {
     const link = `${this.appUrl}/verifikacio?token=${token}`;
     await this.send(
       to,
-      'Erősítsd meg az email-címed – FőzzOkosan',
+      'Erősítsd meg az email-címed – OkosanFőzz',
       this.layout(
         `Szia ${this.escape(name)}!`,
-        'Köszönjük a regisztrációt a FőzzOkosanon. A fiókod aktiválásához erősítsd meg az email-címed:',
+        'Köszönjük a regisztrációt az OkosanFőzz oldalon. A fiókod aktiválásához erősítsd meg az email-címed:',
         'Email megerősítése',
         link,
         'Ha nem te regisztráltál, hagyd figyelmen kívül ezt a levelet.',
@@ -93,7 +93,7 @@ export class MailService {
     const link = `${this.appUrl}/jelszo-visszaallitas?token=${token}`;
     await this.send(
       to,
-      'Jelszó visszaállítása – FőzzOkosan',
+      'Jelszó visszaállítása – OkosanFőzz',
       this.layout(
         `Szia ${this.escape(name)}!`,
         'Jelszó-visszaállítást kértél. Kattints a gombra az új jelszó beállításához. A link 1 óráig érvényes:',
@@ -182,9 +182,9 @@ export class MailService {
   private parseFrom(raw: string): { email: string; name: string } {
     const match = raw.match(/^\s*(.*?)\s*<([^>]+)>\s*$/);
     if (match) {
-      return { name: match[1] || 'FőzzOkosan', email: match[2].trim() };
+      return { name: match[1] || 'OkosanFőzz', email: match[2].trim() };
     }
-    return { name: 'FőzzOkosan', email: raw.trim() };
+    return { name: 'OkosanFőzz', email: raw.trim() };
   }
 
   private layout(
@@ -196,7 +196,7 @@ export class MailService {
   ): string {
     return `
 <div style="font-family:Arial,Helvetica,sans-serif;max-width:480px;margin:0 auto;padding:24px;color:#1f2937;">
-  <h1 style="color:#f97316;font-size:22px;margin:0 0 16px;">FőzzOkosan</h1>
+  <h1 style="color:#f97316;font-size:22px;margin:0 0 16px;">OkosanFőzz</h1>
   <p style="font-size:16px;margin:0 0 8px;">${greeting}</p>
   <p style="font-size:15px;line-height:1.5;margin:0 0 20px;">${intro}</p>
   <p style="margin:0 0 20px;">

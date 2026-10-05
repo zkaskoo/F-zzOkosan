@@ -28,11 +28,13 @@ export default function CreateShoppingListPage() {
   const [search, setSearch] = useState('');
   const [selectedRecipeIds, setSelectedRecipeIds] = useState<string[]>([]);
   const [excludeAllergens, setExcludeAllergens] = useState<Allergen[]>([]);
+  const [error, setError] = useState<string | null>(null);
 
   const { data: recipesData, isLoading } = useRecipes({ search, limit: 50 });
   const generateMutation = useGenerateShoppingList();
 
   const toggleRecipe = (id: string) => {
+    setError(null);
     setSelectedRecipeIds((prev) =>
       prev.includes(id) ? prev.filter((r) => r !== id) : [...prev, id],
     );
@@ -45,7 +47,15 @@ export default function CreateShoppingListPage() {
   };
 
   const handleSubmit = () => {
-    if (!name.trim() || selectedRecipeIds.length === 0) return;
+    setError(null);
+    if (!name.trim()) {
+      setError('Adj meg egy nevet a listának.');
+      return;
+    }
+    if (selectedRecipeIds.length === 0) {
+      setError('Válassz legalább egy receptet a listához.');
+      return;
+    }
     const payload = {
       name: name.trim(),
       recipeIds: selectedRecipeIds,
@@ -76,7 +86,10 @@ export default function CreateShoppingListPage() {
           <input
             type="text"
             value={name}
-            onChange={(e) => setName(e.target.value)}
+            onChange={(e) => {
+              setName(e.target.value);
+              setError(null);
+            }}
             placeholder="pl. Hétvégi bevásárlás"
             className="input w-full"
           />
@@ -140,7 +153,10 @@ export default function CreateShoppingListPage() {
           )}
         </div>
 
-        {/* Error */}
+        {/* Validation + error üzenetek */}
+        {error && (
+          <p className="text-sm text-red-600 mb-2">{error}</p>
+        )}
         {generateMutation.isError && (
           <p className="text-sm text-red-600 mb-2">
             Hiba történt a lista generálásakor. Kérjük, próbáld újra.
@@ -155,7 +171,7 @@ export default function CreateShoppingListPage() {
           <button
             type="button"
             onClick={handleSubmit}
-            disabled={!name.trim() || selectedRecipeIds.length === 0 || generateMutation.isPending}
+            disabled={generateMutation.isPending}
             className="btn-primary flex items-center gap-2 text-sm disabled:opacity-50"
           >
             <ShoppingCart className="h-4 w-4" />

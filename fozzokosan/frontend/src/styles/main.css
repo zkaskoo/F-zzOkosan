@@ -97,3 +97,13 @@ body {
     transform: translateY(0);
   }
 }
+
+/* iOS Safari: a 16px-nél kisebb betűméretű beviteli mezők fókuszkor automatikus
+   benagyítást okoznak. Mobilon 16px-re állítjuk, hogy ne zoomoljon be a böngésző. */
+@media (max-width: 640px) {
+  input,
+  textarea,
+  select {
+    font-size: 16px !important;
+  }
+}

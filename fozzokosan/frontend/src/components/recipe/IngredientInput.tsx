@@ -13,6 +13,7 @@ const HUNGARIAN_UNITS = [
   { value: 'l', label: 'l (liter)' },
   { value: 'ek', label: 'ek (evőkanál)' },
   { value: 'tk', label: 'tk (teáskanál)' },
+  { value: 'kk', label: 'kk (kávéskanál)' },
   { value: 'csésze', label: 'csésze' },
   { value: 'csipet', label: 'csipet' },
   { value: 'db', label: 'db (darab)' },

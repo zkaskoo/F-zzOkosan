@@ -29,12 +29,12 @@ A felhasználó magyar nyelvű szabadszöveges hozzávalólistát ad meg, és ne
 Minden elemnek tartalmaznia kell:
 - "name": a hozzávaló neve (kisbetűvel, magyarul)
 - "quantity": a mennyiség (szám, pl. 0.5 ha "fél"), vagy null ha nincs konkrét mennyiség
-- "unit": az egység (g, kg, dkg, ml, dl, l, ek, tk, db, csésze, csipet, gerezd, szál, fej, csokor, csomag, szelet)
+- "unit": az egység (g, kg, dkg, ml, dl, l, ek, tk, kk, db, csésze, csipet, gerezd, szál, fej, csokor, csomag, szelet)
 - "notes": opcionális megjegyzés (pl. "finomra vágva", "apróra kockázva")
 
 Magyar szóalakok kezelése:
 - "fél" = 0.5, "negyed" = 0.25, "másfél" = 1.5
-- "evőkanál" = "ek", "teáskanál" = "tk", "darab" = "db"
+- "evőkanál" = "ek", "teáskanál" = "tk", "kávéskanál" = "kk", "darab" = "db"
 - "kiló" / "kilogramm" = "kg", "deka" / "dekagramm" = "dkg"
 - "ízlés szerint" = quantity: null, unit: ""
 - tartomány (pl. "1-2 gerezd") = a két érték átlaga (1.5)
@@ -64,8 +64,8 @@ Nyerd ki belőle a receptet, és CSAK egy JSON objektumot adj vissza a következ
 
 Egység- és mennyiség-szabályok (mint a hozzávaló-elemzésnél):
 - "fél" = 0.5, "negyed" = 0.25, "másfél" = 1.5
-- egységek: g, kg, dkg, ml, dl, l, ek, tk, db, csésze, csipet, gerezd, szál, fej, csokor, csomag, szelet
-- "evőkanál" = "ek", "teáskanál" = "tk", "darab" = "db", "kiló" = "kg", "deka" = "dkg"
+- egységek: g, kg, dkg, ml, dl, l, ek, tk, kk, db, csésze, csipet, gerezd, szál, fej, csokor, csomag, szelet
+- "evőkanál" = "ek", "teáskanál" = "tk", "kávéskanál" = "kk", "darab" = "db", "kiló" = "kg", "deka" = "dkg"
 - "ízlés szerint" = quantity: null, unit: ""
 - ha csak darabszám van egység nélkül (pl. "3 tojás") = unit: "db"
 

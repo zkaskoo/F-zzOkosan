@@ -22,6 +22,7 @@ const UNIT_CONVERSIONS: Record<string, { to: string; multiply: number }> = {
   // Volume → milliliters
   ek: { to: 'ml', multiply: 15 }, // evőkanál
   tk: { to: 'ml', multiply: 5 }, // teáskanál
+  kk: { to: 'ml', multiply: 2 }, // kávéskanál
   dl: { to: 'ml', multiply: 100 },
   l: { to: 'ml', multiply: 1000 },
   ml: { to: 'ml', multiply: 1 },
@@ -47,6 +48,8 @@ const UNIT_ALIASES: Record<string, string> = {
   'evő kanál': 'ek',
   teáskanál: 'tk',
   'teás kanál': 'tk',
+  kávéskanál: 'kk',
+  'kávés kanál': 'kk',
   kanál: 'ek',
   deciliter: 'dl',
   liter: 'l',

@@ -1,12 +1,25 @@
 import { useState } from 'react';
-import type { CreateRecipeDto, Difficulty, Recipe, RecipeImportDraft } from '../../types';
+import { useQuery } from '@tanstack/react-query';
+import type { CreateRecipeDto, DietaryTag, Difficulty, Recipe, RecipeImportDraft } from '../../types';
 import IngredientInput from './IngredientInput';
 import StepInput from './StepInput';
 import ErrorMessage from '../common/ErrorMessage';
 import ImageUpload from '../upload/ImageUpload';
 import { isValidImageUrl } from '../../utils/imageUrl';
 import { genId } from '../../utils/id';
+import { categoryApi } from '../../services/api';
 import type { IngredientFormItemWithId, StepFormItemWithId } from './formTypes';
+
+const DIETARY_TAGS: { value: DietaryTag; label: string }[] = [
+  { value: 'VEGETARIAN', label: 'Vegetáriánus' },
+  { value: 'VEGAN', label: 'Vegán' },
+  { value: 'GLUTEN_FREE', label: 'Gluténmentes' },
+  { value: 'DAIRY_FREE', label: 'Tejmentes' },
+  { value: 'LOW_CARB', label: 'Alacsony szénhidrát' },
+  { value: 'KETO', label: 'Keto' },
+  { value: 'PALEO', label: 'Paleo' },
+  { value: 'NUT_FREE', label: 'Diómentes' },
+];
 
 interface RecipeFormProps {
   initialValues?: Recipe;
@@ -67,7 +80,23 @@ export default function RecipeForm({ initialValues, initialDraft, onSubmit, isLo
   const [cookingTime, setCookingTime] = useState<number | ''>(initialValues?.cookingTime ?? initialDraft?.cookingTime ?? '');
   const [servings, setServings] = useState<number | ''>(initialValues?.servings || initialDraft?.servings || '');
   const [difficulty, setDifficulty] = useState<Difficulty>(initialValues?.difficulty ?? initialDraft?.difficulty ?? 'MEDIUM');
+  const [dietaryTags, setDietaryTags] = useState<DietaryTag[]>(initialValues?.dietaryTags ?? []);
+  const [categoryIds, setCategoryIds] = useState<string[]>(
+    () => initialValues?.categories?.map((c) => c.categoryId) ?? [],
+  );
   const [isPublic, setIsPublic] = useState(initialValues?.isPublic ?? true);
+
+  const { data: categories } = useQuery({
+    queryKey: ['categories'],
+    queryFn: categoryApi.list,
+    staleTime: 1000 * 60 * 60,
+  });
+
+  const toggleCategory = (id: string) =>
+    setCategoryIds((prev) => (prev.includes(id) ? prev.filter((c) => c !== id) : [...prev, id]));
+
+  const toggleDietaryTag = (tag: DietaryTag) =>
+    setDietaryTags((prev) => (prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]));
   const [ingredients, setIngredients] = useState<IngredientFormItemWithId[]>(() => initIngredients(initialValues, initialDraft));
   const [steps, setSteps] = useState<StepFormItemWithId[]>(() => initSteps(initialValues, initialDraft));
   const [error, setError] = useState<string | null>(null);
@@ -106,6 +135,8 @@ export default function RecipeForm({ initialValues, initialDraft, onSubmit, isLo
       cookingTime: cookingTime ? Number(cookingTime) : undefined,
       servings: servings ? Number(servings) : undefined,
       difficulty,
+      dietaryTags,
+      categoryIds,
       isPublic,
       ingredients: validIngredients.map((item) => ({
         ingredientName: item.ingredientName,
@@ -195,6 +226,55 @@ export default function RecipeForm({ initialValues, initialDraft, onSubmit, isLo
             <option value="MEDIUM">Közepes</option>
             <option value="HARD">Nehéz</option>
           </select>
+        </div>
+      </div>
+
+      <div>
+        <span className="block text-sm font-medium text-text mb-2">Kategóriák</span>
+        <div className="flex flex-wrap gap-2">
+          {categories?.map((cat) => {
+            const selected = categoryIds.includes(cat.id);
+            return (
+              <button
+                key={cat.id}
+                type="button"
+                onClick={() => toggleCategory(cat.id)}
+                className={`rounded-full px-3 py-1 text-sm font-medium border transition-colors ${
+                  selected
+                    ? 'bg-primary border-primary text-white'
+                    : 'bg-gray-50 border-gray-200 text-text-secondary hover:bg-gray-100'
+                }`}
+              >
+                {cat.name}
+              </button>
+            );
+          })}
+          {!categories?.length && (
+            <span className="text-sm text-text-secondary">Kategóriák betöltése...</span>
+          )}
+        </div>
+      </div>
+
+      <div>
+        <span className="block text-sm font-medium text-text mb-2">Étrendi jelölések</span>
+        <div className="flex flex-wrap gap-2">
+          {DIETARY_TAGS.map((tag) => {
+            const selected = dietaryTags.includes(tag.value);
+            return (
+              <button
+                key={tag.value}
+                type="button"
+                onClick={() => toggleDietaryTag(tag.value)}
+                className={`rounded-full px-3 py-1 text-sm font-medium border transition-colors ${
+                  selected
+                    ? 'bg-secondary border-secondary text-white'
+                    : 'bg-gray-50 border-gray-200 text-text-secondary hover:bg-gray-100'
+                }`}
+              >
+                {tag.label}
+              </button>
+            );
+          })}
         </div>
       </div>
 

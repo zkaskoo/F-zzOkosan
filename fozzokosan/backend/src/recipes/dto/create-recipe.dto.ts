@@ -54,6 +54,11 @@ export class CreateRecipeDto {
   dietaryTags?: DietaryTag[];
 
   @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  categoryIds?: string[];
+
+  @IsOptional()
   @IsBoolean()
   isPublic?: boolean;
 

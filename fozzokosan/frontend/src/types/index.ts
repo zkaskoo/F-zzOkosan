@@ -32,6 +32,12 @@ export interface RecipeStep {
   imageUrl: string | null;
 }
 
+export interface RecipeCategoryLink {
+  recipeId: string;
+  categoryId: string;
+  category: { id: string; name: string; slug: string };
+}
+
 export interface Recipe {
   id: string;
   slug: string;
@@ -41,6 +47,7 @@ export interface Recipe {
   cookingTime: number | null;
   servings: number;
   difficulty: Difficulty;
+  dietaryTags: DietaryTag[];
   isPublic: boolean;
   createdAt: string;
   updatedAt: string;
@@ -48,6 +55,7 @@ export interface Recipe {
   user: Pick<User, 'id' | 'name' | 'avatar'>;
   ingredients: RecipeIngredient[];
   steps: RecipeStep[];
+  categories: RecipeCategoryLink[];
   _count?: { likes: number; comments: number };
 }
 
@@ -66,6 +74,8 @@ export interface CreateRecipeDto {
   cookingTime?: number;
   servings?: number;
   difficulty?: Difficulty;
+  dietaryTags?: DietaryTag[];
+  categoryIds?: string[];
   isPublic?: boolean;
   ingredients: IngredientFormItem[];
   steps: StepFormItem[];

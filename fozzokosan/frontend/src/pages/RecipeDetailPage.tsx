@@ -19,6 +19,17 @@ const difficultyLabels = {
   HARD: { label: 'Nehéz', classes: 'bg-red-100 text-red-700' },
 } as const;
 
+const dietaryTagLabels: Record<string, string> = {
+  VEGETARIAN: 'Vegetáriánus',
+  VEGAN: 'Vegán',
+  GLUTEN_FREE: 'Gluténmentes',
+  DAIRY_FREE: 'Tejmentes',
+  LOW_CARB: 'Alacsony szénhidrát',
+  KETO: 'Keto',
+  PALEO: 'Paleo',
+  NUT_FREE: 'Diómentes',
+};
+
 function formatCookingTime(minutes: number): string {
   if (minutes >= 60) {
     const hours = Math.floor(minutes / 60);
@@ -162,6 +173,28 @@ export default function RecipeDetailPage() {
               {recipe.servings} adagra megadva
             </span>
           </div>
+
+          {/* Kategóriák és étrendi jelölések */}
+          {(recipe.categories?.length > 0 || recipe.dietaryTags?.length > 0) && (
+            <div className="flex flex-wrap items-center gap-2 mb-8 text-sm">
+              {recipe.categories?.map((c) => (
+                <span
+                  key={c.categoryId}
+                  className="rounded-full px-3 py-1 font-medium bg-primary/10 text-primary"
+                >
+                  {c.category.name}
+                </span>
+              ))}
+              {recipe.dietaryTags?.map((tag) => (
+                <span
+                  key={tag}
+                  className="rounded-full px-3 py-1 font-medium bg-secondary/10 text-secondary"
+                >
+                  {dietaryTagLabels[tag] ?? tag}
+                </span>
+              ))}
+            </div>
+          )}
 
           {/* Author */}
           <Link to={`/profil/${recipe.user.id}`} className="flex items-center gap-3 mb-8 p-4 rounded-xl bg-gray-50 hover:bg-gray-100 transition-colors">

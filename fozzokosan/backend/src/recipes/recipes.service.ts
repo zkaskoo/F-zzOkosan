@@ -15,7 +15,7 @@ const RECIPE_FULL_INCLUDE = {
   user: { select: { id: true, name: true, avatar: true } },
   steps: { orderBy: { stepNumber: 'asc' as const } },
   ingredients: { include: { ingredient: true } },
-  categories: true,
+  categories: { include: { category: { select: { id: true, name: true, slug: true } } } },
   _count: { select: { likes: true, comments: true } },
 } satisfies Prisma.RecipeInclude;
 
@@ -57,7 +57,7 @@ export class RecipesService {
   }
 
   async create(createRecipeDto: CreateRecipeDto, userId: string) {
-    const { steps, ingredients, ...recipeData } = createRecipeDto;
+    const { steps, ingredients, categoryIds, ...recipeData } = createRecipeDto;
     const slug = await this.generateUniqueSlug(createRecipeDto.title);
 
     return this.prisma.$transaction(async (prisma) => {
@@ -68,6 +68,16 @@ export class RecipesService {
           userId,
         },
       });
+
+      if (categoryIds && categoryIds.length > 0) {
+        await prisma.recipeCategory.createMany({
+          data: categoryIds.map((categoryId) => ({
+            recipeId: recipe.id,
+            categoryId,
+          })),
+          skipDuplicates: true,
+        });
+      }
 
       if (steps && steps.length > 0) {
         await prisma.recipeStep.createMany({
@@ -254,13 +264,28 @@ export class RecipesService {
       throw new ForbiddenException('Csak a saját receptjeidet szerkesztheted');
     }
 
-    const { steps, ingredients, ...recipeData } = updateRecipeDto;
+    const { steps, ingredients, categoryIds, ...recipeData } = updateRecipeDto;
 
     return this.prisma.$transaction(async (prisma) => {
       await prisma.recipe.update({
         where: { id },
         data: recipeData,
       });
+
+      // Replace categories if provided
+      if (categoryIds !== undefined) {
+        await prisma.recipeCategory.deleteMany({ where: { recipeId: id } });
+
+        if (categoryIds.length > 0) {
+          await prisma.recipeCategory.createMany({
+            data: categoryIds.map((categoryId) => ({
+              recipeId: id,
+              categoryId,
+            })),
+            skipDuplicates: true,
+          });
+        }
+      }
 
       // Replace steps if provided
       if (steps !== undefined) {

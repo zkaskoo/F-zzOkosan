@@ -3,6 +3,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { UnitsService } from '../units/units.service';
 import { CreateShoppingListDto } from './dto/create-shopping-list.dto';
 import { Allergen } from '@prisma/client';
+import { detectAllergens } from '../ingredients/allergen-detection';
 
 interface MergedItem {
   ingredientName: string;
@@ -38,10 +39,17 @@ export class ShoppingListsService {
       for (const ri of recipe.ingredients) {
         if (ri.isOptional) continue;
 
-        // Skip if ingredient has an excluded allergen
+        // Skip if ingredient has an excluded allergen.
+        // A tárolt allergének mellett a névből kikövetkeztetetteket is nézzük,
+        // így a szabad szövegként bevitt összetevők (pl. „trapista sajt") is
+        // kiesnek akkor is, ha az adatbázisban még nincs allergénjük.
         if (excludeAllergens.length > 0) {
-          const hasExcluded = ri.ingredient.allergens.some((a) =>
-            excludeAllergens.includes(a),
+          const effectiveAllergens = new Set<Allergen>([
+            ...ri.ingredient.allergens,
+            ...detectAllergens(ri.ingredient.name),
+          ]);
+          const hasExcluded = excludeAllergens.some((a) =>
+            effectiveAllergens.has(a),
           );
           if (hasExcluded) continue;
         }

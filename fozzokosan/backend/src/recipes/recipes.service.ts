@@ -10,6 +10,7 @@ import { slugify } from '../common/slugify';
 import { CreateRecipeDto } from './dto/create-recipe.dto';
 import { UpdateRecipeDto } from './dto/update-recipe.dto';
 import { CreateRecipeIngredientDto } from './dto/create-recipe-ingredient.dto';
+import { detectAllergens } from '../ingredients/allergen-detection';
 
 const RECIPE_FULL_INCLUDE = {
   user: { select: { id: true, name: true, avatar: true } },
@@ -95,10 +96,13 @@ export class RecipesService {
           const normalizedName = ing.ingredientName.toLowerCase().trim();
           const ingredient = await prisma.ingredient.upsert({
             where: { normalizedName },
+            // A meglévő (esetleg kézzel karbantartott) allergéneket nem írjuk
+            // felül; csak új összetevőnél következtetjük ki a névből.
             update: {},
             create: {
               name: ing.ingredientName,
               normalizedName,
+              allergens: detectAllergens(ing.ingredientName),
             },
           });
 
@@ -318,6 +322,7 @@ export class RecipesService {
               create: {
                 name: ing.ingredientName,
                 normalizedName,
+                allergens: detectAllergens(ing.ingredientName),
               },
             });
 

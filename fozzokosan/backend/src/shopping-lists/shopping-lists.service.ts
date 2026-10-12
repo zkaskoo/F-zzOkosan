@@ -19,7 +19,11 @@ export class ShoppingListsService {
     private unitsService: UnitsService,
   ) {}
 
-  async generate(dto: CreateShoppingListDto, userId: string) {
+  async generate(
+    dto: CreateShoppingListDto,
+    userId: string,
+    menuPlanId: string | null = null,
+  ) {
     const recipes = await this.prisma.recipe.findMany({
       where: { id: { in: dto.recipeIds } },
       include: {
@@ -88,6 +92,8 @@ export class ShoppingListsService {
       data: {
         name: dto.name,
         userId,
+        menuPlanId,
+        excludeAllergens,
         items: {
           create: Array.from(merged.values()).map((item) => ({
             ingredientName: item.ingredientName,

@@ -3,6 +3,7 @@ import {
   NotFoundException,
   ForbiddenException,
 } from '@nestjs/common';
+import { Allergen } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { ShoppingListsService } from '../shopping-lists/shopping-lists.service';
 import { CreateMenuPlanDto, AddMenuItemDto } from './dto/create-menu-plan.dto';
@@ -84,6 +85,13 @@ export class MenuPlansService {
       },
     });
 
+    // A terv tartalma változott → frissítjük az időbélyeget, hogy a következő
+    // bevásárlólista-generálás tudja, hogy újat kell készíteni.
+    await this.prisma.menuPlan.update({
+      where: { id: planId },
+      data: { updatedAt: new Date() },
+    });
+
     return this.findOne(planId, userId);
   }
 
@@ -99,15 +107,51 @@ export class MenuPlansService {
     }
 
     await this.prisma.menuItem.delete({ where: { id: itemId } });
+
+    // Tartalmi változás → időbélyeg frissítése (lásd addItem).
+    await this.prisma.menuPlan.update({
+      where: { id: planId },
+      data: { updatedAt: new Date() },
+    });
+
     return this.findOne(planId, userId);
   }
 
-  async generateShoppingList(planId: string, userId: string) {
+  async generateShoppingList(
+    planId: string,
+    userId: string,
+    excludeAllergens: Allergen[] = [],
+  ) {
     const plan = await this.findOne(planId, userId);
 
     if (plan.items.length === 0) {
       throw new NotFoundException('Az étlapterv üres, nem lehet bevásárlólistát generálni');
     }
+
+    const normalizedAllergens = [...new Set(excludeAllergens)].sort();
+
+    // Ha már van ehhez a tervhez tartozó lista, és azóta sem a terv tartalma,
+    // sem a kizárt allergének nem változtak, akkor nem generálunk újat, hanem
+    // visszaadjuk a meglévőt. Így az ismételt kattintás nem hoz létre duplikátumokat.
+    const existing = await this.prisma.shoppingList.findFirst({
+      where: { menuPlanId: planId, userId },
+      orderBy: { createdAt: 'desc' },
+      include: { items: true },
+    });
+
+    if (
+      existing &&
+      existing.createdAt >= plan.updatedAt &&
+      this.sameAllergens(existing.excludeAllergens, normalizedAllergens)
+    ) {
+      return existing;
+    }
+
+    // Változott a terv vagy az allergénszűrés → a korábbi, elavult listá(ka)t
+    // eldobjuk, és frisset készítünk.
+    await this.prisma.shoppingList.deleteMany({
+      where: { menuPlanId: planId, userId },
+    });
 
     const recipeIds = [...new Set(plan.items.map((item) => item.recipeId))];
 
@@ -115,9 +159,19 @@ export class MenuPlansService {
       {
         name: `${plan.name} - Bevásárlólista`,
         recipeIds,
+        excludeAllergens: normalizedAllergens,
       },
       userId,
+      planId,
     );
+  }
+
+  /** Két allergénlista tartalmilag egyezik-e (sorrendtől függetlenül). */
+  private sameAllergens(a: Allergen[], b: Allergen[]): boolean {
+    if (a.length !== b.length) return false;
+    const sortedA = [...a].sort();
+    const sortedB = [...b].sort();
+    return sortedA.every((val, i) => val === sortedB[i]);
   }
 
   async remove(id: string, userId: string) {

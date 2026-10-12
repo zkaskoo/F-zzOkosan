@@ -5,22 +5,8 @@ import Layout from '../components/layout/Layout';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import { useRecipes } from '../hooks/useRecipes';
 import { useGenerateShoppingList } from '../hooks/useShoppingLists';
+import { ALLERGEN_OPTIONS } from '../constants/allergens';
 import type { Allergen } from '../types';
-
-const ALLERGEN_OPTIONS: { value: Allergen; label: string }[] = [
-  { value: 'GLUTEN', label: 'Glutén' },
-  { value: 'DAIRY', label: 'Tejtermék' },
-  { value: 'EGG', label: 'Tojás' },
-  { value: 'NUT', label: 'Dióféle' },
-  { value: 'PEANUT', label: 'Mogyoró' },
-  { value: 'SOY', label: 'Szója' },
-  { value: 'FISH', label: 'Hal' },
-  { value: 'SHELLFISH', label: 'Rák/Kagyló' },
-  { value: 'SESAME', label: 'Szezám' },
-  { value: 'CELERY', label: 'Zeller' },
-  { value: 'MUSTARD', label: 'Mustár' },
-  { value: 'SULPHITE', label: 'Szulfit' },
-];
 
 export default function CreateShoppingListPage() {
   const navigate = useNavigate();

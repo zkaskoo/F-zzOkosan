@@ -61,7 +61,13 @@ export function useRemoveMenuItem() {
 export function useGenerateMenuShoppingList() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (planId: string) => menuPlanApi.generateShoppingList(planId),
+    mutationFn: ({
+      planId,
+      excludeAllergens,
+    }: {
+      planId: string;
+      excludeAllergens?: string[];
+    }) => menuPlanApi.generateShoppingList(planId, excludeAllergens),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['shopping-lists'] });
     },

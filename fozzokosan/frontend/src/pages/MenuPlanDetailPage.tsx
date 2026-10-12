@@ -12,7 +12,8 @@ import {
   useDeleteMenuPlan,
 } from '../hooks/useMenuPlans';
 import { useRecipes } from '../hooks/useRecipes';
-import type { MealType, MenuItem } from '../types';
+import { ALLERGEN_OPTIONS } from '../constants/allergens';
+import type { Allergen, MealType, MenuItem } from '../types';
 
 const DAY_NAMES = ['Hétfő', 'Kedd', 'Szerda', 'Csütörtök', 'Péntek', 'Szombat', 'Vasárnap'];
 const MEAL_TYPES: { value: MealType; label: string }[] = [
@@ -50,7 +51,14 @@ export default function MenuPlanDetailPage() {
 
   const [addingSlot, setAddingSlot] = useState<{ day: string; mealType: MealType } | null>(null);
   const [recipeSearch, setRecipeSearch] = useState('');
+  const [excludeAllergens, setExcludeAllergens] = useState<Allergen[]>([]);
   const { data: recipesData } = useRecipes({ search: recipeSearch, limit: 20 });
+
+  const toggleAllergen = (a: Allergen) => {
+    setExcludeAllergens((prev) =>
+      prev.includes(a) ? prev.filter((x) => x !== a) : [...prev, a],
+    );
+  };
 
   const handleAdd = (recipeId: string) => {
     if (!id || !addingSlot) return;
@@ -67,9 +75,10 @@ export default function MenuPlanDetailPage() {
 
   const handleGenerateList = () => {
     if (!id) return;
-    shoppingListMutation.mutate(id, {
-      onSuccess: (list) => navigate(`/bevasarlolista/${list.id}`),
-    });
+    shoppingListMutation.mutate(
+      { planId: id, excludeAllergens },
+      { onSuccess: (list) => navigate(`/bevasarlolista/${list.id}`) },
+    );
   };
 
   const handleDelete = () => {
@@ -116,6 +125,30 @@ export default function MenuPlanDetailPage() {
               <Trash2 className="h-4 w-4" />
               Törlés
             </button>
+          </div>
+        </div>
+
+        {/* Allergén-szűrés a bevásárlólistához */}
+        <div className="card p-4 mb-6">
+          <p className="text-sm font-medium text-text mb-1">Mire vagy érzékeny?</p>
+          <p className="text-xs text-text-secondary mb-3">
+            A kijelölt allergéneket tartalmazó hozzávalók nem kerülnek be a bevásárlólistába.
+          </p>
+          <div className="flex flex-wrap gap-2">
+            {ALLERGEN_OPTIONS.map((opt) => (
+              <button
+                key={opt.value}
+                type="button"
+                onClick={() => toggleAllergen(opt.value)}
+                className={`rounded-full px-3 py-1 text-xs font-medium border transition-colors ${
+                  excludeAllergens.includes(opt.value)
+                    ? 'bg-red-100 border-red-300 text-red-700'
+                    : 'bg-gray-50 border-gray-200 text-text-secondary hover:bg-gray-100'
+                }`}
+              >
+                {opt.label}
+              </button>
+            ))}
           </div>
         </div>
 

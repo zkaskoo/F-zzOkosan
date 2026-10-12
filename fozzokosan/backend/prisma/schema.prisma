@@ -277,15 +277,19 @@ model Comment {
 // ============================================
 
 model ShoppingList {
-  id        String   @id @default(uuid())
-  userId    String   @map("user_id")
-  name      String
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
+  id               String     @id @default(uuid())
+  userId           String     @map("user_id")
+  name             String
+  menuPlanId       String?    @map("menu_plan_id")
+  excludeAllergens Allergen[] @default([]) @map("exclude_allergens")
+  createdAt        DateTime   @default(now()) @map("created_at")
+  updatedAt        DateTime   @updatedAt @map("updated_at")
 
-  user  User               @relation(fields: [userId], references: [id], onDelete: Cascade)
-  items ShoppingListItem[]
+  user     User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  menuPlan MenuPlan?          @relation(fields: [menuPlanId], references: [id], onDelete: SetNull)
+  items    ShoppingListItem[]
 
+  @@index([menuPlanId])
   @@map("shopping_lists")
 }
 
@@ -314,9 +318,14 @@ model MenuPlan {
   startDate DateTime   @map("start_date")
   endDate   DateTime   @map("end_date")
   createdAt DateTime   @default(now()) @map("created_at")
+  // A menüterv utolsó tartalmi módosítása (étel hozzáadása/eltávolítása).
+  // Ehhez hasonlítjuk a generált bevásárlólista idejét, hogy eldöntsük,
+  // kell-e újat generálni, vagy elég a meglévőt visszaadni.
+  updatedAt DateTime   @default(now()) @map("updated_at")
 
-  user  User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  items MenuItem[]
+  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items         MenuItem[]
+  shoppingLists ShoppingList[]
 
   @@map("menu_plans")
 }

@@ -11,6 +11,8 @@ import {
 import { Request as ExpressRequest } from 'express';
 import { MenuPlansService } from './menu-plans.service';
 import { CreateMenuPlanDto, AddMenuItemDto } from './dto/create-menu-plan.dto';
+import { GenerateMenuShoppingListDto } from './dto/generate-menu-shopping-list.dto';
+import { Allergen } from '@prisma/client';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 interface ReqUser {
@@ -66,9 +68,14 @@ export class MenuPlansController {
   @Post(':id/shopping-list')
   generateShoppingList(
     @Param('id') id: string,
+    @Body() dto: GenerateMenuShoppingListDto,
     @Request() req: ExpressRequest & { user: ReqUser },
   ) {
-    return this.menuPlansService.generateShoppingList(id, req.user.id);
+    return this.menuPlansService.generateShoppingList(
+      id,
+      req.user.id,
+      (dto.excludeAllergens ?? []) as Allergen[],
+    );
   }
 
   @Delete(':id')

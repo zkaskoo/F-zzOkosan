@@ -236,8 +236,10 @@ export const menuPlanApi = {
     const { data } = await api.delete<MenuPlan>(`/menu-plans/${planId}/items/${itemId}`);
     return data;
   },
-  generateShoppingList: async (planId: string): Promise<ShoppingList> => {
-    const { data } = await api.post<ShoppingList>(`/menu-plans/${planId}/shopping-list`);
+  generateShoppingList: async (planId: string, excludeAllergens: string[] = []): Promise<ShoppingList> => {
+    const { data } = await api.post<ShoppingList>(`/menu-plans/${planId}/shopping-list`, {
+      excludeAllergens,
+    });
     return data;
   },
   delete: async (id: string): Promise<void> => {

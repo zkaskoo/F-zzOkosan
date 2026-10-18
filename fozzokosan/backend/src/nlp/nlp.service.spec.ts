@@ -175,4 +175,58 @@ describe('NlpService', () => {
       expect(result).toEqual([{ name: 'tojás', quantity: 3, unit: 'db' }]);
     });
   });
+
+  describe('parseIngredients retry (átmeneti hibák)', () => {
+    let service: NlpService;
+    let generateContent: jest.Mock;
+
+    beforeEach(() => {
+      service = createService();
+      generateContent = jest.fn();
+      (service as any).model = { generateContent };
+      // A tényleges várakozást kimockoljuk, hogy a teszt azonnal lefusson.
+      jest
+        .spyOn(global, 'setTimeout')
+        .mockImplementation((cb: any) => {
+          cb();
+          return 0 as any;
+        });
+    });
+
+    afterEach(() => {
+      jest.restoreAllMocks();
+    });
+
+    it('átmeneti hiba (503) után újrapróbálkozik, majd sikerül', async () => {
+      generateContent
+        .mockRejectedValueOnce(new Error('503 Service Unavailable'))
+        .mockResolvedValueOnce({
+          response: { text: () => '[{"name": "olaj", "quantity": 2, "unit": "ek"}]' },
+        });
+
+      const result = await service.parseIngredients('2 ek olaj');
+
+      expect(generateContent).toHaveBeenCalledTimes(2); // 1 hibás + 1 sikeres
+      expect(result).toEqual([{ name: 'olaj', quantity: 2, unit: 'ek' }]);
+    });
+
+    it('tartósan átmeneti hiba esetén 3 próbálkozás után a tartalékra vált', async () => {
+      generateContent.mockRejectedValue(new Error('429 overloaded'));
+
+      const result = await service.parseIngredients('3 tojás');
+
+      expect(generateContent).toHaveBeenCalledTimes(3); // mindhárom próba
+      // a szabályalapú tartalék eredménye
+      expect(result).toEqual([{ name: 'tojás', quantity: 3, unit: 'db' }]);
+    });
+
+    it('nem átmeneti hiba esetén NEM próbálkozik újra, egyből a tartalékra vált', async () => {
+      generateContent.mockRejectedValue(new Error('400 Bad Request'));
+
+      const result = await service.parseIngredients('2 ek olaj');
+
+      expect(generateContent).toHaveBeenCalledTimes(1); // nincs újrapróbálkozás
+      expect(result).toEqual([{ name: 'olaj', quantity: 2, unit: 'ek' }]);
+    });
+  });
 });

@@ -4,6 +4,51 @@ import Layout from '../components/layout/Layout';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import ErrorMessage from '../components/common/ErrorMessage';
 import { useShoppingList, useToggleShoppingItem, useDeleteShoppingList } from '../hooks/useShoppingLists';
+import { classifyShoppingItem } from '../constants/pantry';
+
+interface ShoppingItem {
+  id: string;
+  ingredientName: string;
+  quantity: number;
+  unit: string;
+  isChecked: boolean;
+}
+
+function ItemRow({
+  item,
+  onToggle,
+  showQuantity = true,
+  pantry = false,
+}: {
+  item: ShoppingItem;
+  onToggle: (id: string) => void;
+  showQuantity?: boolean;
+  pantry?: boolean;
+}) {
+  return (
+    <label
+      className={`flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors ${
+        item.isChecked ? 'opacity-50' : ''
+      }`}
+    >
+      <input
+        type="checkbox"
+        checked={item.isChecked}
+        onChange={() => onToggle(item.id)}
+        className="h-5 w-5 rounded accent-primary"
+      />
+      <span className={`flex-1 text-sm text-text ${item.isChecked ? 'line-through' : ''}`}>
+        {showQuantity && item.quantity > 0 && (
+          <span className="font-medium">{item.quantity} {item.unit} </span>
+        )}
+        {item.ingredientName}
+        {pantry && (
+          <span className="ml-2 text-xs text-text-secondary">(otthon van?)</span>
+        )}
+      </span>
+    </label>
+  );
+}
 
 export default function ShoppingListDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -26,8 +71,26 @@ export default function ShoppingListDetailPage() {
   if (isLoading) return <Layout><LoadingSpinner size="lg" /></Layout>;
   if (isError || !list) return <Layout><ErrorMessage message="A lista nem található." /></Layout>;
 
-  const unchecked = list.items.filter((i) => !i.isChecked);
-  const checked = list.items.filter((i) => i.isChecked);
+  // A tételeket három csoportba soroljuk: megveendő, fűszer, kamra-alap.
+  const seasonings: ShoppingItem[] = [];
+  const mainItems: ShoppingItem[] = [];
+  for (const item of list.items) {
+    if (classifyShoppingItem(item.ingredientName) === 'seasoning') {
+      seasonings.push(item);
+    } else {
+      mainItems.push(item);
+    }
+  }
+  const isPantry = (item: ShoppingItem) =>
+    classifyShoppingItem(item.ingredientName) === 'pantry';
+
+  // Megveendő tételek: a bepipáltak a lista aljára, áthúzva.
+  const mainSorted = [...mainItems].sort(
+    (a, b) => Number(a.isChecked) - Number(b.isChecked),
+  );
+  const seasoningSorted = [...seasonings].sort(
+    (a, b) => Number(a.isChecked) - Number(b.isChecked),
+  );
 
   return (
     <Layout>
@@ -52,49 +115,35 @@ export default function ShoppingListDetailPage() {
         </div>
 
         <div className="card p-6 space-y-2">
-          {unchecked.length === 0 && checked.length === 0 && (
+          {list.items.length === 0 && (
             <p className="text-text-secondary text-sm text-center py-4">A lista üres.</p>
           )}
-          {unchecked.map((item) => (
-            <label
+          {mainSorted.map((item) => (
+            <ItemRow
               key={item.id}
-              className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors"
-            >
-              <input
-                type="checkbox"
-                checked={false}
-                onChange={() => handleToggle(item.id)}
-                className="h-5 w-5 rounded accent-primary"
-              />
-              <span className="flex-1 text-sm text-text">
-                <span className="font-medium">{item.quantity} {item.unit}</span>{' '}
-                {item.ingredientName}
-              </span>
-            </label>
-          ))}
-
-          {checked.length > 0 && unchecked.length > 0 && (
-            <hr className="my-3 border-gray-200" />
-          )}
-
-          {checked.map((item) => (
-            <label
-              key={item.id}
-              className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors opacity-50"
-            >
-              <input
-                type="checkbox"
-                checked={true}
-                onChange={() => handleToggle(item.id)}
-                className="h-5 w-5 rounded accent-primary"
-              />
-              <span className="flex-1 text-sm text-text line-through">
-                <span className="font-medium">{item.quantity} {item.unit}</span>{' '}
-                {item.ingredientName}
-              </span>
-            </label>
+              item={item}
+              onToggle={handleToggle}
+              pantry={isPantry(item)}
+            />
           ))}
         </div>
+
+        {seasoningSorted.length > 0 && (
+          <div className="card p-6 space-y-2 mt-4">
+            <p className="text-sm font-semibold text-text mb-1">Fűszerek (ízlés szerint)</p>
+            <p className="text-xs text-text-secondary mb-2">
+              Ezeket mennyiség nélkül soroljuk fel – általában ízlés szerint adagolod.
+            </p>
+            {seasoningSorted.map((item) => (
+              <ItemRow
+                key={item.id}
+                item={item}
+                onToggle={handleToggle}
+                showQuantity={false}
+              />
+            ))}
+          </div>
+        )}
       </div>
     </Layout>
   );

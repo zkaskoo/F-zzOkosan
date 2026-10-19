@@ -12,6 +12,15 @@ interface MergedItem {
   sourceRecipes: string[];
 }
 
+/**
+ * Nem bevásárolandó alapanyagok kiszűrése. Jelenleg a csapvíz: a „víz" önálló
+ * szóként (víz, langyos víz, víz a főzéshez) nem kerül a listába, mert azt nem
+ * kell megvenni. Az összetett szavak (ásványvíz, szódavíz) megmaradnak.
+ */
+function isNonShoppable(name: string): boolean {
+  return /(^|[\s,])v[ií]z([\s,]|$)/.test(name.toLowerCase());
+}
+
 @Injectable()
 export class ShoppingListsService {
   constructor(
@@ -42,6 +51,9 @@ export class ShoppingListsService {
     for (const recipe of recipes) {
       for (const ri of recipe.ingredients) {
         if (ri.isOptional) continue;
+
+        // Vizet és egyéb nem bevásárolható alapanyagot nem teszünk a listára.
+        if (isNonShoppable(ri.ingredient.name)) continue;
 
         // Skip if ingredient has an excluded allergen.
         // A tárolt allergének mellett a névből kikövetkeztetetteket is nézzük,

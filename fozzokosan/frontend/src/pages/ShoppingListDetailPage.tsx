@@ -124,6 +124,8 @@ export default function ShoppingListDetailPage() {
               item={item}
               onToggle={handleToggle}
               pantry={isPantry(item)}
+              // A kamra-alapoknál (só, olaj, cukor) a mennyiség nem informatív.
+              showQuantity={!isPantry(item)}
             />
           ))}
         </div>
